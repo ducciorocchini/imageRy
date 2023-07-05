@@ -1,4 +1,0 @@
-import("raster")
-import("devtools")
-
-exportPattern("^[[:alpha:]]+")
