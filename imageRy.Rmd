@@ -27,9 +27,9 @@ Need a guide about devtools? [Here](https://cran.r-project.org/web/packages/gith
 
 ## Including plots from the imageRy R package
 
-Once the imageRy R package has been installed the data are ready available-
+Once the imageRy R package has been installed the data are readily available.  
 
-```{r}
+```{r, message=FALSE, warnings=F}
 library(imageRy)
 data(duccio)
 ```
