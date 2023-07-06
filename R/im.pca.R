@@ -11,5 +11,4 @@ summary(pca)
 
 # pc map
 pci <- predict(x, pca, index = 1:2)
-plot(pci[[1]])
 }
