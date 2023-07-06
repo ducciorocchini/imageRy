@@ -1,8 +1,8 @@
 im.pca <- function(x){
 # random sample
 set.seed(1)
-sr <- sampleRandom(x, 10000)
-
+sr <- spatSample(x, 10000, method="random")
+  
 # principal component
 pca <- prcomp(sr)
 
