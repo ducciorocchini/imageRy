@@ -1,4 +1,4 @@
-#' im.refresh
+#' im_refresh
 #' 
 #' A function to refresh imageRy
 #'
@@ -6,9 +6,9 @@
 #' @export
 #'
 #' @examples
-#' im.refresh()
+#' im_refresh()
 
-im.refresh <- function(){
+im_refresh <- function(){
   devtools::install_github("ducciorocchini/imageRy", force=T)
 }
 
