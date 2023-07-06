@@ -6,3 +6,16 @@ Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elis
 [Guide here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/imageRy.html)
 
 [Data to be uploaded can be seen here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/data/descxription.md)
+
+> **Note**
+> How to import data without im.import()
+
+# example:
+
+library(terra)
+
+mato <- system.file("data/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
+
+mato <- rast(mato)
+
+plot(mato)
