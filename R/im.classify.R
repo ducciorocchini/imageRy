@@ -5,9 +5,9 @@ library(fields)
 im.classify <- function(input_image, num_clusters = 3, seed = NULL, do_plot = TRUE, use_viridis = TRUE, colors = c('yellow','black','red'), num_colors = 100) {
   
   # Check if input is a SpatRaster
-  if(!inherits(input_image, "SpatRaster")) {
-    stop("input_image should be a SpatRaster object.")
-  }
+  #if(!inherits(input_image, "SpatRaster")) {
+  #  stop("input_image should be a SpatRaster object.")
+  #}
   
   # Get the raster values
   image_values <- values(input_image)
@@ -48,8 +48,8 @@ im.classify <- function(input_image, num_clusters = 3, seed = NULL, do_plot = TR
   return(classified_image)
 }
 
-output_raster <- im.classify(input_image = mato,
-                             num_clusters = 5, 
-                             seed = 123, 
-                             do_plot = TRUE,
-                             use_viridis = FALSE)
+# output_raster <- im.classify(input_image = mato,
+#                             num_clusters = 5, 
+#                             seed = 123, 
+#                             do_plot = TRUE,
+#                             use_viridis = FALSE)
