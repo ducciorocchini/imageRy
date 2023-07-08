@@ -10,6 +10,13 @@ Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elis
 > **Note**
 > How to import data without im.import()
 
+> **Warning**
+> Packages needed to properly run imageRY:
++ terra
++ ggplot2
++ fields
++ viridis
+
 # example:
 
 library(terra)
