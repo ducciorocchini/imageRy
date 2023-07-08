@@ -7,15 +7,16 @@ Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elis
 
 [Data to be uploaded can be seen here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/data/descxription.md)
 
-> **Note**
-> How to import data without im.import()
-
 > **Warning**
 > Packages needed to properly run imageRY:
-+ terra
-+ ggplot2
-+ fields
-+ viridis
+library(imageRy)
+library(terra)
+library(ggplot2)
+library(viridis)
+library(fields)
+
+> **Note**
+> How to import data without im.import()
 
 # example:
 
