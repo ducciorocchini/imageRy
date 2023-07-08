@@ -9,11 +9,11 @@ Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elis
 
 > **Warning**
 > Packages needed to properly run imageRY:
-library(imageRy)
-library(terra)
-library(ggplot2)
-library(viridis)
-library(fields)
++ library(imageRy)
++ library(terra)
++ library(ggplot2)
++ library(viridis)
++ library(fields)
 
 > **Note**
 > How to import data without im.import()
