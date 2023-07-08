@@ -1,6 +1,14 @@
-# Function to plot outputs with ggplot2 and vridis
-# requires ggplot2 and viridis packages
-im.ggplot <- function(m, layerfill){
-md <- as.data.frame(m, xy=T)
-ggplot() + geom_raster(md, mapping = aes(x=x, y=y, fill=layerfill)) + scale_fill_viridis(option='viridis')
+im.ggplot <- function(input_raster, layerfill) {
+  # Convert raster to dataframe and create plot directly
+  print(
+    ggplot(as.data.frame(input_raster, xy=TRUE), 
+           aes(x=x, y=y, fill=!!sym(layerfill))) +
+      geom_raster(interpolate = TRUE) +
+      scale_fill_viridis(option = 'viridis')
+  )
 }
+
+p <- im.ggplot(input_raster = mato, layerfill = "matogrosso_ast_2006209_lrg_2")
+
+
+
