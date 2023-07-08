@@ -8,7 +8,7 @@ im.ggplot <- function(input_raster, layerfill) {
   )
 }
 
-p <- im.ggplot(input_raster = mato, layerfill = "matogrosso_ast_2006209_lrg_2")
+# p <- im.ggplot(input_raster = mato, layerfill = "matogrosso_ast_2006209_lrg_2")
 
 
 
