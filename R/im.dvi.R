@@ -1,3 +1,3 @@
-im.dvi = function(x,nir,r){
+im.dvi <- function(x,nir,r){
 x$nir-x$r
 }
