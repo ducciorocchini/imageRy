@@ -27,3 +27,9 @@ mato <- system.file("data/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
 mato <- rast(mato)
 
 plot(mato)
+
+> **Warning** To be checked
++ im.ggplot(): leave grey, take the first layer
++ im.ggplotRGB(): leave grey
++ im.pca()
+#
