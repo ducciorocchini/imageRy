@@ -7,5 +7,6 @@ pca <- prcomp(sr)
 # variance explained
 summary(pca)
 # pc map
-predict(x, pca, index = 1:2)
+pci <- predict(x, pca, index = 1:2)
+plot(pci[[1]])
 }
