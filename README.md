@@ -26,6 +26,8 @@ mato <- system.file("data/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
 
 mato <- rast(mato)
 
+plot(mato)
+
 > **Warning** Things to be checked:
 + im.ggplot(): automatically import first layer, grey background
 + im.ggplotRGB(): grey background
@@ -33,10 +35,3 @@ mato <- rast(mato)
 + im.import(): also import several layers via pattern=""
 
 
-plot(mato)
-
-> **Warning** To be checked
-+ im.ggplot(): leave grey, take the first layer
-+ im.ggplotRGB(): leave grey
-+ im.pca()
-#
