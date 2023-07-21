@@ -33,5 +33,6 @@ plot(mato)
 + im.ggplotRGB(): grey background
 + im.pca(): like im.classify()
 + im.import(): also import several layers via pattern=""
++ Manuals under implementation
 
 
