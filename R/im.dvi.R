@@ -1,4 +1,4 @@
-im.ndvi <- function(x, nir, red){
+im.dvi <- function(x,nir,red){
   
   if(!inherits(x, "SpatRaster")) {
     stop("Input image should be a SpatRaster object.")
@@ -8,10 +8,8 @@ im.ndvi <- function(x, nir, red){
     stop("NIR and red layers should be indicated with a number")
   }
   
-  ndvi <- (x[[nir]] - x[[red]]) / (x[[nir]] + x[[red]])
-  print(im.ggplot(ndvi))
+  dvi <- x[[nir]] - x[[red]]
+  print(im.ggplot(dvi))
   
-  return(ndvi)
-
+  return(dvi)
 }
-
