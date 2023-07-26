@@ -29,9 +29,9 @@ mato <- rast(mato)
 plot(mato)
 
 > **Warning** Things to be checked:
++ im.pca(): to be tested
 + im.ggplot(): automatically import first layer, grey background
 + im.ggplotRGB(): grey background
-+ im.pca(): like im.classify()
 + im.import(): also import several layers via pattern=""
 + Manuals under implementation
 
