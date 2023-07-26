@@ -30,6 +30,8 @@ plot(mato)
 
 > **Warning** Things to be checked:
 + im.pca(): to be tested
++ im.dvi(): to be tested
++ im.ndvi(): to be tested
 + im.ggplot(): automatically import first layer, grey background
 + im.ggplotRGB(): grey background
 + im.import(): also import several layers via pattern=""
