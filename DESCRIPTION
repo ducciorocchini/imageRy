@@ -2,15 +2,15 @@ Package: imageRy
 Type: Package
 Title: Modify and Share Images
 Version: 0.1.0
-Author: Giovanni Andrea Nocera
-Maintainer: The package maintainer <giovanninocera8@gmail.com>
+Author: Duccio Rocchini, Giovanni Andrea Nocera, Ludovico Chieffallo, Elisa Thouverai
+Maintainer: The package maintainer <ducciorocchini@gmail.com>
 Description: Manipulate and share raster images in R.
 Encoding: UTF-8
 Language: en-GB
 License: GPL(>=2)
 Depends: R (>= 4.0.0)
-Imports: devtools,raster,terra
+Imports: devtools,dichromat,fields,ggplot2,stats,terra,viridis
 Suggests: knitr
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-07-05 14:50:03 UTC; elisathouverai
+Packaged: 2023-07-10 11:06:03 UTC; elisathouverai
