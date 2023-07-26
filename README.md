@@ -30,6 +30,7 @@ mato <- rast(mato)
 plot(mato)
 
 > **Warning** Things to be checked:
++ import of sentinel data and plotRGB
 + im.pca(): to be tested
 + im.dvi(): to be tested
 + im.ndvi(): to be tested
