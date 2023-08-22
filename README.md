@@ -4,6 +4,7 @@ Manipulate and share raster images in R.
 Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elisa Thouverai.
 
 ## NEW: Rapid guide available!
+
 > **Note**
 [Rapid guide here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/imageRy_rapid_manual.html)
 to be update with im.import()
@@ -16,9 +17,10 @@ to be update with im.import()
 + library(viridis)
 + library(fields)
 
-# directly import data with the im.import function: 
+## Directly import data with the im.import function: 
 
 im.list()
+
 mato2 <- im.import("matogrosso_ast_2006209_lrg.jpg")
 
 > **Warning** Things to be checked:
