@@ -25,11 +25,13 @@ devtools::install_github("ducciorocchini/imageRy")
 
 library(terra)
 
-mato <- system.file("data/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
+mato <- system.file("images/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
 
 mato <- rast(mato)
 
 plot(mato)
+
+# directly import data with the im.import function: 
 
 > **Warning** Things to be checked:
 + import of sentinel data and plotRGB
