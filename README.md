@@ -15,25 +15,9 @@ to be update with im.import()
 + library(viridis)
 + library(fields)
 
-> **Note**
-> How to import data without im.import()
-
-# example:
-
-devtools::install_github("ducciorocchini/imageRy")
-
-library(terra)
-
-mato <- system.file("images/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
-
-mato <- rast(mato)
-
-plot(mato)
-
 # directly import data with the im.import function: 
 
-check data in inst/images and then:
-
+im.list()
 mato2 <- im.import("matogrosso_ast_2006209_lrg.jpg")
 
 > **Warning** Things to be checked:
