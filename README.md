@@ -21,6 +21,8 @@ to be update with im.import()
 
 # example:
 
+devtools::install_github("ducciorocchini/imageRy")
+
 library(terra)
 
 mato <- system.file("data/matogrosso_ast_2006209_lrg.jpg", package="imageRy")
