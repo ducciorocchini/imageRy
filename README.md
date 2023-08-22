@@ -19,7 +19,7 @@ to be update with im.import()
 + library(viridis)
 + library(fields)
 
-## Directly import data with the im.import function: 
+## Directly import data with the im.import function
 
 im.list()
 
