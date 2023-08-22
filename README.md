@@ -3,6 +3,7 @@
 Manipulate and share raster images in R.
 Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elisa Thouverai.
 
+## NEW: Rapid guide available!
 > **Note**
 [Rapid guide here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/imageRy_rapid_manual.html)
 to be update with im.import()
