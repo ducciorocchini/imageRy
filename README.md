@@ -1,7 +1,7 @@
 # imageRy
 
 Manipulate and share raster images in R.
-Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, and Elisa Thouverai.
+Original code by Duccio Rocchini, Giovanni Nocera, Ludovico Chieffallo, Michele Torresani and Elisa Thouverai.
 
 ## NEW: Rapid guide available!
 
