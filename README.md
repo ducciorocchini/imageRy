@@ -28,12 +28,10 @@ mato2 <- im.import("matogrosso_ast_2006209_lrg.jpg")
 ## Things we are checking
 
 > **Warning** Things to be checked:
-+ import of sentinel data and plotRGB
-+ im.pca(): to be tested
-+ im.dvi(): to be tested
-+ im.ndvi(): to be tested
-+ im.ggplot(): automatically import first layer, grey background
-+ im.ggplotRGB(): grey background
++ im.pca(): to be simplified
++ im.classify(): to be simplified
++ im.dvi(): remove ggplot()
++ im.ndvi(): remove ggplot()
 + im.import(): also import several layers via pattern=""
 + Manuals under implementation
 
