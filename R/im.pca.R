@@ -1,26 +1,29 @@
-im.pca <- function(x){
+library(terra)
+library(viridis)
+
+im.pca <- function(input_image, n_samples = 100, n_components = 3) {
   
-  if(!inherits(x, "SpatRaster")) {
-    stop("Input image should be a SpatRaster object.")
+  #Verify that the input is a SpatRaster
+  if(!inherits(input_image, "SpatRaster")) {
+    stop("input_image should be a SpatRaster object.")
   }
   
-  # random sample
-  df <- as.data.frame(x)
-  set.seed(1)
-  sr <- sample(1:nrow(df), 10000)
+  # 1.sampling
+  sample <- spatSample(input_image, n_samples)
   
-  # principal component
-  pca <- prcomp(df[sr,])
+  # 2.PCA
+  pca <- prcomp(sample)
   
-  # variance explained
-  summary(pca)
+  # Prints the explained variance and correlation with the original bands print(summary(pca))
+  print(pca)
   
-  # pc map
-  pci <- predict(x, pca, index = 1:2)
-  plot(pci[[1]])
+  # 3.PCA map
+  pci <- predict(input_image, pca, index=c(1:n_components))
+  
+  viridis_palette <- colorRampPalette(viridis(7))(255)
+  plot(pci, col=viridis_palette)
   
   return(pci)
-  
 }
 
-
+result <- im.pca(mato, n_components = 3)
