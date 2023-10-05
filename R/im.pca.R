@@ -26,4 +26,3 @@ im.pca <- function(input_image, n_samples = 100, n_components = 3) {
   return(pci)
 }
 
-result <- im.pca(mato, n_components = 3)
