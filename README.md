@@ -28,8 +28,7 @@ mato2 <- im.import("matogrosso_ast_2006209_lrg.jpg")
 ## Things we are checking
 
 > **Warning** Things to be checked:
-+ im.pca(): to be simplified
-+ im.classify(): to be simplified
++ manuals
 + im.dvi(): remove ggplot()
 + im.ndvi(): remove ggplot()
 + im.import(): also import several layers via pattern=""
