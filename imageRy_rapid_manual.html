@@ -358,15 +358,12 @@ display: none;
 
 
 <pre class="r"><code>devtools::install_github(&quot;ducciorocchini/imageRy&quot;)</code></pre>
-<div id="libraries-needed" class="section level1">
-<h1>Libraries needed</h1>
+<div id="packages-needed" class="section level1">
+<h1>Packages needed</h1>
 <ul>
-<li>library(imageRy)</li>
 <li>library(terra)</li>
 <li>library(ggplot2)</li>
 <li>library(viridis)</li>
-<li>library(fields)</li>
-<li>library(devtools)</li>
 </ul>
 </div>
 <div id="functions" class="section level1">
@@ -392,14 +389,14 @@ analysis</p>
 <h1>2. Functions for data visualisation</h1>
 <div id="im.plotrgb" class="section level2">
 <h2>im.plotRGB()</h2>
-<pre class="r"><code>im.plotRGB(mato)</code></pre>
-<p>It directly plots data using bands 1, 2 and 3 in an RGB space.</p>
-</div>
-<div id="im.plotrgb.user" class="section level2">
-<h2>im.plotRGB.user()</h2>
-<pre class="r"><code>im.plotRGB.user(mato, 2, 1, 3)</code></pre>
+<pre class="r"><code>im.plotRGB(mato, 2, 1, 3)</code></pre>
 <p>It directly plots data in an RGB space. Bands are chosen by the
 operator.</p>
+</div>
+<div id="im.plotrgb.auto" class="section level2">
+<h2>im.plotRGB.auto()</h2>
+<pre class="r"><code>im.plotRGB.auto(mato, 2, 1, 3)</code></pre>
+<p>It directly plots data using bands 1, 2 and 3 in an RGB space.</p>
 </div>
 <div id="im.ggplot" class="section level2">
 <h2>im.ggplot()</h2>
@@ -409,7 +406,7 @@ needed.</p>
 </div>
 </div>
 <div id="functions-for-data-analysis" class="section level1">
-<h1>2. Functions for data analysis</h1>
+<h1>3. Functions for data analysis</h1>
 <div id="im.ndvi" class="section level2">
 <h2>im.ndvi()</h2>
 <pre class="r"><code>im.dvi(mato, 1, 2)</code></pre>
