@@ -7,7 +7,7 @@ We did our best to reduce the weight of data in order to facilitate RS data anal
 Hence, most of the data are original sets with coordinate systems recorderded. Other sets are pre-analysed data mainly downloadable from the NASA Earth Observatory () site.
 In case of NASA Earth Observatory data we basically maintained the same name of images. In this manner a simple search of the name in any browser will directly lead to the original storybeyond each image. 
 
-## Original sets
+## Raw datasets
 ### sentinel.dolomites.b*.tif
 Four bands of a Sentinel-2 image acquired in June 2022 are provided over the area of Tofane, Dolomites, Italy.
 These images allow dealing with coordinate reference systems, multiframe plots, imagery stacks, RGB visualisation.
