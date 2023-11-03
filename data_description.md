@@ -1,4 +1,4 @@
-# ImageRy data description :🛰️
+# ImageRy data description 🛰️
 
 Data are stored in: https://github.com/ducciorocchini/imageRy/tree/main/inst/images
 and can be seen in R by the function im.list() and further imported by im.import(). Here is a description of the set in alphabetical order:
