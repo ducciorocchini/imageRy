@@ -29,6 +29,7 @@ mato2 <- im.import("matogrosso_ast_2006209_lrg.jpg")
 
 > **Warning** Things to be checked:
 + manuals
++ add description of data from Ludovico
 + im.dvi(): remove ggplot()
 + im.ndvi(): remove ggplot()
 + im.import(): also import several layers via pattern=""
