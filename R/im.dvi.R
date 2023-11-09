@@ -9,7 +9,6 @@ im.dvi <- function(x,nir,red){
   }
   
   dvi <- x[[nir]] - x[[red]]
-  print(im.ggplot(dvi))
   
   return(dvi)
 }
