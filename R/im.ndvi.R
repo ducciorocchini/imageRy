@@ -9,8 +9,7 @@ im.ndvi <- function(x, nir, red){
   }
   
   ndvi <- (x[[nir]] - x[[red]]) / (x[[nir]] + x[[red]])
-  print(im.ggplot(ndvi))
-  
+ 
   return(ndvi)
 
 }
