@@ -1,9 +1,3 @@
-library(imageRy)
-library(terra)
-
-im.list()
-mato<-im.import("sentinel.dolomites.b4.tif")
-
 
 im.classify <- function(input_image, num_clusters = 3, seed = NULL, do_plot = TRUE, custom_colors = NULL, num_colors = 100) {
   # Set a default color palette. These colors are used for visualization after classification.
@@ -56,7 +50,3 @@ im.classify <- function(input_image, num_clusters = 3, seed = NULL, do_plot = TR
   # Return the raster object with classification results.
   return(classified_image)
 }
-
-
-
-im.classify(mato)
