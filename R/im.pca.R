@@ -1,7 +1,7 @@
 library(terra)
 library(viridis)
 
-im.pca2 <- function(input_image, n_samples = 100, n_components = 3) {
+im.pca <- function(input_image, n_samples = 100, n_components = 3) {
   
   #Verify that the input is a SpatRaster
   if(!inherits(input_image, "SpatRaster")) {
