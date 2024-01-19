@@ -5,7 +5,7 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 
 <!-- badges: start -->
 [![Rapid manual](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/imageRy_rapid_manual.html)
-[![Vignette]([)](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/vignette.html)
+[![Vignette]](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/vignette.html)
 <!-- badges: end -->
 
 ## Rapid manual available!
