@@ -7,7 +7,7 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 
 > **Note**
 [Rapid guide here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/imageRy_rapid_manual.html)
-to be update with im.import()
+to be updated with im.import()
 
 ## Packages needed
 
