@@ -8,6 +8,7 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 > **Note**
 [Rapid guide here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/imageRy_rapid_manual.html)
 
+> **Note**
 [Vignette here](https://htmlpreview.github.io/?https://github.com/ducciorocchini/imageRy/blob/main/vignette.html)
 
 ## Packages needed
