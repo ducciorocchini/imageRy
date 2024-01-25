@@ -1,8 +1,10 @@
 im.import <- function(im) {
-  ls <- list.files(system.file("images", package="imageRy"))
-  fname <- ls[grep(im, ls)]
-  fpath <- system.file("images", fname, package="imageRy")
-  r <- rast(fpath)
-  plot(r)
-  return(r)
+  suppressWarnings({  
+    ls <- list.files(system.file("images", package="imageRy"))
+    fname <- ls[grep(im, ls)]
+    fpath <- system.file("images", fname, package="imageRy")
+    r <- rast(fpath)
+    plot(r) 
+    return(r)
+  })  
 }
