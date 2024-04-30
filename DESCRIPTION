@@ -2,7 +2,7 @@ Package: imageRy
 Type: Package
 Title: Modify and Share Images
 Version: 0.1.0
-Author: Duccio Rocchini, Giovanni Andrea Nocera, Ludovico Chieffallo, Elisa Thouverai
+Author: Duccio Rocchini, Giovanni Andrea Nocera, Ludovico Chieffallo, Giacomo Panza, Michele Torresani, Elisa Thouverai
 Maintainer: The package maintainer <ducciorocchini@gmail.com>
 Description: Manipulate and share raster images in R.
 Encoding: UTF-8
