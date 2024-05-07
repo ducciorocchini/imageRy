@@ -16,7 +16,3 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 > **Warning**
 > Packages needed to properly run imageRY:
 + library(terra)
-
-```{r}
-test
-```
