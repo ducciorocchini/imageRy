@@ -1,7 +1,3 @@
-# Original code: Elisa Thouverai
-# Arguments of the function: im = image, scale = dimension of the ridges in the final plot, option = viridis type of color ramp palette; to be put in the manual
-# Packages needed as dependencies of imageRY: tidyverse
-
 im.ridgeline <- function(im, scale, option) {
   
   #Checking inputs
@@ -29,11 +25,3 @@ im.ridgeline <- function(im, scale, option) {
   return(pl)
   
 }
-
-# Example (to be put in the manual):
-# library(ggridges)
-# library(terra)
-# r <- im.import("greenland")
-# im.ridgeplot(r, 2, "A") 
-# + theme_bw()
-
