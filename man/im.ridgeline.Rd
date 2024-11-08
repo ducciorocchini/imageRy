@@ -36,5 +36,6 @@ Duccio Rocchini
 https://github.com/ducciorocchini/imageRy/
 }
 \examples{
-x <- im.import("sentinel.dolomites")
-im.ndvi(x, 4, 3)
+r <- im.import("greenland")
+im.ridgeplot(r, 2, "A") 
++ theme_bw()
