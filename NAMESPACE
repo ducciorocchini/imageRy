@@ -5,7 +5,7 @@ importFrom("grDevices", "colorRampPalette")
 importFrom("stats", "kmeans", "prcomp", "predict")
 import("terra")
 importFrom("viridis", "scale_fill_viridis", "viridis")
-import("tidyverse")
 import("ggridges")
+import("tidyverse")
 
 exportPattern("^[[:alpha:]]+")
