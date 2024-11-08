@@ -9,7 +9,7 @@ Encoding: UTF-8
 Language: en-GB
 License: GPL(>=2)
 Depends: R (>= 4.0.0)
-Imports: devtools,dichromat,fields,ggplot2,stats,terra,viridis
+Imports: devtools,dichromat,fields,ggplot2,stats,terra,viridis,tidyverse
 Suggests: knitr
 Config/testthat/edition: 3
 NeedsCompilation: no
