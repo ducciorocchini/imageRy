@@ -1,7 +1,7 @@
 \name{im.ndvi {imageRy}}
 \alias{im.ridgeline}
 \title{
-Calculate ridgeline plots from satellite imagery stacked data 
+Calculate ridgeline plots from satellite imagery stacked data
 }
 \description{
 This function calculates ridgeline plots from satellite imagery stacked data
@@ -27,7 +27,7 @@ Ridgeline plots are dramatically useful to investigate temporal change of satell
 SpatRaster object
 }
 \references{
-Check im.import(), im.ggplot() 
+Check im.import(), im.ggplot()
 }
 \author{
 Duccio Rocchini
@@ -37,5 +37,4 @@ https://github.com/ducciorocchini/imageRy/
 }
 \examples{
 r <- im.import("greenland")
-im.ridgeplot(r, 2, "A") 
-+ theme_bw()
+im.ridgeline(r, 2, "A") + theme_bw()
