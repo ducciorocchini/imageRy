@@ -4,7 +4,7 @@ im.ridgeline <- function(im, scale, option) {
   if(!is(im, "SpatRaster")) stop("im must be a SpatRaster")
   if(!is.numeric(scale)) stop("scale must be numeric")
   if(!is.character(option)) stop("ooption must be a character")
-  if(!option %in% c("A", "B", "C", "D", "E", "F", "G", "H")) stop("option must be one of the color ooptions in the viris pachage (A,B,C,D,E,F,G,H)")
+  if(!option %in% c("A", "B", "C", "D", "E", "F", "G", "H")) stop("option must be one of the color ooptions in the viridis pachage (A,B,C,D,E,F,G,H)")
 
   #Transforming im in a dataframe
   df <- as.data.frame(im, wide = FALSE)
