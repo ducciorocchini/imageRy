@@ -22,6 +22,11 @@ im.export()
 ```{r}
 im.plotRGB() # with main to add titles
 ```
+```{r}
+im.plotRGB() # with names of viridis legends
+```
+
+
 
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
