@@ -23,7 +23,7 @@ im.export()
 im.plotRGB() # with main to add titles
 ```
 ```{r}
-im.plotRGB() # with names of viridis legends
+im.ridgeline() # with names of viridis legends
 ```
 
 
