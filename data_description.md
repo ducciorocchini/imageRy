@@ -12,6 +12,9 @@ In case of NASA Earth Observatory data we basically maintained the same name of 
 Four bands of a Sentinel-2 image acquired in June 2022 are provided over the area of Tofane, Dolomites, Italy.
 These images allow dealing with coordinate reference systems, multiframe plots, imagery stacks, RGB visualisation.
 
+## Sentinel2_NDVI_2020*.tif
+Images of the Brenta region (italian Alps) with NDVI for each season (using February, May, August and November)
+
 ## Pre-analysed data
 
 ### EN_*
