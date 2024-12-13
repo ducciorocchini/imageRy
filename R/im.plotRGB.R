@@ -4,7 +4,3 @@ im.plotRGB <- function(x, r, g, b, title = 'Main'){
   plotRGB(x, r, g, b, stretch = "lin", axes = T, mar = c(1,1,2,1))
   title(main = title, cex.main = 1.3, line = 2.5)
 }
-
-# im.plotRGB <- function(x,r,g,b){
-#  plotRGB(x,r,g,b,stretch="lin")
-#}
