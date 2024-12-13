@@ -1,5 +1,3 @@
- Ecco la funzione im.ridgeline() con i nomi delle legende viridis da inserire:
-
 im.ridgeline1 <- function(im, scale, palette = c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket", "turbo")) {
   
   palette <- palette[1]
