@@ -5,8 +5,8 @@ im.ridgeline <- function(im, scale, palette = c("viridis", "magma", "plasma", "i
   #Checking inputs
   if(!is(im, "SpatRaster")) stop("im must be a SpatRaster")
   if(!is.numeric(scale)) stop("scale must be numeric")
-  if(!is.character(palette)) stop("ooption must be a character")
-  if(!palette %in% c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket", "turbo")) stop("option must be one of the color ooptions in the viridis pakage (A,B,C,D,E,F,G,H)")
+  if(!is.character(palette)) stop("palette must be a character")
+  if(!palette %in% c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket", "turbo")) stop("palette must be one of the color options in the viridis package (viridis, magma, plasma, inferno, cividis, mako, rocket, turbo)")
   
   switch(palette, 
          viridis = 'D',
