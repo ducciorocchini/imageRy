@@ -16,7 +16,7 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 + library(terra)
 
 ## Ongoing
-> For the next UNIBO course
+> For the next UNIBO course (check package testp)
 ```{r}
 im.multiframe()
 ```
