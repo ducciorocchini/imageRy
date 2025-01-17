@@ -17,17 +17,12 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 
 ## Ongoing
 ```{r}
+im.multiframe()
+```
+
+```{r}
 im.export()
 ```
-
-```{r}
-im.plotRGB() # with main to add titles
-```
-```{r}
-im.ridgeline() # with names of viridis legends
-```
-
-
 
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
