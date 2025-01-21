@@ -25,9 +25,14 @@ im.multiframe()
 im.export()
 ```
 
-
 ```{r}
 im.fuzzyclass()
 ```
+
+> Avoid alphabetical order and use elements
+```{r}
+im.ridgeline()
+```
+
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
