@@ -7,7 +7,7 @@ Calculate ridgeline plots from satellite imagery stacked data
 This function calculates ridgeline plots from satellite imagery stacked data
   }
 \usage{
-im.ridgeline(im, scale, option) {
+im.ridgeline(im, scale, option)
 }
 \arguments{
   \item{im}{
@@ -38,3 +38,4 @@ https://github.com/ducciorocchini/imageRy/
 \examples{
 r <- im.import("greenland")
 im.ridgeline(r, 2, "A") + theme_bw()
+}
