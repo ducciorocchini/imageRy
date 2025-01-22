@@ -34,5 +34,7 @@ im.fuzzyclass()
 im.ridgeline()
 ```
 
+> Check Mato Grosso images for overlapping
+
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
