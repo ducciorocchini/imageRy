@@ -42,7 +42,7 @@ This set, derived from Copernicus, represents temperature over four different ye
 
 This set could be particularly useful for multitemoral analysis of RS data.
 
-### matogrosso_ast_2006209_lrg.jpg and matogrosso_ast_2006209_lrg.jpg
+### matogrosso_l5_1992219_lrg.jpg and matogrosso_ast_2006209_lrg.jpg
 An inland state of central Brazil, deep in the Amazon interior, Mato Grosso was long isolated from the outside world. A railroad, followed by highways and airplanes, eventually connected this state with other regions in the twentieth century. By the early twenty-first century, modern technology had clearly reached Mato Grosso—and produced widespread change.
 
 These images are particularly useful for multitemporal analysis, spectral indices calculations and image classification.
