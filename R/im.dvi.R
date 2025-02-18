@@ -8,7 +8,7 @@ im.dvi <- function(x,nir,red){
     stop("NIR and red layers should be indicated with a number")
   }
   
-  dvi <- x[[nir]] - x[[red]]
+  dvi = x[[nir]] - x[[red]]
   
   return(dvi)
 }
