@@ -8,7 +8,7 @@ im.ndvi <- function(x, nir, red){
     stop("NIR and red layers should be indicated with a number")
   }
   
-  ndvi <- (x[[nir]] - x[[red]]) / (x[[nir]] + x[[red]])
+  ndvi = (x[[nir]] - x[[red]]) / (x[[nir]] + x[[red]])
  
   return(ndvi)
 
