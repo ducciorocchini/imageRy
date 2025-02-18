@@ -36,7 +36,5 @@ im.fuzzyclass()
 im.ridgeline()
 ```
 
-> Avoid Main in im.plotRGB
-
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
