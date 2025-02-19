@@ -36,5 +36,11 @@ im.fuzzyclass()
 im.ridgeline()
 ```
 
+> In PCA, retain the whole set
+``` r
+im.pca()
+```
+
+
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
