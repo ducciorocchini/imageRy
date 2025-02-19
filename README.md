@@ -19,20 +19,20 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 > Clean sentinel.png
 
 > For the next UNIBO course (check package testp)
-```{r}
+``` r
 im.multiframe()
 ```
 
-```{r}
+``` r 
 im.export()
 ```
 
-```{r}
+``` r
 im.fuzzyclass()
 ```
 
 > Avoid alphabetical order and use elements
-```{r}
+``` r 
 im.ridgeline()
 ```
 
