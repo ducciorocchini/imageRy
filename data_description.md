@@ -17,6 +17,9 @@ Images of the Brenta region (italian Alps) with NDVI for each season (using Febr
 
 ## Pre-analysed data
 
+### bleterbach.jpg
+RGB winter drone imageRy of Bleterbach - image gathered under the project Horizon Europe EarthBridge
+
 ### EN_*
 This set is related to the decrease of nitrogen during pandemics, due to the massive decrease of human activities. It is based on sketch from Sentinel-2 data available at: 
 [https://www.youtube.com/watch?v=oHWXjOCDrvY](https://earthobservatory.nasa.gov/blogs/earthmatters/2020/03/13/airborne-nitrogen-dioxide-decreases-over-italy/?src=earthmatters-rss)https://earthobservatory.nasa.gov/blogs/earthmatters/2020/03/13/airborne-nitrogen-dioxide-decreases-over-italy/?src=earthmatters-rss
