@@ -1,4 +1,4 @@
-im.ridgeline <- function(im, scale, palette = c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket", "turbo")) {
+im.ridgeline <- function(im, scale = 1, palette = c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket", "turbo")) {
   
   palette <- palette[1]
   
@@ -19,6 +19,7 @@ im.ridgeline <- function(im, scale, palette = c("viridis", "magma", "plasma", "i
          turbo = 'H')
   
   #Transforming im in a dataframe
+  names(im) <- make.unique(names(im))  # to avoid ridgelines merging same-name layers
   df <- as.data.frame(im, wide = FALSE)
   
   #Final graph
