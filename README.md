@@ -41,6 +41,9 @@ im.ridgeline()
 im.pca()
 ```
 
+> im.flip
+
+> im.export
 
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
