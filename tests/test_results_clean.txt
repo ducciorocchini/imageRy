@@ -1,0 +1,48 @@
+✔ | F W  S  OK | Context
+⠏ |          0 | im.export                                                            ⠙ |          2 | im.export                                                            ⠼ |          5 | im.export                                                            ⠴ |          6 | im.export                                                            ✔ |          6 | im.export
+⠏ |          0 | im_classify                                                          ⠙ |          2 | im_classify                                                          ✔ |          3 | im_classify
+⠏ |          0 | im_dvi                                                               ⠋ |          1 | im_dvi                                                               ⠙ |          2 | im_dvi                                                               ✔ |          2 | im_dvi
+⠏ |          0 | im_ggplot                                                            ⠙ |          2 | im_ggplot                                                            ✔ |          3 | im_ggplot
+⠏ |          0 | im_import                                                            ⠋ |          1 | im_import                                                            ⠸ |   1      3 | im_import                                                            ⠼ |   1      4 | im_import                                                            ✔ |   1      5 | im_import
+──────────────────────────────────────────────────────────────────────────────────────
+Warning ('test-im_import.R:21:5'): im.import correctly loads a raster
+[rast] unknown extent
+Backtrace:
+     ▆
+  1. └─imageRy::im.import(test_image) at test-im_import.R:21:5
+  2.   ├─base::tryCatch(...) at imageRy/R/im.import.R:61:3
+  3.   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+  4.   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+  5.   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+  6.   ├─terra::rast(fpath) at imageRy/R/im.import.R:62:5
+  7.   └─terra::rast(fpath)
+  8.     └─terra (local) .local(x, ...)
+  9.       └─terra:::messages(r, "rast")
+ 10.         └─terra:::warn(f, paste(unique(x@pntr$getWarnings()), collapse = "\n"))
+──────────────────────────────────────────────────────────────────────────────────────
+⠏ |          0 | im_list                                                              ⠋ |          1 | im_list                                                              ✔ |          3 | im_list
+⠏ |          0 | im_multiframe                                                        ✔ |          3 | im_multiframe
+⠏ |          0 | im_ndvi                                                              ⠙ |          2 | im_ndvi                                                              ✔ |          2 | im_ndvi
+⠏ |          0 | im_pca                                                               [1] "PCA Summary:"
+Importance of components:
+                          PC1    PC2    PC3
+Standard deviation     0.3147 0.2880 0.2695
+Proportion of Variance 0.3889 0.3258 0.2852
+Cumulative Proportion  0.3889 0.7148 1.0000
+[1] "Predicting PCA with 3 layers"
+[1] "PCI Object Created:"
+[1] "SpatRaster"
+attr(,"package")
+[1] "terra"
+[1] 3
+⠙ |          2 | im_pca                                                               ✔ |          4 | im_pca
+⠏ |          0 | im_plotRGB                                                           ⠙ |          2 | im_plotRGB                                                           ✔ |          2 | im_plotRGB
+⠏ |          0 | im_plotRGB_auto                                                      ⠋ |          1 | im_plotRGB_auto                                                      ✔ |          2 | im_plotRGB_auto
+⠏ |          0 | im_print                                                             ⠙ |          2 | im_print                                                             ✔ |          2 | im_print
+⠏ |          0 | im_refresh                                                           ⠙ |          2 | im_refresh                                                           ✔ |          2 | im_refresh
+⠏ |          0 | im_ridgeline                                                         ⠙ |          2 | im_ridgeline                                                         ✔ |          3 | im_ridgeline
+
+══ Results ═══════════════════════════════════════════════════════════════════════════
+Duration: 6.1 s
+
+[ FAIL 0 | WARN 1 | SKIP 0 | PASS 42 ]
