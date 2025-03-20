@@ -42,6 +42,13 @@ im.pca()
 ```
 
 > im.flip()
+``` r
+im.flip <- function(a){
+a = flip(a)
+plot(a)
+return(a)
+}
+```
 
 > im.export()
 
