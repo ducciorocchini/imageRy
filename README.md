@@ -54,5 +54,7 @@ return(a)
 
 > im.ggplpotRGB()
 
+> im.ggplot() # insert different color ramp palettes 
+
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
