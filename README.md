@@ -52,5 +52,7 @@ return(a)
 
 > im.export()
 
+> im.ggplpotRGB()
+
 ## Secretized link:
 https://anonymous.4open.science/r/imageRy-5083/README.md
