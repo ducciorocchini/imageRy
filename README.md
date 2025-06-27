@@ -61,9 +61,9 @@ https://anonymous.4open.science/r/imageRy-5083/README.md
 
 ## Ongoing in the CRAN version
 
++ insert import vignette
 + im.list() to list data from Zenodo
 + im.import() to import several layers
 + im.classify(): check output
-+ insert import bignette
 
 
