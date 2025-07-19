@@ -16,16 +16,13 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 + library(terra)
 
 ## Ongoing
-> Clean sentinel.png
 
-> For the next UNIBO course (check package testp)
+> horizontal and vertical coloring in im.ridgeline() (optional)
+<details>
 ``` r
-im.multiframe()
+test
 ```
-
-``` r 
-im.export()
-```
+ </details>
 
 ``` r
 im.fuzzyclass()
