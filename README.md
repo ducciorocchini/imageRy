@@ -17,6 +17,11 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 
 ## Ongoing
 
+> Import vector s in the CRAN version from Zenodo
+``` r
+im.import()
+```
+
 > horizontal and vertical coloring in im.ridgeline() (optional)
 
 <details>
@@ -96,6 +101,7 @@ im.ridgeline22 <- function(im, scale, dir = c("h", "v"), palette = c("viridis", 
 ```
  </details>
 
+> Fuzzy classification
 ``` r
 im.fuzzyclass()
 ```
