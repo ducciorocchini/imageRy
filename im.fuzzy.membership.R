@@ -136,9 +136,7 @@ im.fuzzy <- function(input_image,
   # Plot (by default: memberships)
   # ----------------------------
   if (do_plot) {
-    color_palette <- grDevices::colorRampPalette(colors)(num_colors)
-    terra::plot(membership_rast, col = color_palette, axes = FALSE,
-                main = names(membership_rast))
+    terra::plot(membership_rast, axes = FALSE, main = names(membership_rast))
   }
   
   # ----------------------------
