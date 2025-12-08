@@ -2,11 +2,15 @@
 # https://github.com/irisnanaobeng
 
 ## Enhanced ggplot-style imageRy function (im.ggplotRGB)
-im.ggplotRGB <- function(rgb_stack, r = 1, g = 2, b = 3, 
+im.ggplotRGB <- function(input_image, r = 1, g = 2, b = 3, 
                         stretch = "lin", title = "", downsample = 1) {
   
-  # Downsample the raster first to reduce memory
-  rgb_small <- aggregate(rgb_stack, fact = downsample)
+  # Only downsample if needed
+  if (downsample == 1) {
+    rgb_small <- input_image
+  } else {
+    rgb_small <- aggregate(input_image, fact = downsample)
+  }
   
   # Convert only the downsampled version to data frame
   rgb_df <- as.data.frame(rgb_small, xy = TRUE)
