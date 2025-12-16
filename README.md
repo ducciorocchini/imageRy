@@ -17,10 +17,7 @@ Original code by Duccio Rocchini, Ludovico Chieffallo, Giovanni Andrea Nocera, G
 
 ## Ongoing
 
-> Import vector s in the CRAN version from Zenodo
-``` r
-im.import()
-```
+> Check greenland data import
 
 > horizontal and vertical coloring in im.ridgeline() (optional)
 
