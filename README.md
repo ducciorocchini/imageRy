@@ -1,5 +1,13 @@
 # imageRy
 
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/9ee62cc3-8d56-4ccf-bb98-8e0427729a82"
+    alt="imageRy logo"
+    width="150"
+  />
+</p>
+
 Manipulate and share raster images in R.
 
 ## Rapid manual available!
