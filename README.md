@@ -1,10 +1,16 @@
 # imageRy
 
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Made with R](https://img.shields.io/badge/Made%20with-R-blue.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/ducciorocchini/imageRy)
+![CRAN status](https://www.r-pkg.org/badges/version/imageRy)
+![CRAN downloads](https://cranlogs.r-pkg.org/badges/imageRy)
+
 <p align="center">
   <img
     src="https://github.com/user-attachments/assets/9ee62cc3-8d56-4ccf-bb98-8e0427729a82"
     alt="imageRy logo"
-    width="150"
+    width="300"
   />
 </p>
 
