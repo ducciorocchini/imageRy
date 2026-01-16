@@ -32,7 +32,7 @@
 #'
 #' @export
 im.plotRGB <- function(x, r, g, b, title = ''){
-  par(col.axis="white", col.lab = "white", tck = 0)
+  par(col.axis="black", col.lab = "black", tck = 0)
   plotRGB(x, r, g, b, stretch = "lin", axes = T, mar = c(1,1,2,1))
   title(main = title, cex.main = 1.3, line = 2.5)
 }
