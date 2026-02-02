@@ -32,7 +32,9 @@ imageRy/
 │   ├── im.classify.R
 │   ├── im.dvi.R
 │   ├── im.export.R
+│   ├── im.fuzzy.R
 │   ├── im.ggplot.R
+│   ├── im.kernel.R
 │   ├── im.import.R
 │   ├── im.list.R
 │   ├── im.multiframe.R
