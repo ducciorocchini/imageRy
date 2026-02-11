@@ -9,12 +9,18 @@ In case of NASA Earth Observatory data we basically maintained the same name of 
 
 ## Raw datasets
 ### sentinel.dolomites.b*.tif
-Four bands of a Sentinel-2 image acquired in June 2022 are provided over the area of Tofane, Dolomites, Italy.
+Four bands of a Sentinel-2 Level-2A image acquired in June 2022 are provided over the area of Tofane, Dolomites, Italy.
 These images allow dealing with coordinate reference systems, multiframe plots, imagery stacks, RGB visualisation.
 
 ## Sentinel2_NDVI_2020*.tif
 Images of the Brenta region (italian Alps) with NDVI for each season (using February, May, August and November)
 
+## S2_AllBands_temperate_passo_falzarego.tif
+Sentinel-2 Level-2A image of the temperate mixed forests near Passo Falzarego, in the Dolomites.
+
+## S2_AllBands_tropical.tif
+Sentinel-2 Level-2A image of the Taboca area, located along the Rio Carabinani in the Amazonas region of Brazil, is a remote and largely pristine section of the Amazon rainforest.
+ 
 ## Pre-analysed data
 
 ### bletterbach.jpg
