@@ -268,3 +268,5 @@ return(a)
 > im.ggplpotRGB()
 
 > im.ggplot() # insert different color ramp palettes
+
+> ggpairs() with images
