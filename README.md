@@ -270,3 +270,5 @@ return(a)
 > im.ggplot() # insert different color ramp palettes
 
 > ggpairs() with images
+
+> stretch in im.plotRGB()
