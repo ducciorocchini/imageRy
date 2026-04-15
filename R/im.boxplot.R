@@ -1,3 +1,65 @@
+#' Visualize Spectral Distributions Across Classes Using Boxplots
+#'
+#' This function generates boxplots of raster values grouped by classes derived from a classified image.
+#' It allows comparison of spectral distributions across classes, with optional density overlays,
+#' median labels, and custom visualization settings.
+#'
+#' @param input_image A `SpatRaster` object representing the input raster (single or multi-layer).
+#' @param classified_image A `SpatRaster` object with a single layer representing class assignments.
+#' @param layer A numeric index or character string specifying which layer of `input_image` to visualize (default: 1).
+#' @param density A logical value indicating whether to overlay half-eye density plots (default: TRUE).
+#' @param median_labels A logical value indicating whether to display median values on the plot (default: FALSE).
+#' @param legend A logical value indicating whether to display the legend (default: FALSE).
+#' @param limits A numeric vector of length 2 specifying quantile limits (between 0 and 1) for the y-axis (default: NULL).
+#' @param custom_colors A character vector specifying colors for the classes (default: NULL).
+#'
+#' @return A `ggplot` object showing the distribution of pixel values per class.
+#'
+#' @details
+#' The function combines spectral information from a raster image with class assignments
+#' from a classified raster to visualize how pixel values are distributed across classes.
+#'
+#' Each class is represented by a boxplot summarizing:
+#' \itemize{
+#'   \item Median values
+#'   \item Interquartile range (IQR)
+#'   \item Distribution spread (excluding outliers by default)
+#' }
+#'
+#' Optional density overlays (half-eye plots) provide a smoothed representation of the
+#' distribution, facilitating interpretation of class separability in spectral space.
+#'
+#' Additional options:
+#' \itemize{
+#'   \item `density = TRUE` overlays kernel density estimates for each class.
+#'   \item `median_labels = TRUE` annotates each class with its median value.
+#'   \item `limits` restricts the y-axis to selected quantiles, improving visualization of central distributions.
+#'   \item `custom_colors` allows user-defined color palettes for classes.
+#' }
+#'
+#' From an informatics perspective, this function provides a link between classification outputs
+#' and spectral feature space, enabling the evaluation of class separability and internal variability.
+#' It supports interpretation of classification results by explicitly showing how pixel values are
+#' distributed within and across classes.
+#'
+#' @seealso [im.classify()], [im.barplot()]
+#'
+#' @examples
+#' \dontrun{
+#' library(terra)
+#' library(ggplot2)
+#'
+#' # Load example raster
+#' r <- rast(system.file("ex/elev.tif", package = "terra"))
+#'
+#' # Perform classification
+#' classified <- im.classify(r, num_clusters = 3)
+#'
+#' # Plot spectral distributions for layer 1
+#' im.boxplot(r, classified, layer = 1, density = TRUE)
+#' }
+#'
+#' @export
 im.boxplot <- function(input_image, classified_image, 
                        layer = 1, # specify the layer to be displayed
                        density = TRUE, # TRUE for adding a half-eye density plot 
