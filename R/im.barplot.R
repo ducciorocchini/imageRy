@@ -1,3 +1,52 @@
+#' Plot Class Distribution from a Classified Raster
+#'
+#' This function generates a bar plot summarizing the distribution of classes in a classified raster image.
+#' It can display either absolute pixel counts or percentages, with optional labels and custom color palettes.
+#'
+#' @param classified_image A `SpatRaster` object representing a classified raster with a single layer.
+#' @param perc A logical value indicating whether to plot percentages instead of counts (default: FALSE).
+#' @param counts A logical value indicating whether to display numeric labels above bars (default: FALSE).
+#' @param rescale A logical value indicating whether to rescale the y-axis to full range (default: FALSE).
+#' @param custom_colors A character vector of colors to be used for the bar plot (default: NULL).
+#'
+#' @return A `ggplot` object representing the distribution of classes in the raster.
+#'
+#' @details
+#' The function extracts pixel values from a classified raster and summarizes them as a bar plot.
+#' Each class corresponds to a category, and the height of the bars represents either:
+#' \itemize{
+#'   \item The number of pixels per class (default), or
+#'   \item The percentage of pixels per class (if `perc = TRUE`)
+#' }
+#'
+#' Additional options:
+#' \itemize{
+#'   \item If `counts = TRUE`, numeric values are displayed above each bar.
+#'   \item If `rescale = TRUE`, the y-axis is fixed to the full range (0–100 for percentages or total pixel count).
+#'   \item If `custom_colors` is provided, it is used to define the color palette of the plot.
+#' }
+#'
+#' This function is particularly useful for summarizing the output of unsupervised or supervised classification
+#' and linking spatial patterns to quantitative class proportions.
+#'
+#' @seealso [im.classify()], [im.kernel()]
+#'
+#' @examples
+#' \dontrun{
+#' library(terra)
+#' library(ggplot2)
+#'
+#' # Load example raster
+#' r <- rast(system.file("ex/elev.tif", package = "terra"))
+#'
+#' # Perform classification
+#' classified <- im.classify(r, num_clusters = 3)
+#'
+#' # Plot class distribution
+#' im.barplot(classified, perc = TRUE, counts = TRUE)
+#' }
+#'
+#' @export
 im.barplot <- function(classified_image,
                        perc = FALSE, # TRUE for bars showing the percentage of pixels per class
                        counts = FALSE, # TRUE for adding numeric labels above the bars
