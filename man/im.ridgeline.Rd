@@ -8,7 +8,8 @@ im.ridgeline(
   im,
   scale,
   palette = c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket",
-    "turbo")
+    "turbo"),
+  direction = 1
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ im.ridgeline(
 
 \item{palette}{A character string specifying the `viridis` color palette option to use.
 Available options: `"viridis"`, `"magma"`, `"plasma"`, `"inferno"`, `"cividis"`, `"mako"`, `"rocket"`, `"turbo"`.}
+
+\item{direction}{A numeric value controlling the direction of the color scale.
+Typically `1` for the default direction and `-1` to reverse the palette.}
 }
 \value{
 A `ggplot` object displaying the ridgeline plot.
@@ -28,6 +32,7 @@ This function generates ridgeline plots from stacked satellite imagery data.
 \details{
 Ridgeline plots are useful for analyzing temporal variations in raster-based satellite imagery.
 This function extracts raster values and visualizes their distribution across layers.
+The `direction` parameter allows reversing the color gradient of the selected palette.
 }
 \examples{
 \dontrun{
@@ -39,9 +44,8 @@ library(ggplot2)
 r <- im.import("greenland")
 
 # Generate ridgeline plot
-im.ridgeline(r, 2, "viridis") + theme_bw()
+im.ridgeline(r, 2, "viridis", direction = 1) + theme_bw()
 }
-
 }
 \references{
 See also `im.import()`, `im.ggplot()`.
