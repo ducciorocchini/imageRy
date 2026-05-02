@@ -171,10 +171,10 @@ Standard R package metadata, including:
 You can install **imageRy** from CRAN or directly from GitHub if desired:
 
 ```r
-# From CRAN/universe
+# From GitHub with new functions
 install.packages("imageRy")
 
-# Or from GitHub
+# Or from CRAN with stable functions
 # remotes::install_github("ducciorocchini/imageRy")
 ```
 
