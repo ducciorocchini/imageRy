@@ -50,40 +50,49 @@
 #'
 #' @export
 im.ggplotRGB <- function(input_image, r = 1, g = 2, b = 3, 
-                        stretch = "lin", title = "", downsample = 1) {
+                         stretch = "lin", title = "", downsample = 1) {
   
-  # Only downsample if needed
+  if (!inherits(input_image, "SpatRaster")) {
+    stop("input_image should be a SpatRaster object.")
+  }
+  
+  if (any(c(r, g, b) < 1) || any(c(r, g, b) > terra::nlyr(input_image))) {
+    stop("r, g, and b must be valid band indices of input_image.")
+  }
+  
   if (downsample == 1) {
     rgb_small <- input_image
   } else {
-    rgb_small <- aggregate(input_image, fact = downsample)
+    rgb_small <- terra::aggregate(input_image, fact = downsample)
   }
   
-  # Convert only the downsampled version to data frame
-  rgb_df <- as.data.frame(rgb_small, xy = TRUE)
-  rgb_df <- na.omit(rgb_df)
+  rgb_df <- terra::as.data.frame(rgb_small, xy = TRUE, na.rm = TRUE)
   
-  band_names <- names(rgb_df)[3:5]
+  band_names <- names(rgb_df)[-(1:2)]
   
-  # Create ggplot
-  p <- ggplot() +
-    geom_raster(data = rgb_df, 
-                aes(x = x, y = y, 
-                    fill = rgb(
-                      get(band_names[r]), 
-                      get(band_names[g]), 
-                      get(band_names[b]),
-                      maxColorValue = max(c(get(band_names[r]), 
-                                          get(band_names[g]), 
-                                          get(band_names[b])), na.rm = TRUE)
-                    ))) +
-    scale_fill_identity() +
-    coord_equal() +
-    labs(title = title) +
-    # theme_minimal() +
-    theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-          axis.text = element_text(size = 8),
-          panel.grid = element_blank())
+  red   <- rgb_df[[band_names[r]]]
+  green <- rgb_df[[band_names[g]]]
+  blue  <- rgb_df[[band_names[b]]]
+  
+  maxval <- max(c(red, green, blue), na.rm = TRUE)
+  
+  rgb_df$rgb_col <- grDevices::rgb(
+    red, green, blue,
+    maxColorValue = maxval
+  )
+  
+  p <- ggplot2::ggplot(rgb_df) +
+    ggplot2::geom_raster(
+      ggplot2::aes(x = x, y = y, fill = rgb_col)
+    ) +
+    ggplot2::scale_fill_identity() +
+    ggplot2::coord_equal() +
+    ggplot2::labs(title = title) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5, size = 12, face = "bold"),
+      axis.text = ggplot2::element_text(size = 8),
+      panel.grid = ggplot2::element_blank()
+    )
   
   return(p)
 }
