@@ -189,7 +189,7 @@ install.packages("imageRy")
 
 ## ❓ Getting Help
 
-* Browse the vignette and manual in `inst/doc/`
+* Browse the vignette 
 * Use `help(package = "imageRy")` in R
 * Raise issues on GitHub
 
