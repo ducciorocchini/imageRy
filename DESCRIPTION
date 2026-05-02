@@ -1,6 +1,6 @@
 Package: imageRy
 Type: Package
-Title: Modify and Share Images
+Title: Provides a framework for remote sensing data analysis in R by integrating spatial processing and statistical visualization within a unified workflow. 
 Version: 0.1.0
 Author: Duccio Rocchini, Giovanni Andrea Nocera, Ludovico Chieffallo, Giacomo Panza, Michele Torresani, Diletta Santovito, Elisa Thouverai
 Maintainer: The package maintainer <ducciorocchini@gmail.com>
@@ -10,7 +10,6 @@ Language: en-GB
 License: GPL(>=2)
 Depends: R (>= 4.0.0)
 Imports: devtools,dichromat,fields,ggplot2,stats,terra,viridis
-Suggests: knitr
+Suggests: knitr,markdown,patchwork
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-07-10 11:06:03 UTC; elisathouverai
