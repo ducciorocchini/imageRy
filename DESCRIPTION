@@ -1,7 +1,7 @@
 Package: imageRy
 Type: Package
 Title: Provides a framework for remote sensing data analysis in R by integrating spatial processing and statistical visualization within a unified workflow. 
-Version: 0.1.0
+Version: 0.2.0
 Author: Duccio Rocchini, Giovanni Andrea Nocera, Ludovico Chieffallo, Giacomo Panza, Michele Torresani, Diletta Santovito, Elisa Thouverai
 Maintainer: The package maintainer <ducciorocchini@gmail.com>
 Description: Manipulate and share raster images in R.
