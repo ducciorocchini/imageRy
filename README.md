@@ -23,19 +23,21 @@
 **imageRy** is an R package that simplifies fundamental raster image operations such as import, classification, vegetation indexes, visualization, and export. It builds on top of **terra** and **ggplot2** for handling spatial data and plotting. ([R Archive Network][1])
 
 ---
-
 ## 📁 Repository Structure
 
-```
+```text
 imageRy/
 ├── R/
+│   ├── im.barplot.R
+│   ├── im.boxplot.R
 │   ├── im.classify.R
 │   ├── im.dvi.R
 │   ├── im.export.R
 │   ├── im.fuzzy.R
 │   ├── im.ggplot.R
-│   ├── im.kernel.R
+│   ├── im.ggplotRGB.R
 │   ├── im.import.R
+│   ├── im.kernel.R
 │   ├── im.list.R
 │   ├── im.multiframe.R
 │   ├── im.ndvi.R
@@ -44,23 +46,42 @@ imageRy/
 │   ├── im.plotRGB.auto.R
 │   ├── im.print.R
 │   └── im.ridgeline.R
+│
+├── inst/
+│   └── images/
+│       └── example remotely sensed raster datasets
+│
 ├── man/
-│   ├── *.Rd
-│   └── documentation for exported functions
+│   ├── im.barplot.Rd
+│   ├── im.boxplot.Rd
+│   ├── im.classify.Rd
+│   ├── im.dvi.Rd
+│   ├── im.export.Rd
+│   ├── im.fuzzy.Rd
+│   ├── im.ggplot.Rd
+│   ├── im.ggplotRGB.Rd
+│   ├── im.import.Rd
+│   ├── im.kernel.Rd
+│   ├── im.list.Rd
+│   ├── im.multiframe.Rd
+│   ├── im.ndvi.Rd
+│   ├── im.pca.Rd
+│   ├── im.plotRGB.Rd
+│   ├── im.plotRGB.auto.Rd
+│   ├── im.print.Rd
+│   └── im.ridgeline.Rd
+│
 ├── tests/
 │   └── testthat/
 │       └── test-*.R
-├── inst/
-│   └── images/
-│       └── example raster data files
-├── data_description.md
-├── README.md
+│
+├── vignette/
+│   └── vignette.md
+│
 ├── DESCRIPTION
 ├── NAMESPACE
-├── vignette.html
-├── imageRy.html
-└── imageRy_rapid_manual.html
-```
+├── README.md
+├── data_description.md
 
 ---
 
