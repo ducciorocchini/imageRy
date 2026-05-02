@@ -82,6 +82,10 @@ imageRy/
 ├── NAMESPACE
 ├── README.md
 ├── data_description.md
+```
+---
+
+Here is a **revised “What’s Inside” section** aligned with the new positioning of *imageRy* (framework + statistical visualization layer, not just utilities):
 
 ---
 
@@ -89,20 +93,38 @@ imageRy/
 
 ### 🔹 `R/`
 
-All of the **R code** lives here — one file per function. These include core utility functions such as:
+All core **R functions** are implemented here, organized around a unified workflow that connects data access, spatial analysis, and statistical visualization. Each file contains a single function, contributing to different components of the analytical framework:
 
-* `im.import()` — load one or more raster images
-* `im.export()` — save rasters to GeoTIFF/PNG/JPG
-* `im.classify()` — unsupervised classification with k-means
-* `im.ndvi()` / `im.dvi()` — vegetation indexes
-* `im.ggplot()` — ggplot2 visualizations
+#### **📥 Data access and import**
+
+* `im.list()` — list available bundled raster datasets
+* `im.import()` — load raster images as `SpatRaster` objects
+* `im.export()` — export raster outputs to standard formats (GeoTIFF, PNG, JPG)
+
+#### **🛰️ Remote sensing analysis**
+
+* `im.classify()` — unsupervised classification using k-means
+* `im.fuzzy()` — fuzzy classification with probabilistic membership
+* `im.ndvi()` / `im.dvi()` — vegetation indices
+* `im.kernel()` — moving-window statistics (e.g., SD, mean, variability)
+* `im.pca()` — principal component analysis
+
+#### **🎨 Spatial visualization**
+
 * `im.plotRGB()` / `im.plotRGB.auto()` — RGB composites
-* `im.multiframe()` — layout multiple plots
-* `im.ridgeline()` — ridgeline density plots
-* `im.print()` — simple package info output
-* `im.list()` — list bundled example data
+* `im.ggplot()` — raster visualization using `ggplot2`
+* `im.ggplotRGB()` — RGB visualization within the `ggplot2` framework
+* `im.multiframe()` — arrange multiple plots
 
-Each function has appropriate documentation and is exported through the **NAMESPACE**. ([cran.r-universe.dev][2])
+#### **📊 Statistical visualization layer (core novelty)**
+
+* `im.ridgeline()` — distribution of raster values across layers
+* `im.barplot()` — class proportions and frequencies
+* `im.boxplot()` — spectral distributions across classes
+
+These functions share a common design: they transform raster data into structured representations (spatial or statistical), enabling users to move seamlessly between maps and distributional interpretation within a single workflow.
+
+All functions are fully documented and exported via the **NAMESPACE**.
 
 ---
 
