@@ -8,9 +8,9 @@ functions commonly used in remote sensing workflows. More specifically,
 `imageRy` implements functions to deal with data **import** and
 **export**, **data visualization**, and **data analysis**. In this
 vignette, we will go through each function implemented in `imageRy`,
-illustrating their use with the example datasets included in the
-package. All the functions of the package contain the suffix **`im.`**
-so that users are always aware of the functions linked to `imageRy`.
+illustrating their use with the example data included in the package.
+All the functions of the package contain the suffix **`im.`** so that
+users are always aware of the functions linked to `imageRy`.
 
 ## 1. Packages needed and package installation
 
@@ -89,14 +89,19 @@ Sentinel-2 Level-2A image of an area of the Dolomites in Italy. A more
 detailed description of the data contained in the `imageRy` package is
 provided at
 <https://github.com/ducciorocchini/imageRy/blob/main/data_description.md>.
+
 It is possible to import single images by specifying the exact name of
 the file, or, as in this case, import all images with the same specified
-pattern, as long as they share the same extent and coordinate reference
-system. After importing the images, an automatic plot is also provided.
+pattern, as long as they share the same extent, resolution and
+coordinate reference system. After importing the images, an automatic
+plot is also provided. For convenience, we will also rename the band
+layers.
 
     dolom <- im.import("sentinel.dolomites")
 
 <img src="./images/im.import-1.png" alt="" style="display: block; margin: auto;" />
+
+    names(dolom) <- c("B2", "B3", "B4", "B8")
 
 Typing the name of the created object will return all the information of
 the image, including in this case: the class (which is a `SpatRaster`,
@@ -115,29 +120,32 @@ names, and the minimum and maximum values.
     ##               sentinel.dolomites.b3.tif  
     ##               sentinel.dolomites.b4.tif  
     ##               sentinel.dolomites.b8.tif  
-    ## names       : sentine~ites.b2, sentine~ites.b3, sentine~ites.b4, sentine~ites.b8 
-    ## min values  :            1338,            1293,             750,            1159 
-    ## max values  :            6903,            6780,            7229,            7313
+    ## names       :   B2,   B3,   B4,   B8 
+    ## min values  : 1338, 1293,  750, 1159 
+    ## max values  : 6903, 6780, 7229, 7313
 
 ## 3. Data visualization
 
-Multispectral images can be visualized in `imageRy` through **RGB
-composites**. In this type of representation, three bands of the image
-are assigned to the red, green, and blue channels of the plot. In
-`imageRy`, data visualization can be performed either by manually
-selecting the bands with `im.plotRGB()` or by automatically plotting the
-first three bands with `im.plotRGB.auto()`. We will also explore
-functions to display plots in a multi-frame layout, visualize rasters
-through `ggplot2`, and build ridgeline plots.
+This section introduces all `imageRy` functions for visualizing raster
+and multispectral image data, including functions to display images as
+RGB composites, arrange multiple plots, map individual raster layers,
+and explore the distribution of pixel values across bands. More advanced
+visualizations are also presented, including bivariate maps, pairwise
+comparisons among image layers, and level plots. Together, these tools
+provide a first visual exploration of image structure, spectral
+patterns, and spatial variation before moving to further analyses.
 
 ### 3.1 Manual RGB visualization with `im.plotRGB()`
 
-The function **`im.plotRGB()`** allows the user to **manually choose**
-which bands should be assigned to the red, green, and blue channels.
+Multispectral images can be visualized in `imageRy` through **RGB
+composites**. In this type of representation, three bands of the image
+are assigned to the red, green, and blue channels of the plot.
 
-For example, in the Dolomites image, the first band (b2) is the blue,
-the second (b3) is the green, the third (b4) is the red, and the fourth
-(b8) is the near-infrared. To have a true color composition of the
+The function **`im.plotRGB()`** allows the user to **manually choose**
+which bands should be assigned to the red, green, and blue channels. For
+example, in the Dolomites image, the first band (`B2`) is the blue, the
+second (`B3`) is the green, the third (`B4`) is the red, and the fourth
+(`B8`) is the near-infrared. To have a true color composition of the
 Dolomites image we can plot it as:
 
     im.plotRGB(dolom, r = 3, g = 2, b = 1, title = "Dolomites - True colors")
@@ -230,6 +238,128 @@ specifying argument `direction = -1`.
     ## Picking joint bandwidth of 31.6
 
 <img src="./images/im.ridgeline direction-1.png" alt="" style="display: block; margin: auto;" />
+
+### 3.7 Bivariate mapping with `im.bivariate()`
+
+**Bivariate maps** are useful for visualising the spatial relationship
+between two raster layers. In our example, rather than displaying one
+band at a time, with **`im.bivariate()`** we can combine two raster
+layers in a single map, assigning each pixel to a class based on its
+values in both bands, making it possible to highlight areas where two
+bands show similar or diverging reflectance patterns.
+
+The core packages used to build the function are `biscale`, which
+provides the functions to classify the two variables into bivariate
+classes and map them, and `cowplot`, used to assemble the final figure.
+
+The function takes as input two `SpatRaster` objects with the same
+geometry. Arguments `xlab` and `ylab` specify the labels displayed on
+the axes of the legend. `dim` defines the dimension of the palette. For
+example, `dim = 3` produces a 3 x 3 classification, corresponding to 9
+classes in total. Finally, with `custom_colors` it is possible to supply
+color palettes. This can either the name of one of the built-in
+`biscale` palettes, like the one we are using in this example (more at:
+<https://cran.r-project.org/web/packages/biscale/vignettes/bivariate_palettes.html>),
+or a custom vector of colors.
+
+Here we compare the red band (`B4`) and near-infrared band (`B8`), as
+their relationship is often informative for interpreting vegetation
+patterns.
+
+    im.bivariate(
+      r1 = dolom[["B4"]],
+      r2 = dolom[["B8"]],
+      xlab = "Red band",
+      ylab = "NIR band",
+      custom_colors = "DkBlue2",
+      dim = 3
+      )
+
+<img src="./images/im.bivariate-1.png" alt="" style="display: block; margin: auto;" />
+
+### 3.8 Pairwise raster comparison with `im.pairs()`
+
+**`im.pairs()`** provides a compact way to explore pairwise
+relationships among the layers of a multi-band raster image. The
+function produces a matrix of plots in which each raster layer is
+compared with all the other: on the diagonal, **density plots** show the
+distribution of values for each layer; in the lower triangle,
+**scatterplots** show the relationship between pairs of bands; in the
+upper triangle, **bivariate maps** show where these relationship occur
+spatially.
+
+The function takes as input a multi-layer `SpatRaster`. The `color`
+argument controls the color used for the density plots and the
+scatterplots. The `sample_pixels` argument can be used to reduce the
+number of pixels used to build the density plots and scatterplots, and
+compute the statistical summaries. When `sample_pixels = NULL`, all
+non-`NA` pixels are used. For large raster images, this can be
+computationally expensive and may produce very dense scatterplots.
+Setting, for example, `sample_pixels = 5000` randomly selects 5000
+pixels from the image, making the function faster while still preserving
+the general shape of the relationships among bands. When sampling is
+used, the reported `R²` and *p*-values are calculated on the sampled
+pixels.
+
+    im.pairs(dolom, 
+             color = "black", 
+             sample_pixels = 5000
+             )
+
+<img src="./images/im.pairs simple usage-1.png" alt="" width="100%" style="display: block; margin: auto;" />
+
+The additional arguments of `im.pairs()` are related to the bivariate
+maps and are the same present in `im.bivariate()`. They control the
+appearance of the bivariate maps shown in the upper triangle of the plot
+matrix, including the color palette, the number of classes in the
+bivariate scheme, and the position, size, and text formatting of the
+embedded legends. In practice, these arguments allow the user to adjust
+the bivariate-map component of `im.pairs()` in the same way as when
+working directly with `im.bivariate()`.
+
+    im.pairs(
+      dolom,
+      color = "slateblue4",
+      bivariate_color = "DkBlue2",
+      sample_pixels = 5000
+    )
+
+<img src="./images/im.pairs usage-1.png" alt="" width="100%" style="display: block; margin: auto;" />
+
+### 3.9 Raster level plots with `im.levelplot()`
+
+The `im.levelplot()` function provides a simple interface for
+visualising one or more layers of a `SpatRaster` object using **level
+plots**. Level plots represent raster values with a continuous colour
+scale, making them useful for exploring the spatial distribution of
+pixel values in single-band or multi-band images.
+
+`im.levelplot()` is based on the `rasterVis::levelplot()` function. It
+takes as input a `SpatRaster`: when a multi-layer image is provided,
+each layer is displayed as a separate panel, allowing quick visual
+comparison among bands.
+
+    im.levelplot(dolom, custom_colors = "viridis")
+
+<img src="./images/im.levelplot basic usage-1.png" alt="" style="display: block; margin: auto;" />
+
+A specific layer can also be selected using the `layer` argument, either
+by index or by name. Users can choose a colour palette with argument
+`custom_colors`, which supports both `viridis` and custom palettes. When
+a `viridis` palette is supplied, it is possible to choose its direction
+with argument `direction`. It is also possible to add contour lines with
+argument `contour`, control the layout of multi-layer plots with `ncol`,
+and customise the plot and legend titles. For single-layer plots,
+`im.levelplot()` can also display marginal summaries using the `margin`
+argument, which can be set to either `"mean"` or `"median"`.
+
+    im.levelplot(dolom, layer = 4, custom_colors = "mako", direction = -1, margin = "median")
+
+<img src="./images/im.levelplot usage-1.png" alt="" style="display: block; margin: auto;" />
+
+    im.levelplot(dolom, layer = 4, custom_colors = "mako", direction = -1, margin = "median", contour = TRUE)
+
+<img src="./images/im.levelplot usage-2.png" alt="" style="display: block; margin: auto;" />
 
 ## 4. Data analysis
 
@@ -397,7 +527,7 @@ degree of fuzziness is controlled by the parameter `m`: higher values of
 `m` produce smoother and less distinct class memberships. The function
 can be applied as follows:
 
-    fuzzy <- im.fuzzy(dolom$sentinel.dolomites.b8, num_clusters = 3, m = 2, seed = 42)
+    fuzzy <- im.fuzzy(dolom$B8, num_clusters = 3, m = 2, seed = 42)
 
 The output is a list containing three elements: the distance rasters
 (`distances`), the membership rasters (`memberships`), and the matrix of
@@ -413,10 +543,10 @@ cluster centers (`centers`):
 
     fuzzy$centers
 
-    ##   sentinel.dolomites.b8
-    ## 1              50.25857
-    ## 2              88.46110
-    ## 3             147.10982
+    ##          B8
+    ## 1  50.25857
+    ## 2  88.46110
+    ## 3 147.10982
 
 ### 4.4 Multivariate analysis with `im.pca()`
 
@@ -434,11 +564,11 @@ Analysis (PCA)** is implemented in `imageRy` with the function
     ## [1] 1486.07539  526.75366   49.82086   33.21852
     ## 
     ## Rotation (n x k) = (4 x 4):
-    ##                             PC1        PC2         PC3         PC4
-    ## sentinel.dolomites.b2 0.4084005  0.2792719  0.86447145  0.08891224
-    ## sentinel.dolomites.b3 0.4650748  0.2204399 -0.20531063 -0.83244173
-    ## sentinel.dolomites.b4 0.5838450  0.3923525 -0.45844047  0.54315450
-    ## sentinel.dolomites.b8 0.5253946 -0.8482175  0.01920928  0.06417613
+    ##          PC1        PC2         PC3         PC4
+    ## B2 0.4084005  0.2792719  0.86447145  0.08891224
+    ## B3 0.4650748  0.2204399 -0.20531063 -0.83244173
+    ## B4 0.5838450  0.3923525 -0.45844047  0.54315450
+    ## B8 0.5253946 -0.8482175  0.01920928  0.06417613
 
 <img src="./images/im.pca-1.png" alt="" style="display: block; margin: auto;" />
 
