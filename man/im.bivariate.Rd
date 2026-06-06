@@ -1,11 +1,6 @@
 \name{im.bivariate}
 \alias{im.bivariate}
-\title{Bivariate map from two SpatRaster objects}
-\description{
-Creates a bivariate map from two \code{terra::SpatRaster} objects using
-classes and colour palettes from the \pkg{biscale} package.
-}
-
+\title{Create bivariate maps from two raster layers}
 \usage{
 im.bivariate(
   r1,
@@ -13,7 +8,7 @@ im.bivariate(
   xlab,
   ylab,
   style = "quantile",
-  dim = 3,
+  dim = 2,
   custom_colors = "BlueOr",
   add_legend = TRUE,
   legend_x = 0.7,
@@ -24,100 +19,91 @@ im.bivariate(
   legend_label_size = 10
 )
 }
-
 \arguments{
-\item{r1}{A \code{terra::SpatRaster} object representing the first variable.}
+  \item{r1}{A single-layer \code{SpatRaster} object representing the first
+  variable to be mapped.}
 
-\item{r2}{A \code{terra::SpatRaster} object representing the second variable.}
+  \item{r2}{A single-layer \code{SpatRaster} object representing the second
+  variable to be mapped. It must have the same geometry as \code{r1}.}
 
-\item{xlab}{Character string. Label for the first variable and the x-axis of the legend.}
+  \item{xlab}{Character string used as the label of the x-axis in the bivariate
+  legend.}
 
-\item{ylab}{Character string. Label for the second variable and the y-axis of the legend.}
+  \item{ylab}{Character string used as the label of the y-axis in the bivariate
+  legend.}
 
-\item{style}{Character string indicating the classification style used to calculate
-breaks. Passed to \code{biscale::bi_class}. Default is \code{"quantile"}.}
+  \item{style}{Character string identifying the method used to calculate class
+  breaks. The value is passed to \code{biscale::bi_class()}. Defaults to
+  \code{"quantile"}.}
 
-\item{dim}{Integer. Dimension of the bivariate palette. Common values are
-\code{2}, \code{3}, or \code{4}. Default is \code{3}.}
+  \item{dim}{Numeric value defining the dimension of the bivariate palette.
+  For example, \code{dim = 3} produces a 3 x 3 classification, corresponding
+  to 9 bivariate classes. Defaults to \code{2}.}
 
-\item{custom_colors}{Either a character string identifying a \pkg{biscale}
-palette, such as \code{"BlueOr"}, or a vector of colours with length
-\code{dim^2}.}
+  \item{custom_colors}{Color palette used for the bivariate map. It can be
+  either the name of a built-in \code{biscale} palette or a character vector
+  of valid color names or hex codes. When a custom vector is supplied, it must
+  contain exactly \code{dim^2} colors. Defaults to \code{"BlueOr"}.}
 
-\item{add_legend}{Logical. If \code{TRUE}, a bivariate legend is added to the
-plot. Default is \code{TRUE}.}
+  \item{add_legend}{Logical. If \code{TRUE}, the bivariate legend is added to
+  the map. If \code{FALSE}, only the bivariate map is returned. Defaults to
+  \code{TRUE}.}
 
-\item{legend_x}{Numeric. Horizontal position of the legend within the plot.
-Default is \code{0.7}.}
+  \item{legend_x}{Numeric value defining the horizontal position of the
+  bivariate legend within the plot. Defaults to \code{0.7}.}
 
-\item{legend_y}{Numeric. Vertical position of the legend within the plot.
-Default is \code{0.65}.}
+  \item{legend_y}{Numeric value defining the vertical position of the
+  bivariate legend within the plot. Defaults to \code{0.65}.}
 
-\item{legend_width}{Numeric. Width of the legend relative to the plot.
-Default is \code{0.3}.}
+  \item{legend_width}{Numeric value defining the width occupied by the
+  bivariate legend within the plot. Defaults to \code{0.3}.}
 
-\item{legend_height}{Numeric. Height of the legend relative to the plot.
-Default is \code{0.3}.}
+  \item{legend_height}{Numeric value defining the height occupied by the
+  bivariate legend within the plot. Defaults to \code{0.3}.}
 
-\item{legend_size}{Numeric. Size of the bivariate legend. Default is \code{10}.}
+  \item{legend_size}{Numeric value controlling the size of the bivariate legend.
+  Defaults to \code{10}.}
 
-\item{legend_label_size}{Numeric. Font size of the legend axis labels.
-Default is \code{10}.}
+  \item{legend_label_size}{Numeric value controlling the font size of the
+  bivariate legend labels. Defaults to \code{10}.}
 }
-
+\description{
+Creates a bivariate map from two raster layers. The function combines two
+continuous raster variables into a single map by assigning each pixel to a
+bivariate class based on its values in both input layers.
+}
 \details{
-The function checks that \code{r1} and \code{r2} are both
-\code{terra::SpatRaster} objects and that they share the same coordinate
-reference system, extent, resolution, number of rows and columns.
+The function uses \code{biscale::bi_class()} to classify the two input rasters
+into bivariate classes and \code{biscale::bi_scale_fill()} to apply a bivariate
+color palette. The two input rasters must be \code{SpatRaster} objects with
+the same coordinate reference system, extent and resolution.
 
-Raster values are converted to a data frame and classified using
-\code{biscale::bi_class}. The resulting classes are plotted with
-\pkg{ggplot2}. If \code{add_legend = TRUE}, a bivariate legend is added using
-\pkg{cowplot}.
+The \code{dim} argument controls the number of classes used for each variable.
+For example, \code{dim = 2} produces four bivariate classes, while
+\code{dim = 3} produces nine bivariate classes.
+
+The bivariate legend is created with \code{biscale::bi_legend()} and added to
+the map using \code{cowplot}. Its position and size can be controlled with the
+\code{legend_x}, \code{legend_y}, \code{legend_width}, and
+\code{legend_height} arguments. If \code{add_legend = FALSE}, the function
+returns only the bivariate map.
 }
-
 \value{
-A \code{ggplot} object if \code{add_legend = FALSE}; otherwise, a
-\code{cowplot} object containing the map and the bivariate legend.
+A \code{ggplot2} object, or a \code{cowplot} object when the bivariate legend
+is added.
 }
-
-\author{
-Duccio Rocchini
-}
-
-\seealso{
-\code{\link[biscale]{bi_class}},
-\code{\link[biscale]{bi_scale_fill}},
-\code{\link[biscale]{bi_legend}},
-\code{\link[terra]{rast}},
-\code{\link[ggplot2]{ggplot}}
-}
-
 \examples{
 \dontrun{
-library(terra)
+dolom <- im.import("sentinel.dolomites")
 
-r1 <- rast(system.file("ex/elev.tif", package = "terra"))
-r2 <- r1 * 2
+names(dolom) <- c("B2", "B3", "B4", "B8")
 
-im.bivariate(
-  r1 = r1,
-  r2 = r2,
-  xlab = "Elevation",
-  ylab = "Second variable"
-)
-
-im.bivariate(
-  r1 = r1,
-  r2 = r2,
-  xlab = "Elevation",
-  ylab = "Second variable",
-  dim = 3,
-  custom_colors = "BlueOr",
-  add_legend = FALSE
-)
+# Bivariate map of red and near-infrared bands
+im.bivariate(r1 = dolom[["B4"]],
+             r2 = dolom[["B8"]],
+             xlab = "Red band",
+             ylab = "NIR band",
+             custom_colors = "DkBlue2",
+             dim = 3)
 }
 }
-
-\keyword{spatial}
-\keyword{hplot}
