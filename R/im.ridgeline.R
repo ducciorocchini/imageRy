@@ -13,63 +13,53 @@
 #' Use `1` for the default direction and `-1` to reverse the palette.
 #' @param boxplot Logical. If `TRUE`, a boxplot is overlaid on each ridgeline.
 #' @param boxplot_width Numeric value controlling the width of the overlaid boxplots.
+#' @param boxplot_alpha Numeric value between 0 and 1 controlling boxplot
+#' transparency. Use `0` for fully transparent boxes and `1` for opaque boxes.
 #' @param rel_min_height Numeric value passed to
-#' `ggridges::geom_density_ridges_gradient()` to remove tails below a relative
-#' height threshold.
+#' `ggridges::geom_density_ridges_gradient()`.
 #'
 #' @return A `ggplot` object displaying the ridgeline plot.
 #'
-#' @details
-#' Ridgeline plots are useful for comparing value distributions across layers
-#' of raster time series or other multi-layer raster objects. The function
-#' extracts raster values from a `SpatRaster`, reshapes them into long format,
-#' and visualizes their distributions across layers.
-#'
-#' When `boxplot = TRUE`, each ridgeline is supplemented with a classical
-#' boxplot summary, allowing the user to inspect the median, interquartile
-#' range, whiskers, and outliers while retaining the full density distribution.
-#'
-#' @references
-#' See also `im.import()`, `im.ggplot()`.
-#'
-#' @seealso [GitHub Repository](https://github.com/ducciorocchini/imageRy/)
-#'
-#' @examples
-#' \dontrun{
-#' library(terra)
-#' library(ggridges)
-#' library(ggplot2)
-#'
-#' r <- im.import("greenland")
-#'
-#' im.ridgeline(
-#'   r,
-#'   scale = 2,
-#'   palette = "viridis",
-#'   direction = 1,
-#'   boxplot = TRUE
-#' ) +
-#'   theme_bw()
-#' }
-#'
 #' @export
-im.ridgeline <- function(im, scale = 2,
-                         palette = c("viridis", "magma", "plasma",
-                                     "inferno", "cividis", "mako",
-                                     "rocket", "turbo"),
-                         direction = 1,
-                         boxplot = FALSE,
-                         boxplot_width = 0.12,
-                         rel_min_height = 0.01) {
+im.ridgeline <- function(
+    im,
+    scale = 2,
+    palette = c(
+      "viridis", "magma", "plasma", "inferno",
+      "cividis", "mako", "rocket", "turbo"
+    ),
+    direction = 1,
+    boxplot = FALSE,
+    boxplot_width = 0.12,
+    boxplot_alpha = 0,
+    rel_min_height = 0.01
+) {
 
   palette <- palette[1]
 
-  if (!is(im, "SpatRaster")) stop("im must be a SpatRaster")
-  if (!is.numeric(scale)) stop("scale must be numeric")
-  if (!is.numeric(direction)) stop("direction must be numeric")
-  if (!is.logical(boxplot)) stop("boxplot must be TRUE or FALSE")
-  if (!is.numeric(boxplot_width)) stop("boxplot_width must be numeric")
-  if (!is.numeric(rel_min_height)) stop("rel_min_height must be numeric")
+  if (!inherits(im, "SpatRaster"))
+    stop("im must be a SpatRaster")
+
+  if (!is.numeric(scale))
+    stop("scale must be numeric")
+
+  if (!is.numeric(direction))
+    stop("direction must be numeric")
+
+  if (!is.logical(boxplot))
+    stop("boxplot must be TRUE or FALSE")
+
+  if (!is.numeric(boxplot_width))
+    stop("boxplot_width must be numeric")
+
+  if (!is.numeric(boxplot_alpha))
+    stop("boxplot_alpha must be numeric")
+
+  if (boxplot_alpha < 0 || boxplot_alpha > 1)
+    stop("boxplot_alpha must be between 0 and 1")
+
+  if (!is.numeric(rel_min_height))
+    stop("rel_min_height must be numeric")
 
   allowed_palettes <- c(
     "viridis", "magma", "plasma", "inferno",
@@ -104,6 +94,7 @@ im.ridgeline <- function(im, scale = 2,
     )
 
   if (boxplot) {
+
     pl <- pl +
       ggplot2::geom_boxplot(
         data = df,
@@ -114,9 +105,9 @@ im.ridgeline <- function(im, scale = 2,
         ),
         inherit.aes = FALSE,
         width = boxplot_width,
-        fill = "white",
+        fill = scales::alpha("white", boxplot_alpha),
         colour = "black",
-        alpha = 0.9,
+        linewidth = 0.4,
         outlier.size = 0.3
       )
   }
