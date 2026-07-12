@@ -86,8 +86,11 @@ https://dx.doi.org/10.5281/zenodo.17296892
 + Argentario 28 2 2026
 https://dx.doi.org/10.5281/zenodo.18839148 
 
-+ Spigolo Canne d'Organo Marzo 2026
++ Spigolo Canne d'Organo March 2026
 https://dx.doi.org/10.5281/zenodo.19660762
+
++ Canale dell'Aquila Val d'Aosta July 2026
+https://dx.doi.org/10.5281/zenodo.21326622
 
 
 
