@@ -62,3 +62,32 @@ https://earthobservatory.nasa.gov/images/35891/deforestation-in-mato-grosso-braz
 
 ### sentinel.png
 This image is a preanalysed Sentinel-2 image of the Similaun Glaciers, Alps, Italy. It is useful for image visualisation and classification.
+
+# Additional images from drone
+
++ https://zenodo.org/me/uploads?q=&f=shared_with_me%3Afalse&l=list&p=1&s=10&sort=newest
+
++ Passo sella 
+https://dx.doi.org/10.5281/zenodo.15730100
+June 2025
+
++ Catinaccio, Dolomites, July 11
+https://dx.doi.org/10.5281/zenodo.16736929
+
++ Dantesca, Sassolungo, September 2025
+https://dx.doi.org/10.5281/zenodo.17296828
+
++ Celsa Siena province, September 2025
+https://dx.doi.org/10.5281/zenodo.17296860
+
++ Monsummano, drone image, October 2025
+https://dx.doi.org/10.5281/zenodo.17296892
+	
++ Argentario 28 2 2026
+https://dx.doi.org/10.5281/zenodo.18839148 
+
++ Spigolo Canne d'Organo Marzo 2026
+https://dx.doi.org/10.5281/zenodo.19660762
+
+
+
