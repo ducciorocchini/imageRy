@@ -95,4 +95,7 @@ https://dx.doi.org/10.5281/zenodo.21326622
 + Riserva Alto Merse, Summer 2026
 https://dx.doi.org/10.5281/zenodo.21326681
 
++ Masaré, Dolomites, June 2026
+https://dx.doi.org/10.5281/zenodo.21327202
+
 
