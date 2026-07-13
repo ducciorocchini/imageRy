@@ -56,11 +56,11 @@
 #' classified <- im.classify(r, num_clusters = 3)
 #'
 #' # Plot spectral distributions for layer 1
-#' im.boxplot(r, classified, layer = 1, density = TRUE)
+#' im.boxplot.classes(r, classified, layer = 1, density = TRUE)
 #' }
 #'
 #' @export
-im.boxplot <- function(input_image, classified_image, 
+im.boxplot.classes <- function(input_image, classified_image, 
                        layer = 1, # specify the layer to be displayed
                        density = TRUE, # TRUE for adding a half-eye density plot 
                        median_labels = FALSE, # TRUE for adding median labels
