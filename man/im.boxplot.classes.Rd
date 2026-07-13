@@ -1,8 +1,8 @@
-\name{im.boxplot}
-\alias{im.boxplot}
+\name{im.boxplot.classes}
+\alias{im.boxplot.classes}
 \title{Visualize raster value distributions across image classes}
 \usage{
-im.boxplot(
+im.boxplot.classes(
   input_image,
   classified_image,
   layer = 1,
@@ -68,16 +68,16 @@ classes <- im.classify(dolom,
                        seed = 42)
 
 # Basic boxplot
-im.boxplot(dolom, classes, layer = 2)
+im.boxplot.classes(dolom, classes, layer = 2)
 
 # Add density and median labels
-im.boxplot(dolom, classes,
+im.boxplot.classes(dolom, classes,
            layer = 2,
            density = TRUE,
            median_labels = TRUE)
 
 # Restrict the visible y-axis range and use custom colors
-im.boxplot(dolom, classes,
+im.boxplot.classes(dolom, classes,
            layer = 2,
            density = TRUE,
            median_labels = TRUE,
