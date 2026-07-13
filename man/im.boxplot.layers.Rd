@@ -1,8 +1,8 @@
-\name{im.boxplot.layer}
-\alias{im.boxplot.layer}
+\name{im.boxplot.layers}
+\alias{im.boxplot.layers}
 \title{Visualize raster value distributions across image layers}
 \usage{
-im.boxplot.layer(
+im.boxplot.layers(
 input_image,
 density = TRUE,
 median_labels = FALSE,
@@ -60,18 +60,18 @@ names(dolom) <- c("B2", "B3", "B4", "B5")
 
 # Basic boxplot
 
-im.boxplot.layer(dolom)
+im.boxplot.layers(dolom)
 
 # Add density and median labels
 
-im.boxplot.layer(dolom,
+im.boxplot.layers(dolom,
   density = TRUE,
   median_labels = TRUE
 )
 
 # Restrict the visible y-axis range and use custom colors
 
-im.boxplot.layer(dolom,
+im.boxplot.layers(dolom,
   density = TRUE,
   median_labels = TRUE,
   limits = c(0.01, 0.99),
