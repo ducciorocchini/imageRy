@@ -98,4 +98,6 @@ https://dx.doi.org/10.5281/zenodo.21326681
 + Masaré, Dolomites, June 2026
 https://dx.doi.org/10.5281/zenodo.21327202
 
++ Masaré, Passo Costalinga, July 2026
+https://dx.doi.org/10.5281/zenodo.21428987
 
