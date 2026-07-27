@@ -194,3 +194,8 @@ install.packages("imageRy")
 * Raise issues on GitHub
 
 ---
+
+## Work in progress
+
+* im.boxplot.layers() coordinates
+* im.boxplot.classes() colors 
