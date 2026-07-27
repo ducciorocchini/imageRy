@@ -1,111 +1,168 @@
-\name{im.boxplot.layers2}
-\alias{im.boxplot.layers2}
+```r
+\name{im.boxplot.layers}
+\alias{im.boxplot.layers}
 \title{Visualize raster value distributions across image layers}
 \usage{
-im.boxplot.layers2(
+im.boxplot.layers(
   input_image,
   density = TRUE,
   median_labels = FALSE,
+  median_position = -0.3,
   legend = FALSE,
   limits = NULL,
   custom_colors = NULL,
+  flip = FALSE,
+  violin = FALSE,
   friedman_test = FALSE
 )
 }
 \arguments{
 \item{input_image}{
-A multi-layer \code{SpatRaster}. Each layer is displayed as a separate group
-in the boxplot.
+A multi-layer \code{SpatRaster}. Each raster layer is represented as a
+separate group in the plot.
 }
 
 \item{density}{
-Logical. If \code{TRUE}, adds a half-eye density distribution for each layer.
-Defaults to \code{TRUE}.
+Logical. If \code{TRUE}, adds a half-eye density distribution beside each
+boxplot. Defaults to \code{TRUE}. This argument is ignored when
+\code{violin = TRUE}.
 }
 
 \item{median_labels}{
 Logical. If \code{TRUE}, adds text labels showing the median value for each
-layer. Defaults to \code{FALSE}.
+raster layer. Defaults to \code{FALSE}.
+}
+
+\item{median_position}{
+A single numeric value controlling the position of median labels along the
+layer axis. Negative values move the labels to the left of the corresponding
+group, whereas positive values move them to the right. Defaults to
+\code{-0.3}.
 }
 
 \item{legend}{
-Logical. If \code{TRUE}, displays the legend. Defaults to \code{FALSE}.
+Logical. If \code{TRUE}, displays the colour and fill legends. Defaults to
+\code{FALSE}.
 }
 
 \item{limits}{
 Optional numeric vector of length 2 giving the lower and upper quantile
-probabilities used to restrict the visible y-axis range. Values must be between
-0 and 1, with the first value smaller than the second. The restriction is
-applied using \code{ggplot2::coord_cartesian()}, so observations outside the
-displayed range are retained when calculating the boxplots, densities, and
-medians. Defaults to \code{NULL}.
+probabilities used to restrict the displayed value range. Values must be
+between 0 and 1, with the first value smaller than the second.
+
+The limits are calculated from the pooled non-missing values of all raster
+layers and applied using \code{ggplot2::scale_y_continuous()}. Observations
+outside the selected range are therefore removed before the graphical
+statistics are calculated. Defaults to \code{NULL}.
 }
 
 \item{custom_colors}{
-Optional character vector of valid color names or hexadecimal color codes used
-to construct a custom palette for the raster layers. Defaults to \code{NULL}.
+Optional character vector of valid colour names or hexadecimal colour codes
+used to construct a custom palette for the raster layers. The supplied colours
+are interpolated to generate one colour for each layer. Defaults to
+\code{NULL}.
+}
+
+\item{flip}{
+Logical. If \code{TRUE}, exchanges the layer and value axes using
+\code{ggplot2::coord_flip()}. Defaults to \code{FALSE}.
+}
+
+\item{violin}{
+Logical. If \code{TRUE}, uses violin plots instead of boxplots. Defaults to
+\code{FALSE}. When \code{violin = TRUE}, the \code{density} argument is
+ignored because violin plots already represent the distribution of values.
 }
 
 \item{friedman_test}{
 Logical. If \code{TRUE}, performs a Friedman rank-sum test comparing values
 among raster layers. Raster cells are treated as blocks and layers as repeated
 measurements. Only cells containing non-missing values in every layer are
-included. The test result is printed to the console and stored as the
+included.
+
+The test result is printed to the console and stored as the
 \code{"friedman_test"} attribute of the returned plot. Defaults to
 \code{FALSE}.
 }
 }
 \description{
-Creates boxplots of pixel values from each layer of a multi-layer raster image,
-with optional half-eye density distributions, median labels, custom colours,
-quantile-based display limits, and a Friedman rank-sum test.
+Creates boxplots or violin plots of pixel values from each layer of a
+multi-layer raster image. Boxplots can optionally be combined with half-eye
+density distributions.
+
+The function also supports median labels, custom colours, quantile-based
+display limits, coordinate flipping, legends, and a Friedman rank-sum test.
 }
 \details{
-The function extracts pixel values from all layers of \code{input_image} and
-constructs a \code{ggplot2} boxplot in which each raster layer is represented
-as a separate group.
+The function extracts pixel values from all layers of \code{input_image},
+converts them from wide to long format, and constructs a \code{ggplot2} object
+in which each raster layer is represented as a separate group.
 
-If \code{density = TRUE}, a half-eye density distribution is added using
-\code{ggdist::stat_halfeye()}. If \code{median_labels = TRUE}, the median of
-each layer is displayed as a text label.
+If \code{violin = FALSE}, raster values are represented using boxplots. If
+\code{violin = TRUE}, boxplots are replaced by violin plots.
 
-The \code{limits} argument controls the visible y-axis range using quantiles of
-the pooled raster values. Because the limits are applied through
-\code{ggplot2::coord_cartesian()}, values outside the displayed range are not
-removed before the boxplots, densities, or medians are calculated.
+If \code{density = TRUE} and \code{violin = FALSE}, a half-eye density
+distribution is added using \code{ggdist::stat_halfeye()}. If
+\code{median_labels = TRUE}, the median of each raster layer is displayed as
+a text label. Its position along the layer axis can be adjusted using
+\code{median_position}.
+
+The \code{limits} argument controls the displayed value range using quantiles
+of the pooled non-missing raster values. The limits are applied using
+\code{ggplot2::scale_y_continuous()}. Consequently, values outside the
+selected range are removed before boxplots, violin plots, half-eye densities,
+and median labels are calculated.
 
 If \code{custom_colors} is supplied, the provided colours are interpolated
 with \code{grDevices::colorRampPalette()} to generate one colour for each
 raster layer.
 
+If \code{flip = TRUE}, the final plot is rotated using
+\code{ggplot2::coord_flip()}.
+
 If \code{friedman_test = TRUE}, the function applies
 \code{stats::friedman.test()} to the matrix of complete raster-cell
-observations. Each row represents the same raster cell across all layers,
-therefore raster cells are treated as blocks and layers as repeated
+observations. Each row represents the same raster cell across all layers.
+Raster cells are therefore treated as blocks and raster layers as repeated
 measurements.
 
-The null hypothesis of the Friedman test is that the distributions of the
-layers have the same location. A significant result indicates that at least
-one layer differs from the others.
+The null hypothesis of the Friedman test is that all raster layers have the
+same location distribution. A significant result indicates that at least one
+layer differs from the others, but it does not identify which layers differ.
 
-The test assumes that values from corresponding cells are meaningfully paired
-across layers. It does not account for spatial autocorrelation among
-neighbouring raster cells. With very large rasters, small differences may
-therefore produce very small p-values.
+The test assumes that values from corresponding raster cells are meaningfully
+paired across layers. It does not account for spatial autocorrelation among
+neighbouring raster cells. Spatial autocorrelation may inflate the test
+statistic and produce overly small p-values, particularly when large numbers
+of raster cells are included.
 
-The function returns a \code{ggplot2} object, so the output can be further
+Although the function accepts two or more raster layers, the Friedman test is
+primarily intended for three or more repeated measurements. For exactly two
+layers, a paired Wilcoxon signed-rank test is generally more appropriate.
+
+The function returns a \code{ggplot2} object, allowing the output to be further
 customized by adding other \code{ggplot2} components.
 }
 \value{
-A \code{ggplot2} object.
+A \code{ggplot2} object representing raster value distributions across image
+layers.
 
 If \code{friedman_test = TRUE} and the test is successfully calculated, the
-returned object also contains a \code{htest} object in the
+returned plot also contains an \code{htest} object in its
 \code{"friedman_test"} attribute. It can be retrieved using:
 
 \preformatted{
 attr(plot_object, "friedman_test")
 }
+}
+\seealso{
+\code{\link{im.boxplot.classes}},
+\code{\link{im.classify}},
+\code{\link{im.barplot}},
+\code{\link[stats]{friedman.test}},
+\code{\link[ggplot2]{geom_boxplot}},
+\code{\link[ggplot2]{geom_violin}},
+\code{\link[ggdist]{stat_halfeye}}
 }
 \examples{
 \dontrun{
@@ -113,27 +170,62 @@ dolom <- im.import("sentinel.dolomites")
 
 names(dolom) <- c("B2", "B3", "B4", "B5")
 
-# Basic boxplot
-im.boxplot.layers2(dolom)
+# Basic boxplots with half-eye density distributions
+im.boxplot.layers(dolom)
 
-# Add density distributions and median labels
-im.boxplot.layers2(
+# Add median labels
+im.boxplot.layers(
   dolom,
   density = TRUE,
   median_labels = TRUE
 )
 
-# Restrict the visible y-axis range and use custom colours
-im.boxplot.layers2(
+# Adjust the position of median labels
+im.boxplot.layers(
+  dolom,
+  median_labels = TRUE,
+  median_position = -0.4
+)
+
+# Restrict the displayed range using pooled raster quantiles
+im.boxplot.layers(
+  dolom,
+  limits = c(0.01, 0.99)
+)
+
+# Use custom colours
+im.boxplot.layers(
   dolom,
   density = TRUE,
-  median_labels = TRUE,
-  limits = c(0.01, 0.99),
   custom_colors = viridis::viridis(4, end = 0.5)
 )
 
+# Display the legend
+im.boxplot.layers(
+  dolom,
+  legend = TRUE
+)
+
+# Flip the plot coordinates
+im.boxplot.layers(
+  dolom,
+  median_labels = TRUE,
+  flip = TRUE
+)
+
+# Use violin plots instead of boxplots
+im.boxplot.layers(
+  dolom,
+  violin = TRUE,
+  median_labels = TRUE,
+  median_position = 0.4,
+  limits = c(0.01, 0.99),
+  custom_colors = viridis::viridis(4, end = 0.5),
+  flip = TRUE
+)
+
 # Perform and print the Friedman test
-im.boxplot.layers2(
+im.boxplot.layers(
   dolom,
   density = TRUE,
   median_labels = TRUE,
@@ -141,7 +233,7 @@ im.boxplot.layers2(
 )
 
 # Save the plot and extract the complete test result
-p <- im.boxplot.layers2(
+p <- im.boxplot.layers(
   dolom,
   friedman_test = TRUE
 )
@@ -149,3 +241,4 @@ p <- im.boxplot.layers2(
 attr(p, "friedman_test")
 }
 }
+```
