@@ -4,7 +4,7 @@ im.boxplot.layers2 <- function(input_image,
                               legend = FALSE, # TRUE for adding a legend
                               limits = NULL, # restrict the visible y-axis range to selected quantiles
                               custom_colors = NULL, # specify a color palette
-								    friedman_test = FALSE) { # apply a Friedman test
+							  friedman_test = FALSE) { # apply a Friedman test
   
 
   # Check input image
