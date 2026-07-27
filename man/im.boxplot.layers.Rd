@@ -1,4 +1,3 @@
-```r
 \name{im.boxplot.layers}
 \alias{im.boxplot.layers}
 \title{Visualize raster value distributions across image layers}
@@ -241,4 +240,3 @@ p <- im.boxplot.layers(
 attr(p, "friedman_test")
 }
 }
-```
