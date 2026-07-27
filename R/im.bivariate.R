@@ -1,3 +1,127 @@
+#' Create a Bivariate Raster Map
+#'
+#' This function generates a bivariate choropleth map from two raster layers
+#' using the \pkg{biscale} classification framework. The two variables are
+#' jointly classified into a two-dimensional color palette, allowing spatial
+#' patterns of co-occurrence to be visualized.
+#'
+#' @param r1 A single-layer `SpatRaster` representing the first variable.
+#' @param r2 A single-layer `SpatRaster` representing the second variable.
+#' @param xlab A character string specifying the label of the x-axis in the
+#'   bivariate legend.
+#' @param ylab A character string specifying the label of the y-axis in the
+#'   bivariate legend.
+#' @param style A character string specifying the method used to calculate class
+#'   breaks. Passed to `biscale::bi_class()`. Defaults to `"quantile"`.
+#' @param dim An integer specifying the number of classes per variable.
+#'   Defaults to `3`.
+#' @param custom_colors Either the name of a built-in `biscale` palette or a
+#'   character vector containing exactly `dim^2` colors defining a custom
+#'   bivariate palette. Defaults to `"BlueOr"`.
+#' @param add_legend A logical value indicating whether to add the bivariate
+#'   legend to the map (default: TRUE).
+#' @param legend_x Horizontal position of the legend in normalized plotting
+#'   coordinates (default: 0.7).
+#' @param legend_y Vertical position of the legend in normalized plotting
+#'   coordinates (default: 0.65).
+#' @param legend_width Width of the legend as a proportion of the plotting
+#'   region (default: 0.3).
+#' @param legend_height Height of the legend as a proportion of the plotting
+#'   region (default: 0.3).
+#' @param legend_size Numeric value controlling the overall size of the
+#'   bivariate legend (default: 10).
+#' @param legend_label_size Numeric value controlling the font size of the
+#'   legend axis labels (default: 10).
+#'
+#' @return A `ggplot` object if `add_legend = FALSE`, otherwise a combined
+#'   `cowplot` object containing the bivariate map and its legend.
+#'
+#' @details
+#' The function first checks that the two raster layers share the same
+#' coordinate reference system, extent, resolution, and dimensions.
+#'
+#' Pixel values are extracted from both rasters and jointly classified using
+#' `biscale::bi_class()`. Each pixel is assigned to one of `dim × dim`
+#' bivariate classes according to the selected classification style.
+#'
+#' The resulting classes are displayed using either:
+#' \itemize{
+#'   \item a built-in `biscale` palette specified by name, or
+#'   \item a user-defined palette containing exactly `dim^2` colors.
+#' }
+#'
+#' If `add_legend = TRUE`, a bivariate legend is created using
+#' `biscale::bi_legend()` and inserted into the map using
+#' `cowplot::draw_plot()`.
+#'
+#' This function is particularly useful for visualizing the spatial
+#' relationship between two continuous raster variables, such as ecological,
+#' climatic, or remotely sensed data.
+#'
+#' @seealso [im.scatter()], [im.boxplot.layers()], [im.classify()]
+#'
+#' @examples
+#' \dontrun{
+#' library(terra)
+#'
+#' # Import two raster layers
+#' r <- im.import("sentinel.dolomites")
+#'
+#' b2 <- r[[1]]
+#' b8 <- r[[4]]
+#'
+#' # Basic bivariate map
+#' im.bivariate(
+#'   b2,
+#'   b8,
+#'   xlab = "Blue",
+#'   ylab = "NIR"
+#' )
+#'
+#' # Use a different classification style
+#' im.bivariate(
+#'   b2,
+#'   b8,
+#'   xlab = "Blue",
+#'   ylab = "NIR",
+#'   style = "equal"
+#' )
+#'
+#' # Use four classes per variable
+#' im.bivariate(
+#'   b2,
+#'   b8,
+#'   xlab = "Blue",
+#'   ylab = "NIR",
+#'   dim = 4
+#' )
+#'
+#' # Hide the legend
+#' im.bivariate(
+#'   b2,
+#'   b8,
+#'   xlab = "Blue",
+#'   ylab = "NIR",
+#'   add_legend = FALSE
+#' )
+#'
+#' # Use a custom palette
+#' mycols <- c(
+#'   "#e8e8e8", "#ace4e4", "#5ac8c8",
+#'   "#dfb0d6", "#a5add3", "#5698b9",
+#'   "#be64ac", "#8c62aa", "#3b4994"
+#' )
+#'
+#' im.bivariate(
+#'   b2,
+#'   b8,
+#'   xlab = "Blue",
+#'   ylab = "NIR",
+#'   custom_colors = mycols
+#' )
+#' }
+#'
+#' @export
 im.bivariate <- function(r1, r2, # SpatRasters of the two variables to plot
                          xlab, ylab, # x and y legend labels
                          style = "quantile", # a string identifying the style used to calculate breaks
