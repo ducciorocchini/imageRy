@@ -1,6 +1,7 @@
 \name{im.boxplot.classes}
 \alias{im.boxplot.classes}
-\title{Visualize raster value distributions across image classes}
+\title{Visualize Raster Value Distributions Across Image Classes}
+
 \usage{
 im.boxplot.classes(
   input_image,
@@ -8,80 +9,199 @@ im.boxplot.classes(
   layer = 1,
   density = TRUE,
   median_labels = FALSE,
+  median_position = -0.3,
   legend = FALSE,
   limits = NULL,
-  custom_colors = NULL
+  custom_colors = NULL,
+  flip = FALSE,
+  violin = FALSE,
+  stat_test = FALSE
 )
 }
+
 \arguments{
-  \item{input_image}{A \code{SpatRaster} containing one or more layers.}
+  \item{input_image}{
+    A \code{SpatRaster} object representing the input raster image. The raster
+    may contain one or more layers.
+  }
 
-  \item{classified_image}{A single-layer \code{SpatRaster} representing the output
-  of an image classification. The raster is used to group pixel values from
-  \code{input_image} into classes.}
+  \item{classified_image}{
+    A single-layer \code{SpatRaster} containing class assignments, typically
+    produced by \code{\link{im.classify}}.
+  }
 
-  \item{layer}{A numeric index or character string specifying which layer of
-  \code{input_image} should be displayed. Defaults to \code{1}.}
+  \item{layer}{
+    A numeric index or character string specifying the layer of
+    \code{input_image} to visualize. Defaults to \code{1}.
+  }
 
-  \item{density}{Logical. If \code{TRUE}, adds a half-eye density distribution for
-  each class. Defaults to \code{TRUE}.}
+  \item{density}{
+    Logical. If \code{TRUE}, half-eye kernel density estimates are added to the
+    boxplots. This argument is ignored when \code{violin = TRUE}. Defaults to
+    \code{TRUE}.
+  }
 
-  \item{median_labels}{Logical. If \code{TRUE}, adds text labels showing the median
-  value for each class. Defaults to \code{FALSE}.}
+  \item{median_labels}{
+    Logical. If \code{TRUE}, median values are displayed for each class.
+    Defaults to \code{FALSE}.
+  }
 
-  \item{legend}{Logical. If \code{TRUE}, displays the legend. Defaults to \code{FALSE}.}
+  \item{median_position}{
+    A numeric value controlling the position of median labels along the class
+    axis. Defaults to \code{-0.3}.
+  }
 
-  \item{limits}{Optional numeric vector of length 2 giving the lower and upper
-  quantile probabilities used to restrict the visible y-axis range. Values
-  must be between 0 and 1. Defaults to \code{NULL}.}
+  \item{legend}{
+    Logical. If \code{TRUE}, the class legend is displayed. Defaults to
+    \code{FALSE}.
+  }
 
-  \item{custom_colors}{Optional character vector of valid color names or hex
-  codes used to build a custom palette for the classes. Defaults to \code{NULL}.}
+  \item{limits}{
+    An optional numeric vector of length two specifying the lower and upper
+    quantile probabilities used to restrict the visible y-axis range. Values
+    must lie between \code{0} and \code{1}. Defaults to \code{NULL}.
+  }
+
+  \item{custom_colors}{
+    An optional character vector containing valid color names or hexadecimal
+    color codes for the classes. If \code{NULL}, the same default
+    colorblind-friendly palette used by \code{\link{im.classify}} is applied.
+  }
+
+  \item{flip}{
+    Logical. If \code{TRUE}, the plot coordinates are flipped. Defaults to
+    \code{FALSE}.
+  }
+
+  \item{violin}{
+    Logical. If \code{TRUE}, violin plots are displayed instead of boxplots.
+    When enabled, the \code{density} argument is ignored. Defaults to
+    \code{FALSE}.
+  }
+
+  \item{stat_test}{
+    Logical. If \code{TRUE}, a non-parametric statistical comparison among
+    classes is performed. A Wilcoxon rank-sum test is used when two classes are
+    present, whereas a Kruskal--Wallis rank-sum test is used when more than two
+    classes are present. Test results are printed in the console. Defaults to
+    \code{FALSE}.
+  }
 }
+
 \description{
-Creates boxplots of pixel values from a selected layer of a single- or multi-layer
-raster image, grouped according to the classes of a classified image.
+Visualizes the distribution of raster values across classes defined by a
+classified raster image. The function produces boxplots or violin plots and
+optionally adds half-eye kernel density estimates, median labels, customized
+colors, quantile-based display limits, and non-parametric statistical tests.
 }
+
 \details{
-The function extracts pixel values from the selected layer of \code{input_image}
-and groups them according to the classes stored in \code{classified_image}. It then
-builds a \code{ggplot2} boxplot showing the distribution of values within each
-class.
+The function extracts pixel values from a selected layer of
+\code{input_image} and groups them according to the class assignments stored in
+\code{classified_image}.
 
-If \code{density = TRUE}, a half-eye density layer is added using
-\code{ggdist::stat_halfeye}. If \code{median_labels = TRUE}, median values are displayed as text labels.
-The \code{limits} argument optionally restricts the visible y-axis range to the selected quantiles.
-If \code{custom_colors} is provided, a custom palette is used for class colours.
+By default, each class is represented by a boxplot summarizing the median,
+interquartile range, and overall spread of raster values. Outliers are not
+displayed in the boxplot layer.
 
-The function returns a \code{ggplot2} object, so the output can be further
-customized with additional \code{ggplot2} layers.
+When \code{density = TRUE}, half-eye kernel density estimates are added using
+\code{ggdist::stat_halfeye}. These density estimates provide a smoothed
+representation of the value distribution within each class.
+
+When \code{violin = TRUE}, violin plots are used instead of boxplots. In this
+case, the \code{density} argument is ignored.
+
+The \code{limits} argument can be used to restrict the visible y-axis range to
+selected quantiles. For example, \code{limits = c(0.01, 0.99)} displays the
+range between the first and ninety-ninth percentiles.
+
+If \code{custom_colors = NULL}, the function uses the same default
+colorblind-friendly class palette adopted by \code{\link{im.classify}}. If the
+number of classes exceeds the number of available colors, additional colors
+are generated by interpolation.
+
+When \code{stat_test = TRUE}, the function automatically selects a
+non-parametric test according to the number of classes. A Wilcoxon rank-sum
+test is performed for two classes, whereas a Kruskal--Wallis rank-sum test is
+performed for more than two classes. The full test result is printed in the
+console.
+
+Wilcoxon and Kruskal--Wallis tests treat raster cells as independent
+observations. Spatial autocorrelation may therefore inflate the test statistic
+and produce overly small p-values. Statistical results should consequently be
+interpreted with caution.
+
+The function returns a \code{ggplot2} object, allowing further customization
+with additional \code{ggplot2} layers.
 }
+
 \value{
-A \code{ggplot2} object.
+A \code{ggplot2} object showing the distribution of raster values within each
+class. When \code{stat_test = TRUE}, the selected statistical test is also
+printed in the console.
 }
+
+\seealso{
+  \code{\link{im.classify}},
+  \code{\link{im.barplot}},
+  \code{\link{im.boxplot.layers}}
+}
+
 \examples{
 \dontrun{
-dolom <- im.import("sentinel.dolomites")
+library(terra)
 
-classes <- im.classify(dolom,
-                       num_clusters = 4,
-                       seed = 42)
+# Import a raster image
+canale <- rast("canale.jpg")
 
-# Basic boxplot
-im.boxplot.classes(dolom, classes, layer = 2)
+# Classify the image into four spectral classes
+classes <- im.classify(
+  canale,
+  num_clusters = 4,
+  seed = 42
+)
 
-# Add density and median labels
-im.boxplot.classes(dolom, classes,
-           layer = 2,
-           density = TRUE,
-           median_labels = TRUE)
+# Basic boxplot for the second raster layer
+im.boxplot.classes(
+  canale,
+  classes,
+  layer = 2
+)
 
-# Restrict the visible y-axis range and use custom colors
-im.boxplot.classes(dolom, classes,
-           layer = 2,
-           density = TRUE,
-           median_labels = TRUE,
-           limits = c(0.01, 0.99),
-           custom_colors = viridis::viridis(4, end = 0.5))
+# Add half-eye densities and median labels
+im.boxplot.classes(
+  canale,
+  classes,
+  layer = 2,
+  density = TRUE,
+  median_labels = TRUE
+)
+
+# Restrict the visible range and apply custom colors
+im.boxplot.classes(
+  canale,
+  classes,
+  layer = 2,
+  density = TRUE,
+  median_labels = TRUE,
+  limits = c(0.01, 0.99),
+  custom_colors = viridis::viridis(4, end = 0.5)
+)
+
+# Use violin plots
+im.boxplot.classes(
+  canale,
+  classes,
+  layer = 2,
+  violin = TRUE
+)
+
+# Perform the appropriate non-parametric test
+im.boxplot.classes(
+  canale,
+  classes,
+  layer = 2,
+  stat_test = TRUE
+)
 }
 }
