@@ -1,72 +1,113 @@
 #' Visualize Spectral Distributions Across Classes Using Boxplots
 #'
-#' This function generates boxplots of raster values grouped by classes derived from a classified image.
-#' It allows comparison of spectral distributions across classes, with optional density overlays,
-#' median labels, and custom visualization settings.
+#' This function visualizes the distribution of raster values across image classes
+#' derived from a classified raster. Depending on the selected options, it displays
+#' boxplots or violin plots, optionally combined with half-eye kernel density estimates,
+#' median labels, custom color palettes, quantile-based display limits, and statistical
+#' comparisons among classes.
 #'
-#' @param input_image A `SpatRaster` object representing the input raster (single or multi-layer).
-#' @param classified_image A `SpatRaster` object with a single layer representing class assignments.
-#' @param layer A numeric index or character string specifying which layer of `input_image` to visualize (default: 1).
-#' @param density A logical value indicating whether to overlay half-eye density plots (default: TRUE).
-#' @param median_labels A logical value indicating whether to display median values on the plot (default: FALSE).
-#' @param legend A logical value indicating whether to display the legend (default: FALSE).
-#' @param limits A numeric vector of length 2 specifying quantile limits (between 0 and 1) for the y-axis (default: NULL).
-#' @param custom_colors A character vector specifying colors for the classes (default: NULL).
+#' @param input_image A `SpatRaster` object representing the input raster (single- or multi-layer).
+#' @param classified_image A single-layer `SpatRaster` containing class assignments,
+#' typically produced by [im.classify()].
+#' @param layer A numeric index or character string specifying the layer of
+#' `input_image` to visualize (default: 1).
+#' @param density A logical value indicating whether to overlay half-eye kernel
+#' density estimates (default: TRUE). Ignored when `violin = TRUE`.
+#' @param median_labels A logical value indicating whether to display median values
+#' above each class (default: FALSE).
+#' @param median_position A numeric value controlling the horizontal position of
+#' median labels (default: -0.3).
+#' @param legend A logical value indicating whether to display the legend
+#' (default: FALSE).
+#' @param limits An optional numeric vector of length two specifying lower and
+#' upper quantile probabilities used to restrict the visible y-axis range.
+#' Values must lie between 0 and 1 (default: NULL).
+#' @param custom_colors An optional character vector specifying custom colors for
+#' the classes. If `NULL`, the same default colorblind-friendly palette used by
+#' [im.classify()] is adopted.
+#' @param flip A logical value indicating whether to flip the plot coordinates
+#' (default: FALSE).
+#' @param violin A logical value indicating whether to display violin plots instead
+#' of boxplots (default: FALSE).
+#' @param stat_test A logical value indicating whether to perform a statistical
+#' comparison among classes (default: FALSE). A Wilcoxon rank-sum test is performed
+#' when two classes are present, whereas a Kruskal-Wallis rank-sum test is used
+#' when more than two classes are present. Test results are printed in the console.
 #'
-#' @return A `ggplot` object showing the distribution of pixel values per class.
+#' @return A `ggplot` object showing the distribution of raster values for each class.
 #'
 #' @details
-#' The function combines spectral information from a raster image with class assignments
-#' from a classified raster to visualize how pixel values are distributed across classes.
+#' The function extracts pixel values from the selected layer of `input_image`
+#' and groups them according to the classes stored in `classified_image`.
+#' It then visualizes the resulting distributions using boxplots or violin plots.
 #'
-#' Each class is represented by a boxplot summarizing:
-#' \itemize{
-#'   \item Median values
-#'   \item Interquartile range (IQR)
-#'   \item Distribution spread (excluding outliers by default)
-#' }
+#' When `density = TRUE`, half-eye kernel density estimates are added to provide
+#' a smoothed representation of each class distribution. Median values can be
+#' displayed using `median_labels = TRUE`.
 #'
-#' Optional density overlays (half-eye plots) provide a smoothed representation of the
-#' distribution, facilitating interpretation of class separability in spectral space.
+#' The `limits` argument restricts the visible y-axis range according to selected
+#' quantiles, improving visualization by reducing the influence of extreme values.
 #'
-#' Additional options:
-#' \itemize{
-#'   \item `density = TRUE` overlays kernel density estimates for each class.
-#'   \item `median_labels = TRUE` annotates each class with its median value.
-#'   \item `limits` restricts the y-axis to selected quantiles, improving visualization of central distributions.
-#'   \item `custom_colors` allows user-defined color palettes for classes.
-#' }
+#' When `stat_test = TRUE`, the function automatically selects an appropriate
+#' non-parametric test according to the number of classes. Because raster cells
+#' are treated as independent observations, users should interpret p-values with
+#' caution in the presence of spatial autocorrelation.
 #'
-#' From an informatics perspective, this function provides a link between classification outputs
-#' and spectral feature space, enabling the evaluation of class separability and internal variability.
-#' It supports interpretation of classification results by explicitly showing how pixel values are
-#' distributed within and across classes.
+#' The function returns a `ggplot2` object, allowing further customization using
+#' additional `ggplot2` layers.
 #'
-#' @seealso [im.classify()], [im.barplot()]
+#' @seealso [im.classify()], [im.barplot()], [im.boxplot.layers()]
 #'
 #' @examples
 #' \dontrun{
 #' library(terra)
-#' library(ggplot2)
 #'
-#' # Load example raster
-#' r <- rast(system.file("ex/elev.tif", package = "terra"))
+#' # Load a raster image
+#' canale <- rast("canale.jpg")
 #'
-#' # Perform classification
-#' classified <- im.classify(r, num_clusters = 3)
+#' # Perform k-means classification
+#' classes <- im.classify(
+#'   canale,
+#'   num_clusters = 4,
+#'   seed = 42
+#' )
 #'
-#' # Plot spectral distributions for layer 1
-#' im.boxplot.classes(r, classified, layer = 1, density = TRUE)
+#' # Basic boxplot
+#' im.boxplot.classes(canale, classes, layer = 2)
+#'
+#' # Boxplots with density estimates and median labels
+#' im.boxplot.classes(
+#'   canale,
+#'   classes,
+#'   layer = 2,
+#'   density = TRUE,
+#'   median_labels = TRUE
+#' )
+#'
+#' # Perform the appropriate non-parametric test
+#' im.boxplot.classes(
+#'   canale,
+#'   classes,
+#'   layer = 2,
+#'   stat_test = TRUE
+#' )
 #' }
 #'
 #' @export
-im.boxplot.classes <- function(input_image, classified_image, 
-                       layer = 1, # specify the layer to be displayed
-                       density = TRUE, # TRUE for adding a half-eye density plot 
-                       median_labels = FALSE, # TRUE for adding median labels
-                       legend = FALSE, # TRUE for adding a legend
-                       limits = NULL, # restrict the visible y-axis range to selected quantiles
-                       custom_colors = NULL) { # specify a color palette
+im.boxplot.classes <- function(
+    input_image,
+    classified_image, 
+    layer = 1, # specify the layer to be displayed
+    density = TRUE, # TRUE for adding a half-eye density plot
+    median_labels = FALSE, # TRUE for adding median labels
+    median_position = -0.3, # position of median labels along the class axis
+    legend = FALSE, # TRUE for adding a legend
+    limits = NULL, # restrict the visible y-axis range to selected quantiles
+    custom_colors = NULL, # specify a color palette
+    flip = FALSE, # flip plot coordinates
+    violin = FALSE, # TRUE for using a violin plot instead of a boxplot
+    stat_test = FALSE # TRUE for performing Wilcoxon o Kruskal-Wallis tests
+) {
   
   # Check input image
   if (!inherits(input_image, "SpatRaster")) {
@@ -82,18 +123,81 @@ im.boxplot.classes <- function(input_image, classified_image,
     stop("classified_image should have a single layer.")
   }
   
+  # Check density
+  if (!is.logical(density) ||
+      length(density) != 1 ||
+      is.na(density)) {
+    stop("density must be either TRUE or FALSE.")
+  }
+  
+  # Check median_labels
+  if (!is.logical(median_labels) ||
+      length(median_labels) != 1 ||
+      is.na(median_labels)) {
+    stop("median_labels must be either TRUE or FALSE.")
+  }
+  
+  # Check median_position
+  if (!is.numeric(median_position) ||
+      length(median_position) != 1 ||
+      is.na(median_position)) {
+    stop("median_position must be a single numeric value.")
+  }
+  
+  # Check legend
+  if (!is.logical(legend) ||
+      length(legend) != 1 ||
+      is.na(legend)) {
+    stop("legend must be either TRUE or FALSE.")
+  }
+  
+  # Check flip
+  if (!is.logical(flip) ||
+      length(flip) != 1 ||
+      is.na(flip)) {
+    stop("flip must be either TRUE or FALSE.")
+  }
+  
+  # Check violin
+  if (!is.logical(violin) ||
+      length(violin) != 1 ||
+      is.na(violin)) {
+    stop("violin must be either TRUE or FALSE.")
+  }
+
+  # Check statistical test
+  if (!is.logical(stat_test) ||
+    length(stat_test) != 1 ||
+    is.na(stat_test)) {
+  stop("stat_test must be either TRUE or FALSE.")
+  }
+  
+  # Warn if density is ignored
+  if (isTRUE(violin) && isTRUE(density)) {
+    warning("density is ignored when violin = TRUE.")
+  }
+  
   # Select layer by index or name
   if (is.numeric(layer)) {
-    if (layer < 1 || layer > terra::nlyr(input_image)) {
+    
+    if (length(layer) != 1 ||
+        is.na(layer) ||
+        layer < 1 ||
+        layer > terra::nlyr(input_image)) {
       stop("layer exceeds the number of layers in input_image.")
     }
+    
     layer_name <- names(input_image)[layer]
     layer_rast <- input_image[[layer]]
     
   } else if (is.character(layer)) {
-    if (!layer %in% names(input_image)) {
+    
+    if (length(layer) != 1 ||
+        is.na(layer) ||
+        !layer %in% names(input_image)) {
       stop("layer name not found in input_image.")
     }
+    
     layer_name <- layer
     layer_rast <- input_image[[layer]]
     
@@ -101,25 +205,98 @@ im.boxplot.classes <- function(input_image, classified_image,
     stop("layer must be either a numeric index or a layer name.")
   }
   
-  # Build the  data frame
-  df <- terra::as.data.frame(c(layer_rast, classified_image), na.rm = TRUE)
-  names(df) <- c("value", "Class")
-  df$Class <- as.factor(df$Class)
+  # Build the data frame
+  df <- terra::as.data.frame(
+    c(layer_rast, classified_image),
+    na.rm = TRUE
+  )
   
-  # Basic plot
-  p <- ggplot2::ggplot(
-    data = df,
-    mapping = ggplot2::aes(x = Class, y = value, colour = Class)
-  ) +
-    ggplot2::geom_boxplot(
-      width = 0.30,
-      outlier.shape = NA,
-      outlier.color = NA
+  names(df) <- c("value", "Class")
+  
+  # Store class values in ascending numeric order
+  class_values <- sort(unique(df$Class))
+  n_classes <- length(class_values)
+  
+  # Convert classes to a factor with explicit level order
+  df$Class <- factor(
+    df$Class,
+    levels = class_values
+  )
+
+  # Optional statistical comparison among classes
+  if (isTRUE(stat_test)) {
+    
+    warning(
+      paste(
+        "Wilcoxon and Kruskal-Wallis tests treat raster cells as",
+        "independent observations. Spatial autocorrelation may inflate",
+        "the test statistic and produce overly small p-values."
+      )
+    )
+    
+    if (n_classes == 2) {
+      
+      cat("\nWilcoxon rank-sum test\n")
+      
+      print(
+        stats::wilcox.test(
+          value ~ Class,
+          data = df,
+          exact = FALSE
+        )
+      )
+      
+    } else {
+      
+      cat("\nKruskal-Wallis rank-sum test\n")
+      
+      print(
+        stats::kruskal.test(
+          value ~ Class,
+          data = df
+        )
+      )
+    }
+  }
+    
+    # Basic plot
+    p <- ggplot2::ggplot(
+      data = df,
+      mapping = ggplot2::aes(
+        x = Class,
+        y = value,
+        colour = Class
+      )
     ) +
-    ggplot2::labs(y = layer_name)
+      ggplot2::labs(
+        x = "Class",
+        y = layer_name
+      )
+    
+    # Add either a boxplot or a violin plot
+    if (isTRUE(violin)) {
+      
+      p <- p +
+        ggplot2::geom_violin(
+          ggplot2::aes(fill = Class),
+          width = 0.7,
+          alpha = 0.5,
+          trim = TRUE
+        )
+      
+    } else {
+      
+      p <- p +
+        ggplot2::geom_boxplot(
+          width = 0.30,
+          outlier.shape = NA,
+          outlier.color = NA
+        )
+    }
   
   # Optional density layer
-  if (isTRUE(density)) {
+  if (isTRUE(density) && !isTRUE(violin)) {
+    
     p <- p +
       ggdist::stat_halfeye(
         ggplot2::aes(fill = Class),
@@ -134,51 +311,168 @@ im.boxplot.classes <- function(input_image, classified_image,
   
   # Optional median labels
   if (isTRUE(median_labels)) {
+    
     p <- p +
       ggplot2::stat_summary(
-        fun = "median",
+        fun = stats::median,
         geom = "text",
         size = 3,
-        ggplot2::aes(label = round(ggplot2::after_stat(y), 3)),
-        position = ggplot2::position_nudge(x = -0.3)
+        ggplot2::aes(
+          label = round(
+            ggplot2::after_stat(y),
+            3
+          )
+        ),
+        position = ggplot2::position_nudge(
+          x = median_position
+        )
       )
   }
   
   # Optional quantile limits
   if (!is.null(limits)) {
-    if (!is.numeric(limits) || length(limits) != 2) {
+    
+    if (!is.numeric(limits) ||
+        length(limits) != 2) {
       stop("limits must be a numeric vector of length 2.")
     }
-    if (any(limits < 0 | limits > 1)) {
-      stop("limits must contain quantile probabilities between 0 and 1.")
+    
+    if (any(is.na(limits)) ||
+        any(limits < 0 | limits > 1)) {
+      stop(
+        "limits must contain quantile probabilities between 0 and 1."
+      )
     }
+    
+    if (limits[1] >= limits[2]) {
+      stop(
+        "The first value of limits must be smaller than the second."
+      )
+    }
+    
+    y_limits <- stats::quantile(
+      df$value,
+      probs = limits,
+      na.rm = TRUE
+    )
     
     p <- p +
       ggplot2::scale_y_continuous(
-        limits = stats::quantile(df$value, probs = limits, na.rm = TRUE)
+        limits = y_limits
       )
   }
   
-  # Optional custom colors
-  if (!is.null(custom_colors)) {
-    if (!is.character(custom_colors)) {
-      stop("custom_colors must be a character vector of valid color names or hex codes.")
+  # Default colorblind-friendly palette used by im.classify()
+  base_colors <- c(
+    "#0072B2", # blue
+    "#E69F00", # orange
+    "#009E73", # bluish green
+    "#CC79A7", # reddish purple
+    "#000000", # black
+    "#D55E00"  # vermillion
+  )
+  
+  # Select the base colors
+  if (is.null(custom_colors)) {
+    
+    if (n_classes > length(base_colors)) {
+      
+      colors <- grDevices::colorRampPalette(
+        base_colors
+      )(n_classes)
+      
+    } else {
+      
+      colors <- base_colors[seq_len(n_classes)]
     }
     
-    n_classes <- nlevels(df$Class)
-    pal <- grDevices::colorRampPalette(custom_colors)(n_classes)
+  } else {
     
-    p <- p + ggplot2::scale_colour_manual(values = pal)
-    
-    if (isTRUE(density)) {
-      p <- p + ggplot2::scale_fill_manual(values = pal)
+    if (!is.character(custom_colors) ||
+        length(custom_colors) == 0) {
+      stop(
+        paste(
+          "custom_colors must be a character vector",
+          "of valid color names or hex codes."
+        )
+      )
     }
+    
+    if (n_classes > length(custom_colors)) {
+      
+      colors <- grDevices::colorRampPalette(
+        custom_colors
+      )(n_classes)
+      
+    } else {
+      
+      colors <- custom_colors[seq_len(n_classes)]
+    }
+  }
+  
+  # Reproduce the 100-color palette used by im.classify()
+  num_colors <- 100
+  
+  color_palette <- grDevices::colorRampPalette(
+    colors
+  )(num_colors)
+  
+  # Match each class value to its position in the raster color scale
+  if (n_classes == 1) {
+    
+    color_indices <- 1
+    
+  } else {
+    
+    color_indices <- round(
+      seq(
+        from = 1,
+        to = num_colors,
+        length.out = n_classes
+      )
+    )
+  }
+  
+  class_colors <- color_palette[color_indices]
+  
+  # Explicitly associate each color with its class
+  names(class_colors) <- as.character(class_values)
+  
+  # Apply class colors
+  p <- p +
+    ggplot2::scale_colour_manual(
+      values = class_colors,
+      breaks = as.character(class_values),
+      limits = as.character(class_values),
+      drop = FALSE
+    )
+  
+  # Apply fill colors when needed
+  if (isTRUE(density) || isTRUE(violin)) {
+    
+    p <- p +
+      ggplot2::scale_fill_manual(
+        values = class_colors,
+        breaks = as.character(class_values),
+        limits = as.character(class_values),
+        drop = FALSE
+      )
   }
   
   # Optional legend
   if (!isTRUE(legend)) {
+    
     p <- p +
-      ggplot2::guides(colour = "none", fill = "none")
+      ggplot2::guides(
+        colour = "none",
+        fill = "none"
+      )
+  }
+  
+  # Optional coordinate flipping
+  if (isTRUE(flip)) {
+    p <- p +
+      ggplot2::coord_flip()
   }
   
   return(p)
