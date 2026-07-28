@@ -29,7 +29,9 @@
 imageRy/
 ├── R/
 │   ├── im.barplot.R
-│   ├── im.boxplot.R
+│   ├── im.bivariate.R
+│   ├── im.boxplot.classes.R
+│   ├── im.boxplot.layers.R
 │   ├── im.classify.R
 │   ├── im.dvi.R
 │   ├── im.export.R
@@ -38,13 +40,16 @@ imageRy/
 │   ├── im.ggplotRGB.R
 │   ├── im.import.R
 │   ├── im.kernel.R
+│   ├── im.levelplot.R
 │   ├── im.list.R
 │   ├── im.multiframe.R
 │   ├── im.ndvi.R
+│   ├── im.pairs.R
 │   ├── im.pca.R
 │   ├── im.plotRGB.R
 │   ├── im.plotRGB.auto.R
 │   ├── im.print.R
+│   ├── im.refresh.R
 │   └── im.ridgeline.R
 │
 ├── inst/
@@ -53,7 +58,9 @@ imageRy/
 │
 ├── man/
 │   ├── im.barplot.Rd
-│   ├── im.boxplot.Rd
+│   ├── im.bivariate.Rd
+│   ├── im.boxplot.classes.Rd
+│   ├── im.boxplot.layers.Rd
 │   ├── im.classify.Rd
 │   ├── im.dvi.Rd
 │   ├── im.export.Rd
@@ -62,26 +69,29 @@ imageRy/
 │   ├── im.ggplotRGB.Rd
 │   ├── im.import.Rd
 │   ├── im.kernel.Rd
+│   ├── im.levelplot.Rd
 │   ├── im.list.Rd
 │   ├── im.multiframe.Rd
 │   ├── im.ndvi.Rd
+│   ├── im.pairs.Rd
 │   ├── im.pca.Rd
 │   ├── im.plotRGB.Rd
 │   ├── im.plotRGB.auto.Rd
 │   ├── im.print.Rd
+│   ├── im.refresh.Rd
 │   └── im.ridgeline.Rd
 │
 ├── tests/
 │   └── testthat/
 │       └── test-*.R
 │
-├── vignette/
-│   └── vignette.md
+├── vignettes/
+│   └── imageRy.Rmd
 │
 ├── DESCRIPTION
 ├── NAMESPACE
 ├── README.md
-├── data_description.md
+└── data_description.md
 ```
 ---
 
