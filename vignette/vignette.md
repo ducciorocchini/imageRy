@@ -1,3 +1,8 @@
+imagery_vignette
+================
+Diletta Santovito
+2026-07-28
+
 # About imageRy
 
 The **`imageRy`** package was designed as an educational resource to
@@ -20,19 +25,25 @@ several functions are derived. In this vignette, we will also use
 
 `imageRy` can be installed via function `install_github()`:
 
-    devtools::install_github("ducciorocchini/imageRy")
+``` r
+devtools::install_github("ducciorocchini/imageRy")
+```
 
 After the installation, we can load all the packages needed in this
 vignette:
 
-    library(imageRy)
-    library(terra)
-    library(viridis)
+``` r
+library(imageRy)
+library(terra)
+library(viridis)
+```
 
 The correct installation and loading of `imageRy` can be verified with
 function **`im.print()`**:
 
-    im.print()
+``` r
+im.print()
+```
 
     ## [1] "I am imageRy"
 
@@ -43,7 +54,9 @@ export of data. To overcome this, `imageRy` provides for data directly
 inside the package. To list all raster images stored in `imageRy` we can
 simply call function **`im.list()`**:
 
-    im.list()
+``` r
+im.list()
+```
 
     ##  [1] "bletterbach.jpg"                                   
     ##  [2] "dolansprings_oli_2013088_canyon_lrg.jpg"           
@@ -97,11 +110,15 @@ coordinate reference system. After importing the images, an automatic
 plot is also provided. For convenience, we will also rename the band
 layers.
 
-    dolom <- im.import("sentinel.dolomites")
+``` r
+dolom <- im.import("sentinel.dolomites")
+```
 
-<img src="./images/im.import-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.import-1.png" alt="" style="display: block; margin: auto;" />
 
-    names(dolom) <- c("B2", "B3", "B4", "B8")
+``` r
+names(dolom) <- c("B2", "B3", "B4", "B8")
+```
 
 Typing the name of the created object will return all the information of
 the image, including in this case: the class (which is a `SpatRaster`,
@@ -109,7 +126,9 @@ being based on the `terra` package), the dimensions of the image, its
 resolution, the extent, the coordinate system, the sources, the layer
 names, and the minimum and maximum values.
 
-    dolom
+``` r
+dolom
+```
 
     ## class       : SpatRaster 
     ## size        : 934, 1059, 4  (nrow, ncol, nlyr)
@@ -148,9 +167,11 @@ second (`B3`) is the green, the third (`B4`) is the red, and the fourth
 (`B8`) is the near-infrared. To have a true color composition of the
 Dolomites image we can plot it as:
 
-    im.plotRGB(dolom, r = 3, g = 2, b = 1, title = "Dolomites - True colors")
+``` r
+im.plotRGB(dolom, r = 3, g = 2, b = 1, title = "Dolomites - True colors")
+```
 
-<img src="./images/im.plotRGB-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.plotRGB-1.png" alt="" style="display: block; margin: auto;" />
 
 ### 3.2 Automatic RGB visualization with `im.plotRGB.auto()`
 
@@ -159,9 +180,11 @@ For a quicker first exploration of an image, function
 the image to build an RGB plot, without requiring the user to manually
 specify band positions:
 
-    im.plotRGB.auto(dolom, title = "Dolomites - Automatic RGB plot")
+``` r
+im.plotRGB.auto(dolom, title = "Dolomites - Automatic RGB plot")
+```
 
-<img src="./images/im.plotRGB.auto-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.plotRGB.auto-1.png" alt="" style="display: block; margin: auto;" />
 
 ### 3.3 Multi-frame plot layout with `im.multiframe()`
 
@@ -169,11 +192,13 @@ specify band positions:
 `par(mfrow = c, y))`, allowing the display of multiple plots in a grid
 format. For example:
 
-    im.multiframe(1, 2)
-    im.plotRGB(dolom, r = 4, g = 1, b = 3, title = "Dolomites - False colors")
-    im.plotRGB.auto(dolom, title = "Dolomites - Automatic RGB plot")
+``` r
+im.multiframe(1, 2)
+im.plotRGB(dolom, r = 4, g = 1, b = 3, title = "Dolomites - False colors")
+im.plotRGB.auto(dolom, title = "Dolomites - Automatic RGB plot")
+```
 
-<img src="./images/im.multiframe-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.multiframe-1.png" alt="" style="display: block; margin: auto;" />
 
 ### 3.4 Raster visualization with `im.ggplot()`
 
@@ -183,17 +208,21 @@ a data frame with spatial coordinates and raster values, and then plots
 it using a `viridis` color scale. By default, the first layer of the
 raster is used:
 
-    im.ggplot(dolom)
+``` r
+im.ggplot(dolom)
+```
 
-<img src="./images/im.ggplot-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.ggplot-1.png" alt="" style="display: block; margin: auto;" />
 
 Since `dolom` is a multilayer image, a specific band can also be
 selected through the `layerfill` argument. For example, to visualize the
 second layer:
 
-    im.ggplot(dolom, layerfill = 2)
+``` r
+im.ggplot(dolom, layerfill = 2)
+```
 
-<img src="./images/im.ggplot layerfill-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.ggplot layerfill-1.png" alt="" style="display: block; margin: auto;" />
 
 In contrast to `im.plotRGB()` and `im.plotRGB.auto()`, which directly
 generate base R plots, `im.ggplot()` returns a `ggplot` object. This
@@ -207,9 +236,11 @@ from a `terra SpatRaster` using `ggplot2` with function
 **`im.ggplotRGB()`**. In this case, we can manually select bands to
 assign to the red, green and blue channels:
 
-    im.ggplotRGB(dolom, r = 2, g = 3, b = 1)
+``` r
+im.ggplotRGB(dolom, r = 2, g = 3, b = 1)
+```
 
-<img src="./images/im.ggplotRGB-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.ggplotRGB-1.png" alt="" style="display: block; margin: auto;" />
 
 ### 3.6 Distribution of raster values with `im.ridgeline()`
 
@@ -224,22 +255,85 @@ The function requires a `SpatRaster` object and a `scale` argument
 controlling the vertical scaling of the ridgeline curves. A color
 palette can also be selected among several `viridis` options.
 
-    im.ridgeline(dolom, scale = 2, palette = "magma")
+``` r
+im.ridgeline(dolom, scale = 2, palette = "magma")
+```
 
     ## Picking joint bandwidth of 31.6
 
-<img src="./images/im.ridgeline-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.ridgeline-1.png" alt="" style="display: block; margin: auto;" />
 
 It is possible to reverse the order of the colors in the palette
 specifying argument `direction = -1`.
 
-    im.ridgeline(dolom, scale = 2, palette = "magma", direction = -1)
+``` r
+im.ridgeline(dolom, scale = 2, palette = "magma", direction = -1)
+```
 
     ## Picking joint bandwidth of 31.6
 
-<img src="./images/im.ridgeline direction-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.ridgeline direction-1.png" alt="" style="display: block; margin: auto;" />
 
-### 3.7 Bivariate mapping with `im.bivariate()`
+### 3.7 Boxplot comparison of raster layers with `im.boxplot.layers()`
+
+In addition to ridgeline plots, the distribution of pixel values across
+the layers of a multi-band image can also be explored using
+**`im.boxplot.layers()`**. This function produces a **boxplot** for each
+raster layer, allowing a direct comparison of the median, spread and
+variability of pixel values among bands. The function takes as input a
+multi-layer `SpatRaster` object. By default, it combines boxplots with
+half-eye density plots, which show the shape of the value distribution
+for each layer.
+
+``` r
+im.boxplot.layers(dolom)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/im.boxplot.layers simple usage-1.png" alt="" style="display: block; margin: auto;" />
+
+Several optional arguments can be used to customise the output. The
+half-eye density plots can be removed by setting `density = FALSE`,
+while median values can be displayed with `median_labels = TRUE`, and
+adjusted with argument `median_position`. The argument `limits` can be
+used to restrict the visible y-axis range to selected quantiles. Colors
+can be customised through the `custom_colors` argument. It is also
+possible to swap the x and y axes with argument `flip = TRUE`.
+
+``` r
+im.boxplot.layers(dolom,
+  density = TRUE,
+  median_labels = TRUE,
+  legend = FALSE,
+  limits = c(0.01, 0.99),
+  custom_colors = viridis::viridis(4, end = 0.5),
+  flip = TRUE
+)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/im.boxplot.layers usage-1.png" alt="" style="display: block; margin: auto;" />
+
+Finally, argument `violin = TRUE` will produce a **violin plot** instead
+of a boxplot.
+
+``` r
+im.boxplot.layers(dolom,
+  violin = TRUE,
+  median_labels = TRUE,
+  median_position = 0.4,
+  legend = FALSE,
+  limits = c(0.01, 0.99),
+  custom_colors = viridis::viridis(4, end = 0.5),
+  flip = TRUE
+)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/im.boxplot.layers violin-1.png" alt="" style="display: block; margin: auto;" />
+
+As with other imageRy functions based on `ggplot2`,
+`im.boxplot.layers()` returns a `ggplot` object, making it possible to
+further customise the plot using standard `ggplot2` functions.
+
+### 3.8 Bivariate mapping with `im.bivariate()`
 
 **Bivariate maps** are useful for visualising the spatial relationship
 between two raster layers. In our example, rather than displaying one
@@ -266,18 +360,20 @@ Here we compare the red band (`B4`) and near-infrared band (`B8`), as
 their relationship is often informative for interpreting vegetation
 patterns.
 
-    im.bivariate(
-      r1 = dolom[["B4"]],
-      r2 = dolom[["B8"]],
-      xlab = "Red band",
-      ylab = "NIR band",
-      custom_colors = "DkBlue2",
-      dim = 3
-      )
+``` r
+im.bivariate(
+  r1 = dolom[["B4"]],
+  r2 = dolom[["B8"]],
+  xlab = "Red band",
+  ylab = "NIR band",
+  custom_colors = "DkBlue2",
+  dim = 3
+  )
+```
 
-<img src="./images/im.bivariate-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.bivariate-1.png" alt="" style="display: block; margin: auto;" />
 
-### 3.8 Pairwise raster comparison with `im.pairs()`
+### 3.9 Pairwise raster comparison with `im.pairs()`
 
 **`im.pairs()`** provides a compact way to explore pairwise
 relationships among the layers of a multi-band raster image. The
@@ -301,12 +397,14 @@ the general shape of the relationships among bands. When sampling is
 used, the reported `R²` and *p*-values are calculated on the sampled
 pixels.
 
-    im.pairs(dolom, 
-             color = "black", 
-             sample_pixels = 5000
-             )
+``` r
+im.pairs(dolom,
+  color = "black",
+  sample_pixels = 5000
+)
+```
 
-<img src="./images/im.pairs simple usage-1.png" alt="" width="100%" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.pairs simple usage-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 The additional arguments of `im.pairs()` are related to the bivariate
 maps and are the same present in `im.bivariate()`. They control the
@@ -317,31 +415,34 @@ embedded legends. In practice, these arguments allow the user to adjust
 the bivariate-map component of `im.pairs()` in the same way as when
 working directly with `im.bivariate()`.
 
-    im.pairs(
-      dolom,
-      color = "slateblue4",
-      bivariate_color = "DkBlue2",
-      sample_pixels = 5000
-    )
+``` r
+im.pairs(
+  dolom,
+  color = "slateblue4",
+  bivariate_color = "DkBlue2",
+  sample_pixels = 5000
+)
+```
 
-<img src="./images/im.pairs usage-1.png" alt="" width="100%" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.pairs usage-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
-### 3.9 Raster level plots with `im.levelplot()`
+### 3.10 Raster level plots with `im.levelplot()`
 
 The `im.levelplot()` function provides a simple interface for
 visualising one or more layers of a `SpatRaster` object using **level
 plots**. Level plots represent raster values with a continuous colour
 scale, making them useful for exploring the spatial distribution of
-pixel values in single-band or multi-band images.
+pixel values in single-band or multi-band images. `im.levelplot()` is
+based on the `rasterVis::levelplot()` function. It takes as input a
+`SpatRaster`: when a multi-layer image is provided, each layer is
+displayed as a separate panel, allowing quick visual comparison among
+bands.
 
-`im.levelplot()` is based on the `rasterVis::levelplot()` function. It
-takes as input a `SpatRaster`: when a multi-layer image is provided,
-each layer is displayed as a separate panel, allowing quick visual
-comparison among bands.
+``` r
+im.levelplot(dolom, custom_colors = "viridis")
+```
 
-    im.levelplot(dolom, custom_colors = "viridis")
-
-<img src="./images/im.levelplot basic usage-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.levelplot basic usage-1.png" alt="" style="display: block; margin: auto;" />
 
 A specific layer can also be selected using the `layer` argument, either
 by index or by name. Users can choose a colour palette with argument
@@ -353,13 +454,17 @@ and customise the plot and legend titles. For single-layer plots,
 `im.levelplot()` can also display marginal summaries using the `margin`
 argument, which can be set to either `"mean"` or `"median"`.
 
-    im.levelplot(dolom, layer = 4, custom_colors = "mako", direction = -1, margin = "median")
+``` r
+im.levelplot(dolom, layer = 4, custom_colors = "mako", direction = -1, margin = "median")
+```
 
-<img src="./images/im.levelplot usage-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.levelplot usage-1.png" alt="" style="display: block; margin: auto;" />
 
-    im.levelplot(dolom, layer = 4, custom_colors = "mako", direction = -1, margin = "median", contour = TRUE)
+``` r
+im.levelplot(dolom, layer = 4, custom_colors = "mako", direction = -1, margin = "median", contour = TRUE)
+```
 
-<img src="./images/im.levelplot usage-2.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.levelplot usage-2.png" alt="" style="display: block; margin: auto;" />
 
 ## 4. Data analysis
 
@@ -388,28 +493,34 @@ status.
 
 The DVI is the simplest of the two indices and is calculated as:
 
-*D**V**I* = *N**I**R* − *R**E**D*
+$$
+DVI = {NIR} - {RED}
+$$
 
-where *N**I**R* is the reflectance in the near-infrared band and
-*R**E**D* is the reflectance in the red band. Higher values generally
-indicate denser and healthier vegetation. In `imageRy`, this index can
-be calculated with the function **`im.dvi()`**, which requires a
+where ${NIR}$ is the reflectance in the near-infrared band and ${RED}$
+is the reflectance in the red band. Higher values generally indicate
+denser and healthier vegetation. In `imageRy`, this index can be
+calculated with the function **`im.dvi()`**, which requires a
 `SpatRaster` object together with the positions of the near-infrared and
 red bands.
 
 For the Dolomites image, where the near-infrared band is in position 4
 and the red band is in position 3, DVI can be calculated as follows:
 
-    dvi <- im.dvi(dolom, nir = 4, red = 3)
+``` r
+dvi <- im.dvi(dolom, nir = 4, red = 3)
+```
 
 A straightforward plot of the result based on the `viridis` palette can
 be done as:
 
-    clviridis <- colorRampPalette(viridis(7))(255) 
+``` r
+clviridis <- colorRampPalette(viridis(7))(255) 
 
-    plot(dvi, col = clviridis)
+plot(dvi, col = clviridis)
+```
 
-<img src="./images/im.dvi plot-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.dvi plot-1.png" alt="" style="display: block; margin: auto;" />
 
 #### 4.1.2 The Normalized Difference Vegetation Index (NDVI) with `im.ndvi()`
 
@@ -429,11 +540,13 @@ of the near-infrared and red bands.
 
 The function can be applied as follows:
 
-    ndvi <- im.ndvi(dolom, nir = 4, red = 3)
+``` r
+ndvi <- im.ndvi(dolom, nir = 4, red = 3)
 
-    plot(ndvi, col = clviridis)
+plot(ndvi, col = clviridis)
+```
 
-<img src="./images/im.ndvi-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.ndvi-1.png" alt="" style="display: block; margin: auto;" />
 
 ### 4.2 Unsupervised classification with `im.classify()`
 
@@ -445,44 +558,59 @@ change, and the final percentage values may show low variability from
 one calculation to the other. To allow reproducibility, we can specify
 the `seed` argument:
 
-    classes <- im.classify(dolom, num_clusters = 4, seed = 42)
+``` r
+classes <- im.classify(dolom, num_clusters = 4, seed = 42)
+```
 
-<img src="./images/im.classify-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.classify-1.png" alt="" style="display: block; margin: auto;" />
 
 The classified image can be further inspected with functions
 `im.boxplot()` and `im.barplot()`. These functions are intended to
 visualize the distribution of pixel values across classes and the
 relative abundance of each class in a simple and flexible way.
 
-#### 4.2.1 `im.boxplot()`
+#### 4.2.1 `im.boxplot.classes()`
 
-**`im.boxplot()`** is designed to visualize how pixel values from a
-selected raster layer are distributed across the classes. The function
-takes two inputs: the original image and the classified raster generated
-with `im.classify()`. The layer to be displayed can be selected either
-by numeric index or by layer name:
+**`im.boxplot.classes()`** is designed to visualize how pixel values
+from a selected raster layer are distributed across the classes. The
+function takes two inputs: the original image and the classified raster
+generated with `im.classify()`. The layer to be displayed can be
+selected either by numeric index or by layer name:
 
-    im.boxplot(dolom, classes, layer = 1)
+``` r
+im.boxplot.classes(dolom, classes, layer = 1)
+```
 
-<img src="./images/im.boxplot basic use-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.boxplot.classes basic use-1.png" alt="" style="display: block; margin: auto;" />
 
-By default, the function returns a **boxplot** for each class, but there
-are several optional arguments. For example, we can add a half-eye
-**density plot** by setting the argument `density = TRUE`, to show the
-shape of value distribution within each class. We can also display
-median values for each class by setting `median_labels = TRUE`, while
-the visible y-axis range can be restricted to selected quantiles using
-`limits`, and color palettes can be set through the argument
-`custom_colors`.
+By default, the function returns a **boxplot** for each class, and the
+additional arguments are the same as those available in
+`im.boxplot.layer()`.
 
-    im.boxplot(dolom, classes, 
-               layer = 2, 
-               density = TRUE, 
-               median_labels = TRUE,
-               limits = c(0.01, 0.99),
-               custom_colors = viridis::viridis(4, end = 0.5))
+``` r
+im.boxplot.classes(dolom, classes,
+  layer = 2,
+  density = TRUE,
+  median_labels = TRUE,
+  limits = c(0.01, 0.99)
+)
+```
 
-<img src="./images/im.boxplot options-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.boxplot.classes options-1.png" alt="" style="display: block; margin: auto;" />
+
+``` r
+im.boxplot.classes(dolom, classes,
+  layer = 2,
+  violin = TRUE,
+  median_labels = TRUE,
+  median_position = 0.4,
+  legend = FALSE,
+  limits = c(0.01, 0.99),
+  flip = TRUE
+)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/im.boxplot.classes options-2.png" alt="" style="display: block; margin: auto;" />
 
 #### 4.2.2 `im.barplot()`
 
@@ -491,9 +619,11 @@ showing how many pixels belong to each class. The function only requires
 the classified raster as input. By default, it returns a **barplot** of
 the number of pixels in each class.
 
-    im.barplot(classes)
+``` r
+im.barplot(classes)
+```
 
-<img src="./images/im.barplot basic use-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.barplot basic use-1.png" alt="" style="display: block; margin: auto;" />
 
 Users can display the **percentage** of pixels in each class instead of
 raw counts by setting `perc = TRUE`. **Numerical labels** can be added
@@ -502,13 +632,16 @@ rescale the y-axis from 0 to the total number of pixels if
 `perc = FALSE`, or from 0 to 100 if `perc = TRUE`. Colors can be
 customized in the same exact way as with `im.boxplot()`.
 
-    im.barplot(classes, 
-               perc = TRUE, 
-               counts = TRUE,
-               rescale = TRUE,
-               custom_colors = viridis::viridis(4, end = 0.5))
+``` r
+im.barplot(classes,
+  perc = TRUE,
+  counts = TRUE,
+  rescale = TRUE,
+  custom_colors = viridis::viridis(4, end = 0.5)
+)
+```
 
-<img src="./images/im.barplot options-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.barplot options-1.png" alt="" style="display: block; margin: auto;" />
 
 Just like `im.ggplot()` and `im.ggplotRGB()`, both `im.boxplot()` and
 `im.barplot()` return a `ggplot2` object.
@@ -527,21 +660,29 @@ degree of fuzziness is controlled by the parameter `m`: higher values of
 `m` produce smoother and less distinct class memberships. The function
 can be applied as follows:
 
-    fuzzy <- im.fuzzy(dolom$B8, num_clusters = 3, m = 2, seed = 42)
+``` r
+fuzzy <- im.fuzzy(dolom$B8, num_clusters = 3, m = 2, seed = 42)
+```
 
 The output is a list containing three elements: the distance rasters
 (`distances`), the membership rasters (`memberships`), and the matrix of
 cluster centers (`centers`):
 
-    plot(fuzzy$distances)
+``` r
+plot(fuzzy$distances)
+```
 
-<img src="./images/im.fuzzy rasters-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.fuzzy rasters-1.png" alt="" style="display: block; margin: auto;" />
 
-    plot(fuzzy$memberships)
+``` r
+plot(fuzzy$memberships)
+```
 
-<img src="./images/im.fuzzy rasters-2.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.fuzzy rasters-2.png" alt="" style="display: block; margin: auto;" />
 
-    fuzzy$centers
+``` r
+fuzzy$centers
+```
 
     ##          B8
     ## 1  50.25857
@@ -558,7 +699,9 @@ axes, to reduce the problem of multicollinearity. **Principal Components
 Analysis (PCA)** is implemented in `imageRy` with the function
 **`im.pca()`**:
 
-    pc <- im.pca(dolom)
+``` r
+pc <- im.pca(dolom)
+```
 
     ## Standard deviations (1, .., p=4):
     ## [1] 1486.07539  526.75366   49.82086   33.21852
@@ -570,7 +713,7 @@ Analysis (PCA)** is implemented in `imageRy` with the function
     ## B4 0.5838450  0.3923525 -0.45844047  0.54315450
     ## B8 0.5253946 -0.8482175  0.01920928  0.06417613
 
-<img src="./images/im.pca-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.pca-1.png" alt="" style="display: block; margin: auto;" />
 
 The output shows that the first principal component contains most of the
 information in the image, because its standard deviation is much larger
@@ -593,9 +736,11 @@ argument `stat` specifies which statistic should be calculated.
 Since `im.kernel()` works on a single-layer raster, we can apply it to a
 derived index, such as the `ndvi` object we previously computed.
 
-    ndvi_kernel <- im.kernel(ndvi, mw = 3, stat = c("mean", "sd"))
+``` r
+ndvi_kernel <- im.kernel(ndvi, mw = 3, stat = c("mean", "sd"))
+```
 
-<img src="./images/im.kernel-1.png" alt="" style="display: block; margin: auto;" />
+<img src="imagery_vignette_update_files/figure-gfm/im.kernel-1.png" alt="" style="display: block; margin: auto;" />
 
 In this example, the function computes the local mean and standard
 deviation of `ndvi` within a 3 x 3 moving window.
@@ -606,6 +751,8 @@ Finally, `imageRy` implements function **`im.export()`** that allows to
 save a SpatRaster object in GeoTIFF, PNG or JPG format. For example, to
 save the `ndvi` object in PNG format, simply do:
 
-    im.export(ndvi, "dolom_ndvi.png")
+``` r
+im.export(ndvi, "dolom_ndvi.png")
+```
 
     ## Raster successfully exported as PNG: dolom_ndvi.png
