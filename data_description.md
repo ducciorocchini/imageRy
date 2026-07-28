@@ -66,7 +66,7 @@ This image is a preanalysed Sentinel-2 image of the Similaun Glaciers, Alps, Ita
 # Additional images from drones in Zenodo
 They can be directly imported by: 
 ```r
-example <- rast("zenodo_link") 
+example <- rast("zenodo_link") # open the DOI and copy the link to the image
 ```
 
 + Passo sella 
