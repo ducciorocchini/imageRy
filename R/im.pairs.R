@@ -1,3 +1,108 @@
+#' Pairwise Visualization of Multi-Layer Raster Data
+#'
+#' This function creates a matrix of plots for exploring pairwise relationships
+#' among the layers of a multi-layer raster image. Density plots are displayed
+#' along the diagonal, scatterplots with linear regression statistics in the
+#' lower triangle, and bivariate maps in the upper triangle.
+#'
+#' @param input_image A multi-layer `SpatRaster` object containing at least two
+#'   raster layers.
+#' @param color A character value specifying the color used for density plots
+#'   and scatterplot points (default: `"black"`).
+#' @param bivariate_color A character value specifying the palette used for the
+#'   bivariate maps (default: `"BlueOr"`). This argument is passed to
+#'   [im.bivariate()].
+#' @param dim A numeric value specifying the number of classes per variable in
+#'   the bivariate color palette (default: `2`).
+#' @param sample_pixels An optional positive integer specifying the number of
+#'   complete raster cells randomly sampled for density plots, scatterplots,
+#'   and regression analyses. If `NULL`, all complete raster cells are used
+#'   (default: `NULL`).
+#' @param seed A numeric value used as the random seed for reproducible
+#'   sampling (default: `42`).
+#' @param map_factor A numeric value greater than or equal to `1` specifying
+#'   the aggregation factor applied to raster layers before creating the
+#'   bivariate maps. Values greater than `1` reduce computation time for
+#'   large rasters (default: `1`).
+#' @param legend_x A numeric value specifying the horizontal position of the
+#'   bivariate legend (default: `0.72`).
+#' @param legend_y A numeric value specifying the vertical position of the
+#'   bivariate legend (default: `0.72`).
+#' @param legend_width A numeric value specifying the relative width of the
+#'   bivariate legend (default: `0.32`).
+#' @param legend_height A numeric value specifying the relative height of the
+#'   bivariate legend (default: `0.32`).
+#' @param legend_size A numeric value specifying the size of the bivariate
+#'   legend (default: `10`).
+#' @param legend_label_size A numeric value specifying the text size of the
+#'   legend labels (default: `6`).
+#'
+#' @return A `patchwork` object containing a matrix of density plots,
+#'   scatterplots, and bivariate maps.
+#'
+#' @details
+#' This function provides an integrated graphical summary of pairwise
+#' relationships among all layers of a multi-layer raster.
+#'
+#' The resulting matrix contains:
+#' \itemize{
+#'   \item Density plots along the diagonal showing the distribution of values
+#'   within each raster layer.
+#'   \item Scatterplots in the lower triangle showing pairwise relationships
+#'   between raster layers.
+#'   \item Bivariate maps in the upper triangle showing the spatial
+#'   correspondence between each pair of raster layers.
+#' }
+#'
+#' For each scatterplot, a simple linear regression is fitted and the
+#' coefficient of determination (R²) together with the p-value of the slope
+#' are displayed in the corresponding panel.
+#'
+#' Raster cells containing missing values in one or more layers are removed
+#' before generating the plots and statistical summaries.
+#'
+#' If `sample_pixels` is specified, only a random subset of complete raster
+#' cells is used for density plots, scatterplots, and regression analyses.
+#' Sampling does not affect the bivariate maps.
+#'
+#' If `map_factor` is greater than `1`, raster layers used in the bivariate
+#' maps are aggregated using the mean before visualization. This substantially
+#' reduces computation time for large rasters but also decreases spatial
+#' resolution.
+#'
+#' The regression statistics shown in the scatterplots assume independent
+#' observations. Because raster cells are often spatially autocorrelated,
+#' p-values should be interpreted with caution.
+#'
+#' @seealso [im.bivariate()]
+#'
+#' @examples
+#' \dontrun{
+#' library(terra)
+#'
+#' # Load an example multi-layer raster
+#' r <- rast(system.file("ex/logo.tif", package = "terra"))
+#'
+#' # Pairwise visualization
+#' im.pairs(r)
+#'
+#' # Use a random sample of pixels
+#' im.pairs(
+#'   r,
+#'   sample_pixels = 1000,
+#'   seed = 42
+#' )
+#'
+#' # Aggregate bivariate maps for faster plotting
+#' im.pairs(
+#'   r,
+#'   color = "darkblue",
+#'   sample_pixels = 1000,
+#'   map_factor = 2
+#' )
+#' }
+#'
+#' @export
 im.pairs <- function(input_image, # original multi-layer SpatRaster
                      color = "black", # color for density and scatterplots
                      bivariate_color = "BlueOr", # colors for the bivariate maps
