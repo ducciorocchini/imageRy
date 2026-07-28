@@ -1,13 +1,16 @@
-im.levelplot <- function(input_image, # a SpatRaster object
-                         layer = NULL, # Layer to display
-                         margin = NULL, # Function for the margin plots (either "mean" or "median) (only works for single layer display)
-                         custom_colors = "viridis", # Custom color palette
-                         direction = 1, # Direction of the custom color palette (if it's a viridis palette)
-                         contour = FALSE, # Contour lines
-                         ncol = NULL, # Number of columns (if multiple layers are displayed)
-                         main = NULL, # Title
-                         legend_title = NULL) { # Legend title
+im.levelplot <- function(
+    input_image,                   # a SpatRaster object
+    layer = NULL,                  # layer to display
+    margin = NULL,                 # "mean" or "median"
+    custom_colors = "viridis",     # viridis palette name or vector of colors
+    direction = 1,                 # direction of viridis palette
+    contour = FALSE,               # add contour lines
+    ncol = NULL,                   # number of columns for multi-layer display
+    main = NULL,                   # plot title
+    legend_title = NULL            # legend title
+) {
   
+  # Check input image
   if (!inherits(input_image, "SpatRaster")) {
     stop("input_image must be a SpatRaster object.")
   }
@@ -16,15 +19,24 @@ im.levelplot <- function(input_image, # a SpatRaster object
   if (!is.null(layer)) {
     
     if (is.numeric(layer)) {
-      if (length(layer) != 1 || layer < 1 || layer > terra::nlyr(input_image)) {
+      
+      if (length(layer) != 1 ||
+          is.na(layer) ||
+          layer < 1 ||
+          layer > terra::nlyr(input_image)) {
         stop("layer must be a valid layer index.")
       }
+      
       input_image <- input_image[[layer]]
       
     } else if (is.character(layer)) {
-      if (length(layer) != 1 || !layer %in% names(input_image)) {
+      
+      if (length(layer) != 1 ||
+          is.na(layer) ||
+          !layer %in% names(input_image)) {
         stop("layer must be a valid layer name.")
       }
+      
       input_image <- input_image[[layer]]
       
     } else {
@@ -33,18 +45,41 @@ im.levelplot <- function(input_image, # a SpatRaster object
   }
   
   # Check margin
-  if (!is.null(margin) && !margin %in% c("mean", "median")) {
-    stop("margin must be NULL, 'mean', or 'median'.")
+  if (!is.null(margin)) {
+    
+    if (!is.character(margin) ||
+        length(margin) != 1 ||
+        is.na(margin) ||
+        !margin %in% c("mean", "median")) {
+      stop("margin must be NULL, 'mean', or 'median'.")
+    }
   }
   
   # Check direction
-  if (!direction %in% c(1, -1)) {
+  if (!is.numeric(direction) ||
+      length(direction) != 1 ||
+      is.na(direction) ||
+      !direction %in% c(1, -1)) {
     stop("direction must be either 1 or -1.")
   }
   
   # Check contour
-  if (!is.logical(contour) || length(contour) != 1) {
+  if (!is.logical(contour) ||
+      length(contour) != 1 ||
+      is.na(contour)) {
     stop("contour must be either TRUE or FALSE.")
+  }
+  
+  # Check ncol
+  if (!is.null(ncol)) {
+    
+    if (!is.numeric(ncol) ||
+        length(ncol) != 1 ||
+        is.na(ncol) ||
+        ncol < 1 ||
+        ncol %% 1 != 0) {
+      stop("ncol must be NULL or a positive integer.")
+    }
   }
   
   # Ignore margin for multi-layer images
@@ -53,38 +88,58 @@ im.levelplot <- function(input_image, # a SpatRaster object
     margin <- NULL
   }
   
-  # Handle colours
+  # Available viridis palettes
   viridis_opts <- c(
-    "viridis", "magma", "plasma", "inferno",
-    "cividis", "mako", "rocket", "turbo"
+    "viridis",
+    "magma",
+    "plasma",
+    "inferno",
+    "cividis",
+    "mako",
+    "rocket",
+    "turbo"
   )
   
-  if (is.character(custom_colors) && length(custom_colors) == 1) {
+  # Build color palette
+  if (is.character(custom_colors) &&
+      length(custom_colors) == 1) {
     
     if (!custom_colors %in% viridis_opts) {
       stop(
-        "If custom_colors is a single string, it must be one of: ",
-        paste(viridis_opts, collapse = ", "),
-        "."
+        paste0(
+          "If custom_colors is a single string, it must be one of: ",
+          paste(viridis_opts, collapse = ", "),
+          "."
+        )
       )
     }
     
     pal <- viridisLite::viridis(
-      100,
+      n = 100,
       option = custom_colors,
       direction = direction
     )
     
-  } else if (is.character(custom_colors) && length(custom_colors) >= 2) {
+  } else if (is.character(custom_colors) &&
+             length(custom_colors) >= 2) {
     
-    pal <- custom_colors
+    pal <- grDevices::colorRampPalette(
+      custom_colors
+    )(100)
     
   } else {
-    stop("custom_colors must be a palette name or a character vector of colors.")
+    stop(
+      paste(
+        "custom_colors must be either a valid viridis palette name",
+        "or a character vector containing at least two colors."
+      )
+    )
   }
   
-  # rasterVis colour theme
-  plt_theme <- rasterVis::rasterTheme(region = pal)
+  # rasterVis color theme
+  plt_theme <- rasterVis::rasterTheme(
+    region = pal
+  )
   
   # Margin settings
   margin_arg <- FALSE
@@ -107,19 +162,62 @@ im.levelplot <- function(input_image, # a SpatRaster object
   # Layout for multi-layer images
   layout_arg <- NULL
   
-  if (terra::nlyr(input_image) > 1 && !is.null(ncol)) {
-    nrow <- ceiling(terra::nlyr(input_image) / ncol)
-    layout_arg <- c(ncol, nrow)
+  if (terra::nlyr(input_image) > 1 &&
+      !is.null(ncol)) {
+    
+    nrow <- ceiling(
+      terra::nlyr(input_image) / ncol
+    )
+    
+    layout_arg <- c(
+      ncol,
+      nrow
+    )
   }
   
   # Legend settings
   colorkey_arg <- TRUE
   
   if (!is.null(legend_title)) {
+    
+    if (!is.character(legend_title) ||
+        length(legend_title) != 1 ||
+        is.na(legend_title)) {
+      stop("legend_title must be NULL or a single character value.")
+    }
+    
     colorkey_arg <- list(
       space = "right",
       title = legend_title
     )
+  }
+  
+  # Determine axis labels while handling missing CRS
+  raster_crs <- terra::crs(
+    input_image,
+    proj = TRUE
+  )
+  
+  if (is.na(raster_crs) ||
+      !nzchar(raster_crs)) {
+  
+    xlab_arg <- "X"
+    ylab_arg <- "Y"
+  
+  } else if (isTRUE(
+    terra::is.lonlat(
+      input_image,
+      warn = FALSE
+    )
+  )) {
+  
+    xlab_arg <- "Longitude"
+    ylab_arg <- "Latitude"
+  
+  } else {
+  
+    xlab_arg <- "Easting"
+    ylab_arg <- "Northing"
   }
   
   # Build plot
@@ -130,6 +228,8 @@ im.levelplot <- function(input_image, # a SpatRaster object
     layout = layout_arg,
     par.settings = plt_theme,
     main = main,
-    colorkey = colorkey_arg
+    colorkey = colorkey_arg,
+    xlab = xlab_arg,
+    ylab = ylab_arg
   )
 }
