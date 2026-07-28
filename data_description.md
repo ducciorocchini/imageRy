@@ -63,6 +63,9 @@ https://earthobservatory.nasa.gov/images/35891/deforestation-in-mato-grosso-braz
 ### sentinel.png
 This image is a preanalysed Sentinel-2 image of the Similaun Glaciers, Alps, Italy. It is useful for image visualisation and classification.
 
+## canale_aquila.JPG
+Drone RGB image gathered at Canale dell'Aquila, Val d'Aosta (Italiy) on July 2026. 
+
 # Additional images from drones in Zenodo
 
 + https://zenodo.org/me/uploads?q=&f=shared_with_me%3Afalse&l=list&p=1&s=10&sort=newest
