@@ -1,3 +1,99 @@
+#' Visualize Raster Layers Using Level Plots
+#'
+#' This function visualizes single- or multi-layer raster images using level plots.
+#' It supports customizable color palettes, contour overlays, optional marginal
+#' summaries for single-layer rasters, flexible multi-panel layouts, and
+#' automatic axis labeling based on the raster coordinate reference system.
+#'
+#' @param input_image A `SpatRaster` object representing the input raster image.
+#' @param layer A numeric index or character string specifying the layer to
+#' display. If `NULL`, all raster layers are displayed (default: NULL).
+#' @param margin An optional character value specifying the function used to
+#' summarize rows and columns for single-layer rasters. Accepted values are
+#' `"mean"` and `"median"` (default: NULL).
+#' @param custom_colors Either the name of a viridis palette (`"viridis"`,
+#' `"magma"`, `"plasma"`, `"inferno"`, `"cividis"`, `"mako"`, `"rocket"`,
+#' `"turbo"`) or a character vector of colors used to build a custom palette
+#' (default: `"viridis"`).
+#' @param direction An integer specifying the direction of the viridis palette.
+#' Accepted values are `1` (default) and `-1`.
+#' @param contour A logical value indicating whether contour lines should be
+#' overlaid on the raster (default: FALSE).
+#' @param ncol An optional positive integer specifying the number of columns
+#' used when displaying multiple raster layers (default: NULL).
+#' @param main An optional character string specifying the plot title
+#' (default: NULL).
+#' @param legend_title An optional character string specifying the legend title
+#' (default: NULL).
+#'
+#' @return
+#' A `trellis` object produced by `rasterVis::levelplot()`.
+#'
+#' @details
+#' The function creates level plots for raster data using
+#' `rasterVis::levelplot()`. A single raster layer or all layers of a
+#' multi-layer raster can be displayed.
+#'
+#' For single-layer rasters, optional marginal summaries can be added along the
+#' rows and columns using either the mean or the median of raster values.
+#'
+#' Additional options:
+#' \itemize{
+#'   \item If `margin = "mean"` or `margin = "median"`, marginal profiles are
+#'   displayed for single-layer rasters.
+#'   \item If `contour = TRUE`, contour lines are superimposed on the raster.
+#'   \item If `ncol` is specified, multiple raster layers are arranged using
+#'   the requested number of columns.
+#'   \item If `custom_colors` is a viridis palette name, a 100-color viridis
+#'   palette is automatically generated.
+#'   \item If `custom_colors` is a vector of colors, a continuous palette is
+#'   interpolated from the supplied colors.
+#' }
+#'
+#' Axis labels are automatically adapted to the raster coordinate reference
+#' system. Geographic rasters are labelled as longitude and latitude,
+#' projected rasters as easting and northing, whereas rasters without a
+#' coordinate reference system use generic X and Y coordinates.
+#'
+#' This function provides an intuitive visualization of raster data and is
+#' particularly useful as a first exploratory step before applying
+#' distribution-based analyses such as [im.ridgeline()] or
+#' [im.boxplot.layers()].
+#'
+#' @seealso [im.ridgeline()], [im.boxplot.layers()], [im.ggplot()]
+#'
+#' @examples
+#' \dontrun{
+#' library(terra)
+#'
+#' # Load a raster
+#' r <- rast(system.file("ex/elev.tif", package = "terra"))
+#'
+#' # Display a single layer
+#' im.levelplot(r)
+#'
+#' # Add median marginal profiles
+#' im.levelplot(
+#'   r,
+#'   margin = "median"
+#' )
+#'
+#' # Reverse a viridis palette and add contours
+#' im.levelplot(
+#'   r,
+#'   custom_colors = "mako",
+#'   direction = -1,
+#'   contour = TRUE
+#' )
+#'
+#' # Display all layers in two columns
+#' im.levelplot(
+#'   r,
+#'   ncol = 2
+#' )
+#' }
+#'
+#' @export
 im.levelplot <- function(
     input_image,                   # a SpatRaster object
     layer = NULL,                  # layer to display
