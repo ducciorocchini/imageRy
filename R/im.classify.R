@@ -1,42 +1,52 @@
 #' Classify a Raster Image Using K-Means Clustering
 #'
-#' This function performs unsupervised classification on a raster image using k-means clustering.
-#' It assigns each pixel to a cluster and optionally visualizes the classified image.
+#' This function performs unsupervised classification of a raster image using
+#' k-means clustering. Each raster cell is assigned to a cluster according to
+#' its values across the raster layers.
 #'
 #' @param input_image A `SpatRaster` object representing the input raster image.
-#' @param num_clusters An integer specifying the number of clusters (default: 3).
-#' @param seed An optional integer seed for reproducibility of k-means clustering results (default: NULL).
-#' @param do_plot A logical value indicating whether to display the classified raster (default: TRUE).
-#' @param custom_colors A vector of custom colors to be used for classification visualization (default: NULL).
-#' If NULL, a predefined set of colors is used.
-#' @param num_colors The number of colors to interpolate in the visualization palette (default: 100).
+#' @param num_clusters A positive integer greater than or equal to 2 specifying
+#' the number of clusters (default: 3).
+#' @param seed An optional integer used as the random seed for reproducible
+#' k-means classification (default: NULL).
+#' @param do_plot A logical value indicating whether the classified raster
+#' should be displayed using the default `terra::plot()` method
+#' (default: TRUE).
 #'
-#' @return A `SpatRaster` object with cluster assignments, where each pixel belongs to a classified cluster.
+#' @return A single-layer `SpatRaster` containing the cluster assignment of
+#' each raster cell.
 #'
 #' @details
-#' The function applies k-means clustering on the pixel values of the raster image. Each pixel is treated
-#' as a multi-dimensional point, where each band represents a feature. The classified raster assigns
-#' each pixel to a cluster, which can be visualized using a color palette.
+#' The function extracts raster values and treats each complete raster cell as
+#' a multidimensional observation, with raster layers representing variables.
+#' K-means clustering is then applied to the complete observations.
 #'
-#' - If `custom_colors` is provided, it is used as the classification color palette.
-#' - If `seed` is provided, it ensures reproducibility of k-means clustering.
-#' - If `do_plot = TRUE`, the classified raster is displayed with the chosen color scheme.
+#' Cells containing missing values in one or more raster layers are excluded
+#' from the clustering and assigned `NA` in the resulting classified raster.
 #'
-#' @references
-#' K-means clustering is a widely used unsupervised classification algorithm. For more information, see:
-#' \url{https://en.wikipedia.org/wiki/K-means_clustering}
+#' If `do_plot = TRUE`, the output is displayed using `terra::plot()`.
+#' Consequently, the plot produced directly by `im.classify()` is identical
+#' to the plot obtained by subsequently applying `plot()` to the returned
+#' raster.
 #'
-#' @seealso [im.import()], [im.ridgeline()]
+#' @seealso [im.boxplot.classes()], [im.barplot()]
 #'
 #' @examples
 #' \dontrun{
 #' library(terra)
-#' 
-#' # Load a raster dataset
-#' r <- rast(system.file("ex/elev.tif", package = "terra"))
-#' 
-#' # Perform k-means classification with 4 clusters
-#' classified_raster <- im.classify(r, num_clusters = 4, seed = 123, do_plot = TRUE)
+#'
+#' # Load a raster image
+#' r <- rast(system.file("ex/logo.tif", package = "terra"))
+#'
+#' # Perform k-means classification
+#' classes <- im.classify(
+#'   r,
+#'   num_clusters = 4,
+#'   seed = 42
+#' )
+#'
+#' # This produces the same visualization
+#' plot(classes)
 #' }
 #'
 #' @export
@@ -44,98 +54,112 @@ im.classify <- function(
     input_image,
     num_clusters = 3,
     seed = NULL,
-    do_plot = TRUE,
-    custom_colors = NULL,
-    num_colors = 100
+    do_plot = TRUE
 ) {
-  
-  # Check input
+
+  # Check input image
   if (!inherits(input_image, "SpatRaster")) {
     stop("input_image should be a SpatRaster object.")
   }
-  
-  if (length(num_clusters) != 1L ||
-      !is.numeric(num_clusters) ||
+
+  # Check number of clusters
+  if (!is.numeric(num_clusters) ||
+      length(num_clusters) != 1 ||
+      is.na(num_clusters) ||
       num_clusters < 2 ||
       num_clusters %% 1 != 0) {
     stop("num_clusters must be an integer greater than or equal to 2.")
   }
-  
-  # Default colorblind-friendly palette
-  base_colors <- c(
-    "#0072B2", # blue
-    "#E69F00", # orange
-    "#009E73", # bluish green
-    "#CC79A7", # reddish purple
-    "#000000",  # black
-    "#D55E00" # vermillion
-  )
-  
-  # Select colors
-  colors <- if (is.null(custom_colors)) {
-    base_colors
-  } else {
-    custom_colors
+
+  num_clusters <- as.integer(num_clusters)
+
+  # Check seed
+  if (!is.null(seed)) {
+
+    if (!is.numeric(seed) ||
+        length(seed) != 1 ||
+        is.na(seed) ||
+        seed %% 1 != 0) {
+      stop("seed must be NULL or a single integer.")
+    }
+
+    seed <- as.integer(seed)
   }
-  
-  if (length(colors) < num_clusters) {
-    warning(
+
+  # Check plotting argument
+  if (!is.logical(do_plot) ||
+      length(do_plot) != 1 ||
+      is.na(do_plot)) {
+    stop("do_plot must be either TRUE or FALSE.")
+  }
+
+  # Extract raster values
+  image_values <- terra::values(
+    input_image,
+    mat = TRUE
+  )
+
+  # Retain cells containing values in every raster layer
+  complete_pixels <- stats::complete.cases(
+    image_values
+  )
+
+  if (!any(complete_pixels)) {
+    stop(
+      "The input raster contains no complete pixel observations."
+    )
+  }
+
+  image_values_complete <- image_values[
+    complete_pixels,
+    ,
+    drop = FALSE
+  ]
+
+  # Check that enough complete cells are available
+  if (nrow(image_values_complete) < num_clusters) {
+    stop(
       paste(
-        "The number of clusters exceeds the number of available colors.",
-        "Additional colors have been generated by interpolation."
+        "The number of complete raster cells must be",
+        "greater than or equal to num_clusters."
       )
     )
-    
-    colors <- grDevices::colorRampPalette(colors)(num_clusters)
-  } else {
-    colors <- colors[seq_len(num_clusters)]
   }
-  
-  # Extract complete raster observations
-  image_values <- terra::values(input_image, mat = TRUE)
-  
-  complete_pixels <- stats::complete.cases(image_values)
-  
-  if (!any(complete_pixels)) {
-    stop("The input raster contains no complete pixel observations.")
-  }
-  
-  image_values_complete <- image_values[complete_pixels, , drop = FALSE]
-  
-  # Set seed
+
+  # Set the random seed
   if (!is.null(seed)) {
     set.seed(seed)
   }
-  
-  # K-means classification
+
+  # Perform k-means classification
   kmeans_result <- stats::kmeans(
-    image_values_complete,
+    x = image_values_complete,
     centers = num_clusters
   )
-  
-  # Create output raster
+
+  # Create a single-layer output raster
   classified_image <- input_image[[1]]
-  
+
+  # Initialize all cells as missing
   classified_values <- rep(
     NA_integer_,
     terra::ncell(classified_image)
   )
-  
-  classified_values[complete_pixels] <- kmeans_result$cluster
-  
-  terra::values(classified_image) <- classified_values
-  
+
+  # Assign cluster values to complete cells
+  classified_values[complete_pixels] <-
+    kmeans_result$cluster
+
+  # Store classifications in the output raster
+  terra::values(classified_image) <-
+    classified_values
+
   names(classified_image) <- "class"
-  
-  # Plot using one color per class
+
+  # Display the output using the standard terra method
   if (isTRUE(do_plot)) {
-    terra::plot(
-      classified_image,
-      col = colors,
-      axes = FALSE,
-      type = "classes"
-    )
+    terra::plot(classified_image)
   }
-  
+
   return(classified_image)
 }
