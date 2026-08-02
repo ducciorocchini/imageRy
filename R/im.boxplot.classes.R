@@ -309,7 +309,7 @@ im.boxplot.classes <- function(
     p <- p +
       ggdist::stat_halfeye(
         mapping = ggplot2::aes(fill = Class),
-        adjust = 0.5,
+        adjust = 2,
         width = 0.5,
         .width = 0,
         justification = -0.4,
