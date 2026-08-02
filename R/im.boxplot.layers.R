@@ -305,7 +305,7 @@ im.boxplot.layers <- function(input_image,
     p <- p +
       ggdist::stat_halfeye(
         ggplot2::aes(fill = Layer),
-        adjust = 0.5,
+        adjust = 2,
         width = 0.5,
         .width = 0,
         justification = -0.4,
