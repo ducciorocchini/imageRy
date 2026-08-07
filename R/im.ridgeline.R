@@ -15,7 +15,7 @@
 #'   (default: 1).
 #' @param color_by A character string specifying how colors are assigned.
 #'   Available options are `"value"`, `"quartile"`, and `"quartile_smooth"`.
-#'   `"value"` uses the original continuous gradient based on raster values;
+#'   `"value"` uses a continuous gradient based on raster values;
 #'   `"quartile"` assigns four discrete colors to Q1-Q4;
 #'   `"quartile_smooth"` produces a continuous gradient scaled according to
 #'   the quartile position of values within each raster layer.
@@ -30,10 +30,9 @@
 #' When `color_by = "quartile"`, values are divided into four intervals
 #' delimited by the first quartile, median, and third quartile.
 #'
-#' When `color_by = "quartile_smooth"`, colors vary continuously across the
+#' When `color_by = "quartile_smooth"`, colors vary continuously across each
 #' distribution while the color scale is normalized so that each quartile
-#' occupies one quarter of the palette. This preserves a smooth visual
-#' transition while retaining information about quartile position.
+#' occupies one quarter of the palette.
 #'
 #' @export
 im.ridgeline <- function(
@@ -74,7 +73,7 @@ im.ridgeline <- function(
     stop("direction must be either 1 or -1.")
   }
 
-  # Check relative minimum height
+  # Check rel_min_height
   if (!is.numeric(rel_min_height) ||
       length(rel_min_height) != 1 ||
       !is.finite(rel_min_height) ||
@@ -136,17 +135,17 @@ im.ridgeline <- function(
     )
   }
 
-  # Preserve original raster-layer order
-  df$layer <- factor(
-    df$layer,
-    levels = names(im)
-  )
-
   # ----------------------------------------------------------
   # 1. CONTINUOUS VALUE GRADIENT
   # ----------------------------------------------------------
 
   if (color_by == "value") {
+
+    # Reverse factor levels so that first raster layer appears on top
+    df$layer <- factor(
+      df$layer,
+      levels = rev(names(im))
+    )
 
     pl <- ggplot2::ggplot(
       df,
@@ -178,7 +177,7 @@ im.ridgeline <- function(
   # ----------------------------------------------------------
 
   density_list <- lapply(
-    levels(df$layer),
+    names(im),
     function(layer_name) {
 
       vals <- df$values[
@@ -227,11 +226,6 @@ im.ridgeline <- function(
 
       # ------------------------------------------------------
       # Smooth quartile position
-      #
-      # 0.00 ---- Q1 ---- 0.25
-      # 0.25 ---- Q2 ---- 0.50
-      # 0.50 ---- Q3 ---- 0.75
-      # 0.75 ---- Q4 ---- 1.00
       # ------------------------------------------------------
 
       xmin <- min(dens$x)
@@ -239,7 +233,7 @@ im.ridgeline <- function(
 
       qpos <- numeric(length(dens$x))
 
-      # First quartile
+      # Q1
       id1 <- dens$x <= q[1]
 
       if (q[1] > xmin) {
@@ -255,7 +249,7 @@ im.ridgeline <- function(
         qpos[id1] <- 0.25
       }
 
-      # Second quartile
+      # Q2
       id2 <- dens$x > q[1] &
         dens$x <= q[2]
 
@@ -273,7 +267,7 @@ im.ridgeline <- function(
         qpos[id2] <- 0.50
       }
 
-      # Third quartile
+      # Q3
       id3 <- dens$x > q[2] &
         dens$x <= q[3]
 
@@ -291,7 +285,7 @@ im.ridgeline <- function(
         qpos[id3] <- 0.75
       }
 
-      # Fourth quartile
+      # Q4
       id4 <- dens$x > q[3]
 
       if (xmax > q[3]) {
@@ -337,9 +331,10 @@ im.ridgeline <- function(
     density_list
   )
 
+  # First raster layer on top
   density_df$layer <- factor(
     density_df$layer,
-    levels = names(im)
+    levels = rev(names(im))
   )
 
   density_df$quartile <- factor(
