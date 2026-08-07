@@ -1,116 +1,446 @@
 #' Generate Ridgeline Plots from Raster Data
 #'
 #' This function generates ridgeline plots from multi-layer raster data.
-#' Optional boxplots can be overlaid on each ridgeline to show median,
-#' quartiles, whiskers, and outliers.
+#' Colors can represent continuous raster values, discrete quartiles, or a
+#' smooth quartile-based gradient.
 #'
 #' @param im A `SpatRaster` object representing the raster data to be visualized.
-#' @param scale A numeric value defining the vertical scale of the ridgelines.
+#' @param scale A numeric value defining the vertical scale of the ridgelines
+#'   (default: 2).
 #' @param palette A character string specifying the `viridis` color palette.
-#' Available options are `"viridis"`, `"magma"`, `"plasma"`, `"inferno"`,
-#' `"cividis"`, `"mako"`, `"rocket"`, and `"turbo"`.
-#' @param direction A numeric value controlling the direction of the color scale.
-#' Use `1` for the default direction and `-1` to reverse the palette.
-#' @param boxplot Logical. If `TRUE`, a boxplot is overlaid on each ridgeline.
-#' @param boxplot_width Numeric value controlling the width of the overlaid boxplots.
-#' @param boxplot_alpha Numeric value between 0 and 1 controlling boxplot
-#' transparency. Use `0` for fully transparent boxes and `1` for opaque boxes.
-#' @param rel_min_height Numeric value passed to
-#' `ggridges::geom_density_ridges_gradient()`.
+#'   Available options are `"viridis"`, `"magma"`, `"plasma"`, `"inferno"`,
+#'   `"cividis"`, `"mako"`, `"rocket"`, and `"turbo"`.
+#' @param direction A numeric value controlling the direction of the color
+#'   palette. Use `1` for the default direction and `-1` to reverse it
+#'   (default: 1).
+#' @param color_by A character string specifying how colors are assigned.
+#'   Available options are `"value"`, `"quartile"`, and `"quartile_smooth"`.
+#'   `"value"` uses the original continuous gradient based on raster values;
+#'   `"quartile"` assigns four discrete colors to Q1-Q4;
+#'   `"quartile_smooth"` produces a continuous gradient scaled according to
+#'   the quartile position of values within each raster layer.
+#' @param rel_min_height A numeric value controlling the minimum relative
+#'   density height displayed (default: 0.01).
 #'
 #' @return A `ggplot` object displaying the ridgeline plot.
+#'
+#' @details
+#' Quartiles are calculated independently for each raster layer.
+#'
+#' When `color_by = "quartile"`, values are divided into four intervals
+#' delimited by the first quartile, median, and third quartile.
+#'
+#' When `color_by = "quartile_smooth"`, colors vary continuously across the
+#' distribution while the color scale is normalized so that each quartile
+#' occupies one quarter of the palette. This preserves a smooth visual
+#' transition while retaining information about quartile position.
 #'
 #' @export
 im.ridgeline <- function(
     im,
     scale = 2,
-    palette = c(
-      "viridis", "magma", "plasma", "inferno",
-      "cividis", "mako", "rocket", "turbo"
-    ),
+    palette = "viridis",
     direction = 1,
-    boxplot = FALSE,
-    boxplot_width = 0.12,
-    boxplot_alpha = 0,
+    color_by = c(
+      "value",
+      "quartile",
+      "quartile_smooth"
+    ),
     rel_min_height = 0.01
 ) {
 
-  palette <- palette[1]
+  # Check raster input
+  if (!inherits(im, "SpatRaster")) {
+    stop("im must be a SpatRaster object.")
+  }
 
-  if (!inherits(im, "SpatRaster"))
-    stop("im must be a SpatRaster")
+  if (terra::nlyr(im) < 1) {
+    stop("im must contain at least one raster layer.")
+  }
 
-  if (!is.numeric(scale))
-    stop("scale must be numeric")
+  # Check scale
+  if (!is.numeric(scale) ||
+      length(scale) != 1 ||
+      !is.finite(scale) ||
+      scale <= 0) {
+    stop("scale must be a positive numeric value.")
+  }
 
-  if (!is.numeric(direction))
-    stop("direction must be numeric")
+  # Check direction
+  if (!is.numeric(direction) ||
+      length(direction) != 1 ||
+      is.na(direction) ||
+      !direction %in% c(1, -1)) {
+    stop("direction must be either 1 or -1.")
+  }
 
-  if (!is.logical(boxplot))
-    stop("boxplot must be TRUE or FALSE")
-
-  if (!is.numeric(boxplot_width))
-    stop("boxplot_width must be numeric")
-
-  if (!is.numeric(boxplot_alpha))
-    stop("boxplot_alpha must be numeric")
-
-  if (boxplot_alpha < 0 || boxplot_alpha > 1)
-    stop("boxplot_alpha must be between 0 and 1")
-
-  if (!is.numeric(rel_min_height))
-    stop("rel_min_height must be numeric")
-
-  allowed_palettes <- c(
-    "viridis", "magma", "plasma", "inferno",
-    "cividis", "mako", "rocket", "turbo"
-  )
-
-  if (!palette %in% allowed_palettes) {
+  # Check relative minimum height
+  if (!is.numeric(rel_min_height) ||
+      length(rel_min_height) != 1 ||
+      !is.finite(rel_min_height) ||
+      rel_min_height < 0) {
     stop(
-      "palette must be one of: ",
-      paste(allowed_palettes, collapse = ", ")
+      "rel_min_height must be a non-negative numeric value."
     )
   }
 
-  df <- terra::as.data.frame(im, wide = FALSE)
-  df <- df[is.finite(df$values), ]
+  # Check color mode
+  color_by <- match.arg(color_by)
 
-  pl <- ggplot2::ggplot(
-    df,
-    ggplot2::aes(
-      x = values,
-      y = layer,
-      fill = ggplot2::after_stat(x)
+  # Available viridis palettes
+  allowed_palettes <- c(
+    "viridis",
+    "magma",
+    "plasma",
+    "inferno",
+    "cividis",
+    "mako",
+    "rocket",
+    "turbo"
+  )
+
+  # Check palette
+  if (!is.character(palette) ||
+      length(palette) != 1 ||
+      is.na(palette) ||
+      !palette %in% allowed_palettes) {
+
+    stop(
+      paste0(
+        "palette must be one of: ",
+        paste(
+          allowed_palettes,
+          collapse = ", "
+        ),
+        "."
+      )
     )
-  ) +
-    ggridges::geom_density_ridges_gradient(
-      scale = scale,
-      rel_min_height = rel_min_height
+  }
+
+  # Convert raster to long-format data frame
+  df <- terra::as.data.frame(
+    im,
+    wide = FALSE
+  )
+
+  # Remove missing / non-finite values
+  df <- df[
+    is.finite(df$values),
+    ,
+    drop = FALSE
+  ]
+
+  if (nrow(df) == 0) {
+    stop(
+      "No finite raster values are available for plotting."
+    )
+  }
+
+  # Preserve original raster-layer order
+  df$layer <- factor(
+    df$layer,
+    levels = names(im)
+  )
+
+  # ----------------------------------------------------------
+  # 1. CONTINUOUS VALUE GRADIENT
+  # ----------------------------------------------------------
+
+  if (color_by == "value") {
+
+    pl <- ggplot2::ggplot(
+      df,
+      ggplot2::aes(
+        x = values,
+        y = layer,
+        fill = ggplot2::after_stat(x)
+      )
     ) +
-    ggplot2::scale_fill_viridis_c(
+      ggridges::geom_density_ridges_gradient(
+        scale = scale,
+        rel_min_height = rel_min_height
+      ) +
+      ggplot2::scale_fill_viridis_c(
+        option = palette,
+        direction = direction,
+        name = "Value"
+      ) +
+      ggplot2::labs(
+        x = "Value",
+        y = "Layer"
+      )
+
+    return(pl)
+  }
+
+  # ----------------------------------------------------------
+  # Build density estimates and layer-specific quartiles
+  # ----------------------------------------------------------
+
+  density_list <- lapply(
+    levels(df$layer),
+    function(layer_name) {
+
+      vals <- df$values[
+        df$layer == layer_name
+      ]
+
+      # Skip layers with too few values
+      if (length(vals) < 2) {
+        return(NULL)
+      }
+
+      dens <- stats::density(vals)
+
+      q <- stats::quantile(
+        vals,
+        probs = c(
+          0.25,
+          0.50,
+          0.75
+        ),
+        na.rm = TRUE,
+        names = FALSE
+      )
+
+      # ------------------------------------------------------
+      # Discrete quartile class
+      # ------------------------------------------------------
+
+      quartile_class <- cut(
+        dens$x,
+        breaks = c(
+          -Inf,
+          q[1],
+          q[2],
+          q[3],
+          Inf
+        ),
+        labels = c(
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ),
+        include.lowest = TRUE
+      )
+
+      # ------------------------------------------------------
+      # Smooth quartile position
+      #
+      # 0.00 ---- Q1 ---- 0.25
+      # 0.25 ---- Q2 ---- 0.50
+      # 0.50 ---- Q3 ---- 0.75
+      # 0.75 ---- Q4 ---- 1.00
+      # ------------------------------------------------------
+
+      xmin <- min(dens$x)
+      xmax <- max(dens$x)
+
+      qpos <- numeric(length(dens$x))
+
+      # First quartile
+      id1 <- dens$x <= q[1]
+
+      if (q[1] > xmin) {
+        qpos[id1] <-
+          0.25 *
+          (
+            dens$x[id1] - xmin
+          ) /
+          (
+            q[1] - xmin
+          )
+      } else {
+        qpos[id1] <- 0.25
+      }
+
+      # Second quartile
+      id2 <- dens$x > q[1] &
+        dens$x <= q[2]
+
+      if (q[2] > q[1]) {
+        qpos[id2] <-
+          0.25 +
+          0.25 *
+          (
+            dens$x[id2] - q[1]
+          ) /
+          (
+            q[2] - q[1]
+          )
+      } else {
+        qpos[id2] <- 0.50
+      }
+
+      # Third quartile
+      id3 <- dens$x > q[2] &
+        dens$x <= q[3]
+
+      if (q[3] > q[2]) {
+        qpos[id3] <-
+          0.50 +
+          0.25 *
+          (
+            dens$x[id3] - q[2]
+          ) /
+          (
+            q[3] - q[2]
+          )
+      } else {
+        qpos[id3] <- 0.75
+      }
+
+      # Fourth quartile
+      id4 <- dens$x > q[3]
+
+      if (xmax > q[3]) {
+        qpos[id4] <-
+          0.75 +
+          0.25 *
+          (
+            dens$x[id4] - q[3]
+          ) /
+          (
+            xmax - q[3]
+          )
+      } else {
+        qpos[id4] <- 1
+      }
+
+      data.frame(
+        x = dens$x,
+        density = dens$y,
+        layer = layer_name,
+        quartile = quartile_class,
+        qpos = qpos
+      )
+    }
+  )
+
+  density_list <- density_list[
+    !vapply(
+      density_list,
+      is.null,
+      logical(1)
+    )
+  ]
+
+  if (length(density_list) == 0) {
+    stop(
+      "Density estimates could not be calculated."
+    )
+  }
+
+  density_df <- do.call(
+    rbind,
+    density_list
+  )
+
+  density_df$layer <- factor(
+    density_df$layer,
+    levels = names(im)
+  )
+
+  density_df$quartile <- factor(
+    density_df$quartile,
+    levels = c(
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4"
+    )
+  )
+
+  # ----------------------------------------------------------
+  # 2. DISCRETE QUARTILE COLORS
+  # ----------------------------------------------------------
+
+  if (color_by == "quartile") {
+
+    quartile_colors <- viridisLite::viridis(
+      4,
       option = palette,
       direction = direction
     )
 
-  if (boxplot) {
-
-    pl <- pl +
-      ggplot2::geom_boxplot(
-        data = df,
-        ggplot2::aes(
-          x = values,
-          y = layer,
-          group = layer
+    pl <- ggplot2::ggplot(
+      density_df,
+      ggplot2::aes(
+        x = x,
+        y = layer,
+        height = density,
+        group = interaction(
+          layer,
+          quartile
         ),
-        inherit.aes = FALSE,
-        width = boxplot_width,
-        fill = scales::alpha("white", boxplot_alpha),
-        colour = "black",
-        linewidth = 0.4,
-        outlier.size = 0.3
+        fill = quartile
       )
+    ) +
+      ggridges::geom_ridgeline(
+        stat = "identity",
+        scale = scale,
+        min_height = 0,
+        colour = "white",
+        linewidth = 0.15
+      ) +
+      ggplot2::scale_fill_manual(
+        values = quartile_colors,
+        name = "Quartile"
+      ) +
+      ggplot2::labs(
+        x = "Value",
+        y = "Layer"
+      )
+
+    return(pl)
   }
 
-  return(pl)
+  # ----------------------------------------------------------
+  # 3. SMOOTH QUARTILE GRADIENT
+  # ----------------------------------------------------------
+
+  if (color_by == "quartile_smooth") {
+
+    pl <- ggplot2::ggplot(
+      density_df,
+      ggplot2::aes(
+        x = x,
+        y = layer,
+        height = density,
+        group = layer,
+        fill = qpos
+      )
+    ) +
+      ggridges::geom_ridgeline_gradient(
+        stat = "identity",
+        scale = scale,
+        min_height = 0,
+        colour = NA
+      ) +
+      ggplot2::scale_fill_viridis_c(
+        option = palette,
+        direction = direction,
+        limits = c(0, 1),
+        breaks = c(
+          0.125,
+          0.375,
+          0.625,
+          0.875
+        ),
+        labels = c(
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ),
+        name = "Quartile"
+      ) +
+      ggplot2::labs(
+        x = "Value",
+        y = "Layer"
+      )
+
+    return(pl)
+  }
 }
