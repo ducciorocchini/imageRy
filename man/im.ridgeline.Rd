@@ -2,54 +2,137 @@
 % Please edit documentation in R/im.ridgeline.R
 \name{im.ridgeline}
 \alias{im.ridgeline}
-\title{Generate Ridgeline Plots from Satellite Raster Data}
+
+\title{Generate Ridgeline Plots from Raster Data}
+
 \usage{
 im.ridgeline(
   im,
-  scale,
-  palette = c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket",
-    "turbo"),
-  direction = 1
+  scale = 2,
+  palette = "viridis",
+  direction = 1,
+  color_by = c("value", "quartile", "quartile_smooth"),
+  rel_min_height = 0.01
 )
 }
+
 \arguments{
-\item{im}{A `SpatRaster` object representing the raster data to be visualized.}
 
-\item{scale}{A numeric value that defines the vertical scale of the ridgeline plot.}
-
-\item{palette}{A character string specifying the `viridis` color palette option to use.
-Available options: `"viridis"`, `"magma"`, `"plasma"`, `"inferno"`, `"cividis"`, `"mako"`, `"rocket"`, `"turbo"`.}
-
-\item{direction}{A numeric value controlling the direction of the color scale.
-Typically `1` for the default direction and `-1` to reverse the palette.}
+\item{im}{
+A \code{SpatRaster} object representing the raster data to be visualized.
 }
+
+\item{scale}{
+A numeric value defining the vertical scale of the ridgelines
+(default: \code{2}).
+}
+
+\item{palette}{
+A character string specifying the \code{viridis} color palette.
+Available options are \code{"viridis"}, \code{"magma"},
+\code{"plasma"}, \code{"inferno"}, \code{"cividis"},
+\code{"mako"}, \code{"rocket"}, and \code{"turbo"}.
+}
+
+\item{direction}{
+A numeric value controlling the direction of the color palette.
+Use \code{1} for the default direction and \code{-1} to reverse it
+(default: \code{1}).
+}
+
+\item{color_by}{
+A character string specifying how colors are assigned.
+Available options are \code{"value"}, \code{"quartile"}, and
+\code{"quartile_smooth"}.
+
+\code{"value"} uses a continuous color gradient based on raster values.
+
+\code{"quartile"} assigns four discrete colors corresponding to the
+four quartiles of each raster-layer distribution.
+
+\code{"quartile_smooth"} produces a continuous color gradient normalized
+according to the quartile position of values within each raster layer.
+}
+
+\item{rel_min_height}{
+A numeric value controlling the minimum relative density height displayed
+(default: \code{0.01}).
+}
+}
+
 \value{
-A `ggplot` object displaying the ridgeline plot.
+A \code{ggplot} object displaying the ridgeline plot.
 }
+
 \description{
-This function generates ridgeline plots from stacked satellite imagery data.
+Generates ridgeline plots from multi-layer raster data. Colors can represent
+continuous raster values, discrete quartiles, or a smooth quartile-based
+gradient.
 }
+
 \details{
-Ridgeline plots are useful for analyzing temporal variations in raster-based satellite imagery.
-This function extracts raster values and visualizes their distribution across layers.
-The `direction` parameter allows reversing the color gradient of the selected palette.
+Raster values are extracted from all layers of the input
+\code{SpatRaster} and represented as kernel density ridgelines.
+
+The first raster layer is displayed at the top of the plot and subsequent
+layers are arranged below it, preserving the order of the raster layers.
+
+When \code{color_by = "value"}, colors vary continuously according to
+the raster values represented along the horizontal axis.
+
+When \code{color_by = "quartile"}, quartiles are calculated independently
+for each raster layer. Values are divided into four intervals delimited by
+the first quartile, median, and third quartile, and the four intervals are
+represented using discrete colors.
+
+When \code{color_by = "quartile_smooth"}, quartiles are also calculated
+independently for each raster layer, but the color scale varies continuously.
+The scale is normalized so that each quartile occupies one quarter of the
+palette, providing smooth color transitions while retaining information about
+the quartile position of raster values.
+
+The horizontal axis is labelled \code{Value}, whereas the vertical axis is
+labelled \code{Layer}.
 }
+
 \examples{
 \dontrun{
-library(terra)
-library(ggridges)
-library(ggplot2)
 
-# Import raster data
+library(terra)
+
+# Import a multi-layer raster
 r <- im.import("greenland")
 
-# Generate ridgeline plot
-im.ridgeline(r, 2, "viridis", direction = 1) + theme_bw()
+# Standard ridgeline plot using a continuous value gradient
+im.ridgeline(
+  r,
+  scale = 2,
+  palette = "viridis",
+  color_by = "value"
+)
+
+# Ridgelines with discrete quartile colors
+im.ridgeline(
+  r,
+  scale = 2,
+  palette = "mako",
+  color_by = "quartile"
+)
+
+# Ridgelines with smooth quartile-based color transitions
+im.ridgeline(
+  r,
+  scale = 2,
+  palette = "mako",
+  direction = -1,
+  color_by = "quartile_smooth"
+)
+
 }
 }
-\references{
-See also `im.import()`, `im.ggplot()`.
-}
+
 \seealso{
-[GitHub Repository](https://github.com/ducciorocchini/imageRy/)
+\code{\link{im.levelplot}},
+\code{\link{im.boxplot.layers}},
+\code{\link{im.boxplot.classes}}
 }
