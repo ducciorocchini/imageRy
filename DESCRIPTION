@@ -8,7 +8,7 @@ Description: Manipulate and share raster images in R.
 Encoding: UTF-8
 Language: en-GB
 License: GPL(>=2)
-Depends: R (>= 4.0.0)
+Depends: R (>= 4.1.0)
 Imports: devtools,dichromat,fields,ggplot2,ggridges,stats,terra,viridis
 Suggests: knitr,markdown,patchwork
 Config/testthat/edition: 3
