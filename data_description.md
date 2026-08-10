@@ -103,3 +103,7 @@ https://dx.doi.org/10.5281/zenodo.21327202
 + Masaré, Passo Costalinga, July 2026
 https://dx.doi.org/10.5281/zenodo.21428987
 
++ Poggio al Montone, August 2026
+https://dx.doi.org/10.5281/zenodo.21870840
+
+
