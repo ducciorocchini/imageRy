@@ -1,12 +1,12 @@
 #' Fuzzy clustering of a raster image (k-means + fuzzy memberships)
 #'
-#' Performs fuzzy classification of a \code{SpatRaster} image by first estimating
+#' Performs fuzzy clustering of a \code{SpatRaster} image by first estimating
 #' cluster centers with k-means and then computing fuzzy membership maps from
 #' pixel-to-center distances using a fuzzifier parameter \code{m}.
 #'
 #' @param input_image A \code{SpatRaster} object containing one or more bands to be used as features.
 #'   Pixels with \code{NA} in any band are excluded from the analysis.
-#' @param num_clusters Integer. Number of clusters (classes) to compute. Default: \code{3}.
+#' @param num_clusters Integer. Number of clusters to compute. Default: \code{3}.
 #' @param seed Integer or \code{NULL}. Optional random seed for reproducible k-means results. Default: \code{NULL}.
 #' @param m Numeric. Fuzzifier parameter (\eqn{m > 1}) controlling the degree of fuzziness in membership assignment;
 #'   a common choice is \eqn{m = 2}. Default: \code{2}.
@@ -18,7 +18,7 @@
 #' @return A named \code{list} with components:
 #' \describe{
 #'   \item{distances}{A \code{SpatRaster} with \code{num_clusters} layers giving the Euclidean distance of each valid pixel to each cluster center.}
-#'   \item{memberships}{A \code{SpatRaster} with \code{num_clusters} layers giving fuzzy membership values in \eqn{[0,1]} for each cluster (memberships per valid pixel sum to 1 across classes).}
+#'   \item{memberships}{A \code{SpatRaster} with \code{num_clusters} layers giving fuzzy membership values in \eqn{[0,1]} for each cluster (memberships per valid pixel sum to 1 across clusters).}
 #'   \item{centers}{A numeric matrix of k-means cluster centers with \code{num_clusters} rows and one column per input band (bands scaled to 0--255 prior to clustering).}
 #' }
 #'
@@ -30,8 +30,13 @@
 #' For each valid pixel, Euclidean distances to all centers are computed and fuzzy memberships are derived from distances as:
 #' \deqn{u_k(x) = \left[\sum_{j=1}^{K} \left(\frac{d_k(x)}{d_j(x)}\right)^{\frac{2}{m-1}}\right]^{-1},}
 #' where \eqn{d_k(x)} is the distance from pixel \eqn{x} to center \eqn{k}, \eqn{K} is the number of clusters,
-#' and \eqn{m} is the fuzzifier. If a pixel matches one or more centers exactly (distance 0),
-#' membership is equally shared among the zero-distance centers.
+#' and \eqn{m} is the fuzzifier.
+#' If a pixel coincides exactly with a single cluster center (distance 0),
+#' membership is set to 1 for that cluster and to 0 for all others.
+#' If multiple centers coincide exactly with the pixel, membership is
+#' equally distributed among the zero-distance centers. This latter case
+#' represents a degenerate clustering configuration in which the coincident
+#' centers are indistinguishable in Euclidean feature space.
 #'
 #' If \code{do_plot = TRUE}, membership rasters are displayed using the selected palette.
 #'
