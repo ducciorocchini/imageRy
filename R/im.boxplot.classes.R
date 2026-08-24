@@ -72,201 +72,126 @@
 #' @export
 im.boxplot.classes <- function(
     input_image,
-    classified_image,
-    layer = 1,
-    density = TRUE,
-    median_labels = FALSE,
-    median_position = -0.3,
-    legend = FALSE,
-    limits = NULL,
-    custom_colors = NULL,
-    flip = FALSE,
-    violin = FALSE,
-    stat_test = FALSE
+    classified_image, 
+    layer = 1, # specify the layer to be displayed
+    density = TRUE, # TRUE for adding a half-eye density plot
+    median_labels = FALSE, # TRUE for adding median labels
+    median_position = -0.3, # position of median labels along the class axis
+    legend = FALSE, # TRUE for adding a legend
+    limits = NULL, # restrict the visible y-axis range to selected quantiles
+    custom_colors = NULL, # specify a color palette
+    flip = FALSE, # flip plot coordinates
+    violin = FALSE # TRUE for using a violin plot instead of a boxplot
 ) {
-
+  
   # Check input image
   if (!inherits(input_image, "SpatRaster")) {
     stop("input_image should be a SpatRaster object.")
   }
-
+  
   # Check classified image
   if (!inherits(classified_image, "SpatRaster")) {
     stop("classified_image should be a SpatRaster object.")
   }
-
+  
   if (terra::nlyr(classified_image) != 1) {
     stop("classified_image should have a single layer.")
   }
-
-  # Check spatial compatibility
-  if (!terra::compareGeom(
-    input_image,
-    classified_image,
-    stopOnError = FALSE
-  )) {
-    stop(
-      paste(
-        "input_image and classified_image must have matching",
-        "extent, resolution, origin and coordinate reference system."
-      )
-    )
-  }
-
-  # Check logical arguments
+  
+  # Check density
   if (!is.logical(density) ||
       length(density) != 1 ||
       is.na(density)) {
     stop("density must be either TRUE or FALSE.")
   }
-
+  
+  # Check median_labels
   if (!is.logical(median_labels) ||
       length(median_labels) != 1 ||
       is.na(median_labels)) {
     stop("median_labels must be either TRUE or FALSE.")
   }
-
+  
+  # Check median_position
+  if (!is.numeric(median_position) ||
+      length(median_position) != 1 ||
+      is.na(median_position)) {
+    stop("median_position must be a single numeric value.")
+  }
+  
+  # Check legend
   if (!is.logical(legend) ||
       length(legend) != 1 ||
       is.na(legend)) {
     stop("legend must be either TRUE or FALSE.")
   }
-
+  
+  # Check flip
   if (!is.logical(flip) ||
       length(flip) != 1 ||
       is.na(flip)) {
     stop("flip must be either TRUE or FALSE.")
   }
-
+  
+  # Check violin
   if (!is.logical(violin) ||
       length(violin) != 1 ||
       is.na(violin)) {
     stop("violin must be either TRUE or FALSE.")
   }
-
-  if (!is.logical(stat_test) ||
-      length(stat_test) != 1 ||
-      is.na(stat_test)) {
-    stop("stat_test must be either TRUE or FALSE.")
-  }
-
-  # Check median-label position
-  if (!is.numeric(median_position) ||
-      length(median_position) != 1 ||
-      !is.finite(median_position)) {
-    stop("median_position must be a single finite numeric value.")
-  }
-
+  
   # Warn if density is ignored
   if (isTRUE(violin) && isTRUE(density)) {
     warning("density is ignored when violin = TRUE.")
   }
-
+  
   # Select layer by index or name
   if (is.numeric(layer)) {
-
+    
     if (length(layer) != 1 ||
         is.na(layer) ||
-        layer %% 1 != 0 ||
         layer < 1 ||
         layer > terra::nlyr(input_image)) {
-      stop("layer must be a valid layer index.")
+      stop("layer exceeds the number of layers in input_image.")
     }
-
-    layer <- as.integer(layer)
+    
     layer_name <- names(input_image)[layer]
     layer_rast <- input_image[[layer]]
-
+    
   } else if (is.character(layer)) {
-
+    
     if (length(layer) != 1 ||
         is.na(layer) ||
         !layer %in% names(input_image)) {
       stop("layer name not found in input_image.")
     }
-
+    
     layer_name <- layer
     layer_rast <- input_image[[layer]]
-
+    
   } else {
     stop("layer must be either a numeric index or a layer name.")
   }
-
-  # Build data frame
+  
+  # Build the data frame
   df <- terra::as.data.frame(
     c(layer_rast, classified_image),
     na.rm = TRUE
   )
-
+  
   names(df) <- c("value", "Class")
-
-  df <- df[
-    is.finite(df$value) & !is.na(df$Class),
-    ,
-    drop = FALSE
-  ]
-
-  if (nrow(df) == 0) {
-    stop("No complete raster values are available for plotting.")
-  }
-
-  # Store class values in ascending order
+  
+  # Store class values in ascending numeric order
   class_values <- sort(unique(df$Class))
   n_classes <- length(class_values)
-
-  if (n_classes < 1) {
-    stop("No valid classes are available for plotting.")
-  }
-
-  # Convert class values to an ordered factor
+  
+  # Convert classes to a factor with explicit level order
   df$Class <- factor(
     df$Class,
     levels = class_values
   )
-
-  # Optional statistical comparison
-  if (isTRUE(stat_test)) {
-
-    if (n_classes < 2) {
-      stop(
-        "At least two classes are required to perform a statistical test."
-      )
-    }
-
-    warning(
-      paste(
-        "Wilcoxon and Kruskal-Wallis tests treat raster cells as",
-        "independent observations. Spatial autocorrelation may inflate",
-        "the test statistic and produce overly small p-values."
-      )
-    )
-
-    if (n_classes == 2) {
-
-      cat("\nWilcoxon rank-sum test\n\n")
-
-      print(
-        stats::wilcox.test(
-          value ~ Class,
-          data = df,
-          exact = FALSE
-        )
-      )
-
-    } else {
-
-      cat("\nKruskal-Wallis rank-sum test\n\n")
-
-      print(
-        stats::kruskal.test(
-          value ~ Class,
-          data = df
-        )
-      )
-    }
-  }
-
-  # Build basic plot
+  
+  # Basic plot
   p <- ggplot2::ggplot(
     data = df,
     mapping = ggplot2::aes(
@@ -277,57 +202,54 @@ im.boxplot.classes <- function(
   ) +
     ggplot2::labs(
       x = "Class",
-      y = layer_name,
-      colour = "Class",
-      fill = "Class"
+      y = layer_name
     )
-
-  # Add either boxplots or violin plots
+  
+  # Add either a boxplot or a violin plot
   if (isTRUE(violin)) {
-
+    
     p <- p +
       ggplot2::geom_violin(
-        mapping = ggplot2::aes(fill = Class),
+        ggplot2::aes(fill = Class),
         width = 0.7,
         alpha = 0.5,
         trim = TRUE
       )
-
+    
   } else {
-
+    
     p <- p +
       ggplot2::geom_boxplot(
         width = 0.30,
         outlier.shape = NA,
-        outlier.colour = NA
+        outlier.color = NA
       )
   }
-
-  # Optional half-eye density layer
+  
+  # Optional density layer
   if (isTRUE(density) && !isTRUE(violin)) {
-
+    
     p <- p +
       ggdist::stat_halfeye(
-        mapping = ggplot2::aes(fill = Class),
+        ggplot2::aes(fill = Class),
         adjust = 0.5,
         width = 0.5,
         .width = 0,
         justification = -0.4,
         point_colour = NA,
-        slab_colour = NA,
         alpha = 0.5
       )
   }
-
+  
   # Optional median labels
   if (isTRUE(median_labels)) {
-
+    
     p <- p +
       ggplot2::stat_summary(
         fun = stats::median,
         geom = "text",
         size = 3,
-        mapping = ggplot2::aes(
+        ggplot2::aes(
           label = round(
             ggplot2::after_stat(y),
             3
@@ -335,101 +257,113 @@ im.boxplot.classes <- function(
         ),
         position = ggplot2::position_nudge(
           x = median_position
-        ),
-        show.legend = FALSE
+        )
       )
   }
-
+  
   # Optional quantile limits
   if (!is.null(limits)) {
-
+    
     if (!is.numeric(limits) ||
-        length(limits) != 2 ||
-        any(!is.finite(limits))) {
-      stop("limits must be a finite numeric vector of length 2.")
+        length(limits) != 2) {
+      stop("limits must be a numeric vector of length 2.")
     }
-
-    if (any(limits < 0 | limits > 1)) {
+    
+    if (any(is.na(limits)) ||
+        any(limits < 0 | limits > 1)) {
       stop(
         "limits must contain quantile probabilities between 0 and 1."
       )
     }
-
+    
     if (limits[1] >= limits[2]) {
       stop(
         "The first value of limits must be smaller than the second."
       )
     }
-
-    value_limits <- stats::quantile(
+    
+    y_limits <- stats::quantile(
       df$value,
       probs = limits,
-      na.rm = TRUE,
-      names = FALSE
+      na.rm = TRUE
     )
-
+    
     p <- p +
-      ggplot2::coord_cartesian(
-        ylim = value_limits
+      ggplot2::scale_y_continuous(
+        limits = y_limits
       )
   }
-
-  # Build class colors
+  
+  # Default palette used by im.classify()
+  base_colors <- c("#0072B2", "#E69F00", "#009E73", "#CC79A7", 
+                   "#000000", "#D55E00")
+  
+  # Select the base colors
   if (is.null(custom_colors)) {
-
-    # Same viridis palette used by the standard terra plot
-    color_palette <- terra::map.pal(
-      "viridis",
-      100
-    )
-
+    
+    if (n_classes > length(base_colors)) {
+      
+      colors <- grDevices::colorRampPalette(
+        base_colors
+      )(n_classes)
+      
+    } else {
+      
+      colors <- base_colors[seq_len(n_classes)]
+    }
+    
   } else {
-
+    
     if (!is.character(custom_colors) ||
         length(custom_colors) == 0) {
       stop(
         paste(
           "custom_colors must be a character vector",
-          "of valid color names or hexadecimal codes."
+          "of valid color names or hex codes."
         )
       )
     }
-
-    if (length(custom_colors) == 1) {
-
-      color_palette <- rep(
-        custom_colors,
-        100
-      )
-
-    } else {
-
-      color_palette <- grDevices::colorRampPalette(
+    
+    if (n_classes > length(custom_colors)) {
+      
+      colors <- grDevices::colorRampPalette(
         custom_colors
-      )(100)
+      )(n_classes)
+      
+    } else {
+      
+      colors <- custom_colors[seq_len(n_classes)]
     }
   }
-
-  # Match each class to its position in the raster color scale
+  
+  # Reproduce the 100-color palette used by im.classify()
+  num_colors <- 100
+  
+  color_palette <- grDevices::colorRampPalette(
+    colors
+  )(num_colors)
+  
+  # Match each class value to its position in the raster color scale
   if (n_classes == 1) {
-
-    color_indices <- 1L
-
+    
+    color_indices <- 1
+    
   } else {
-
+    
     color_indices <- round(
-      1 + (
-        (class_values - min(class_values)) /
-          (max(class_values) - min(class_values))
-      ) * 99
+      seq(
+        from = 1,
+        to = num_colors,
+        length.out = n_classes
+      )
     )
   }
-
+  
   class_colors <- color_palette[color_indices]
-
-  # Explicitly associate colors with class values
+  
+  # Explicitly associate each color with its class
   names(class_colors) <- as.character(class_values)
-
+  
   # Apply class colors
   p <- p +
     ggplot2::scale_colour_manual(
@@ -438,10 +372,10 @@ im.boxplot.classes <- function(
       limits = as.character(class_values),
       drop = FALSE
     )
-
-  # Apply fill colors where needed
+  
+  # Apply fill colors when needed
   if (isTRUE(density) || isTRUE(violin)) {
-
+    
     p <- p +
       ggplot2::scale_fill_manual(
         values = class_colors,
@@ -450,22 +384,25 @@ im.boxplot.classes <- function(
         drop = FALSE
       )
   }
-
+  
   # Optional legend
   if (!isTRUE(legend)) {
-
+    
     p <- p +
       ggplot2::guides(
         colour = "none",
         fill = "none"
       )
   }
-
+  
   # Optional coordinate flipping
   if (isTRUE(flip)) {
     p <- p +
-      ggplot2::coord_flip()
+      ggplot2::coord_flip() +
+      ggplot2::scale_x_discrete(
+        limits = rev(levels(df$Class))
+      )
   }
-
+  
   return(p)
 }
