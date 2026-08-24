@@ -210,8 +210,7 @@ im.boxplot.layers <- function(input_image,
                                limits = NULL, # restrict the visible y-axis range to selected quantiles
                                custom_colors = NULL, # specify a color palette
                                flip = FALSE, # flip plot coordinates
-                               violin = FALSE, # TRUE for using a violin plot instead of a boxplot
-							   friedman_test = FALSE # TRUE for using the Friedman test
+                               violin = FALSE # TRUE for using a violin plot instead of a boxplot
 ) { 
   
   # Check input image
@@ -381,63 +380,12 @@ im.boxplot.layers <- function(input_image,
   
   # Optional coordinate flipping
   if (isTRUE(flip)) {
-    p <- p + ggplot2::coord_flip()
+    p <- p +
+      ggplot2::coord_flip() +
+      ggplot2::scale_x_discrete(
+        limits = rev(levels(df$Layer))
+      )
   }
-
-   # Optional Friedman test
-  if (isTRUE(friedman_test)) {
-
-    # Keep only raster cells with values in every layer
-    df_friedman <- terra::as.data.frame(
-      input_image,
-      na.rm = FALSE
-    )
-
-    df_friedman <- df_friedman[
-      stats::complete.cases(df_friedman),
-      ,
-      drop = FALSE
-    ]
-
-    if (nrow(df_friedman) == 0) {
-
-      warning(
-        "Friedman test could not be performed because no raster cells contain non-missing values in every layer."
-      )
-
-    } else {
-
-      ft <- stats::friedman.test(
-        as.matrix(df_friedman)
-      )
-
-      p_text <- if (ft$p.value < .Machine$double.eps) {
-        paste0("p < ", format(.Machine$double.eps, scientific = TRUE))
-      } else {
-        paste0("p = ", format.pval(ft$p.value, digits = 3))
-      }
-
-      message(
-        sprintf(
-          "Friedman test: chi-squared = %.2f, df = %d, %s",
-          unname(ft$statistic),
-          unname(ft$parameter),
-          p_text
-        )
-      )
-
-      warning(
-        paste(
-          "The Friedman test assumes paired observations across raster layers",
-          "but does not account for spatial autocorrelation.",
-          "Spatial autocorrelation may inflate the test statistic and",
-          "produce overly small p-values."
-        )
-      )
-
-      attr(p, "friedman_test") <- ft
-    }
-  }
-  	
+  
   return(p)
 }
