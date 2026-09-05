@@ -85,11 +85,45 @@ imageRy/
 │   └── testthat/
 │       └── test-*.R
 │
-├── vignettes/
-│   └── imageRy.Rmd
+├── vignette/
+│   ├── imagery_vignette_update_files/
+│   │   └── figure-gfm/
+│   │       ├── im.barplot basic use-1.png
+│   │       ├── im.barplot options-1.png
+│   │       ├── im.bivariate-1.png
+│   │       ├── im.boxplot.classes basic use-1.png
+│   │       ├── im.boxplot.classes options-1.png
+│   │       ├── im.boxplot.classes options-2.png
+│   │       ├── im.boxplot.layers simple usage-1.png
+│   │       ├── im.boxplot.layers usage-1.png
+│   │       ├── im.boxplot.layers violin-1.png
+│   │       ├── im.classify-1.png
+│   │       ├── im.dvi plot-1.png
+│   │       ├── im.fuzzy rasters-1.png
+│   │       ├── im.fuzzy rasters-2.png
+│   │       ├── im.fuzzy-1.png
+│   │       ├── im.ggplot layerfill-1.png
+│   │       ├── im.ggplot-1.png
+│   │       ├── im.ggplotRGB-1.png
+│   │       ├── im.import-1.png
+│   │       ├── im.kernel-1.png
+│   │       ├── im.levelplot basic usage-1.png
+│   │       ├── im.levelplot usage-1.png
+│   │       ├── im.levelplot usage-2.png
+│   │       ├── im.multiframe-1.png
+│   │       ├── im.ndvi-1.png
+│   │       ├── im.pairs simple usage-1.png
+│   │       ├── im.pairs usage-1.png
+│   │       ├── im.pca-1.png
+│   │       ├── im.plotRGB-1.png
+│   │       ├── im.plotRGB.auto-1.png
+│   │       ├── im.ridgeline direction-1.png
+│   │       └── im.ridgeline-1.png
+│   │
+│   └── vignette.md
 │
 ├── DESCRIPTION
-├── NAMESPACE
+└── NAMESPACE
 ├── README.md
 └── data_description.md
 ```
@@ -178,14 +212,11 @@ Standard R package metadata, including:
 
 ## 🛠 Installation
 
-You can install **imageRy** from CRAN or directly from GitHub if desired:
+From GitHub with new functions:
 
 ```r
-# From GitHub with new functions
-install.packages("imageRy")
-
-# Or from CRAN with stable functions
-# remotes::install_github("ducciorocchini/imageRy")
+From GitHub with new functions
+remotes::install_github("ducciorocchini/imageRy")
 ```
 
 ---
