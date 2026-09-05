@@ -157,9 +157,17 @@ im.classify <- function(
   names(classified_image) <- "class"
 
   # Display the output using the standard terra method
-  if (isTRUE(do_plot)) {
-    terra::plot(classified_image)
-  }
+    if (isTRUE(do_plot)) {
+    
+      class_colors <- viridisLite::viridis(
+        num_clusters
+      )
+    
+      terra::plot(
+        classified_image,
+        col = class_colors
+      )
+    }
 
   return(classified_image)
 }
