@@ -36,7 +36,8 @@
 #'   generate one color for each raster layer (default: `NULL`).
 #'
 #' @param flip A logical value indicating whether to flip the plot coordinates
-#'   using `ggplot2::coord_flip()` (default: `FALSE`).
+#'   using `ggplot2::coord_flip()` (default: `FALSE`). When `TRUE`, the first
+#'   raster layer is displayed at the top.
 #'
 #' @param violin A logical value indicating whether to use violin plots instead
 #'   of boxplots (default: `FALSE`). When `violin = TRUE`, the `density`
@@ -67,49 +68,34 @@
 #'   distribution is added using `ggdist::stat_halfeye()`.
 #'   \item If `median_labels = TRUE`, the median value of each layer is
 #'   displayed beside the corresponding distribution.
-#'   \item The position of median labels can be adjusted using
-#'   `median_position`.
 #'   \item If `custom_colors` is provided, the supplied colors are interpolated
 #'   to generate one color for each raster layer.
 #'   \item If `legend = FALSE`, both the color and fill legends are hidden.
-#'   \item If `flip = TRUE`, the layer and value axes are exchanged.
+#'   \item If `flip = TRUE`, the layer and value axes are exchanged and the
+#'   first raster layer is displayed at the top.
 #' }
 #'
 #' If `limits` is provided, the lower and upper values are calculated from the
 #' selected quantiles of all non-missing raster values. The visible value range
-#' is then restricted using `ggplot2::coord_cartesian()`.
+#' is restricted using `ggplot2::coord_cartesian()`.
 #'
 #' Because `coord_cartesian()` performs a visual zoom rather than removing
-#' observations, values outside the displayed range remain part of the data.
-#' They are therefore retained when calculating boxplots, violin plots,
-#' half-eye density distributions, and median values.
+#' observations, values outside the displayed range remain part of the data
+#' and are retained when calculating boxplots, violin plots, half-eye density
+#' distributions and median values.
 #'
 #' If `friedman_test = TRUE`, a Friedman rank-sum test is performed using raster
-#' cells as blocks and raster layers as repeated measurements. Each row of the
-#' input data represents a raster cell, and each column represents a raster
-#' layer.
-#'
-#' Only raster cells containing non-missing values in every layer are included
-#' in the Friedman test.
-#'
-#' The null hypothesis of the Friedman test is that all raster layers have the
-#' same location distribution. A significant result indicates that at least
-#' one raster layer differs from the others, but it does not identify which
-#' layers differ.
-#'
-#' Corresponding raster cells must represent paired observations across raster
-#' layers. The layers must therefore have matching spatial geometry and cell
-#' alignment.
+#' cells as blocks and raster layers as repeated measurements. Only raster cells
+#' containing non-missing values in every layer are included.
 #'
 #' The Friedman test does not account for spatial autocorrelation among
 #' neighbouring raster cells. Spatial autocorrelation may inflate the test
-#' statistic and produce overly small p-values, particularly when large numbers
-#' of raster cells are included.
+#' statistic and produce overly small p-values. A warning is therefore issued
+#' whenever the test is requested.
 #'
-#' Although the function accepts two or more raster layers, the Friedman test
-#' is primarily intended for three or more repeated measurements. For exactly
-#' two raster layers, a paired Wilcoxon signed-rank test is generally more
-#' appropriate.
+#' The Friedman test is primarily intended for three or more repeated
+#' measurements. For exactly two raster layers, a paired Wilcoxon signed-rank
+#' test is generally more appropriate.
 #'
 #' @seealso
 #' [im.barplot()],
@@ -126,73 +112,25 @@
 #' library(ggplot2)
 #' library(viridis)
 #'
-#' # Import a multi-layer raster
 #' dolom <- im.import("sentinel.dolomites")
-#'
 #' names(dolom) <- c("B2", "B3", "B4", "B5")
 #'
 #' # Basic boxplots with half-eye density distributions
 #' im.boxplot.layers(dolom)
 #'
-#' # Add median labels
+#' # Flip plot coordinates
 #' im.boxplot.layers(
 #'   dolom,
-#'   density = TRUE,
-#'   median_labels = TRUE
-#' )
-#'
-#' # Adjust the position of median labels
-#' im.boxplot.layers(
-#'   dolom,
-#'   median_labels = TRUE,
-#'   median_position = -0.4
-#' )
-#'
-#' # Restrict the visible range using pooled raster quantiles
-#' im.boxplot.layers(
-#'   dolom,
-#'   limits = c(0.01, 0.99)
-#' )
-#'
-#' # Use custom colors
-#' im.boxplot.layers(
-#'   dolom,
-#'   density = TRUE,
-#'   custom_colors = viridis::viridis(4, end = 0.5)
-#' )
-#'
-#' # Display the legend
-#' im.boxplot.layers(
-#'   dolom,
-#'   legend = TRUE
-#' )
-#'
-#' # Flip the plot coordinates
-#' im.boxplot.layers(
-#'   dolom,
-#'   median_labels = TRUE,
 #'   flip = TRUE
 #' )
 #'
-#' # Use violin plots instead of boxplots
+#' # Use violin plots
 #' im.boxplot.layers(
 #'   dolom,
-#'   violin = TRUE,
-#'   median_labels = TRUE,
-#'   median_position = 0.4,
-#'   limits = c(0.01, 0.99),
-#'   custom_colors = viridis::viridis(4, end = 0.5),
-#'   flip = TRUE
+#'   violin = TRUE
 #' )
 #'
 #' # Perform the Friedman rank-sum test
-#' im.boxplot.layers(
-#'   dolom,
-#'   density = TRUE,
-#'   friedman_test = TRUE
-#' )
-#'
-#' # Store the plot and retrieve the complete test result
 #' p <- im.boxplot.layers(
 #'   dolom,
 #'   friedman_test = TRUE
@@ -202,94 +140,148 @@
 #' }
 #'
 #' @export
-im.boxplot.layers <- function(input_image,
-                               density = TRUE, # TRUE for adding a half-eye density plot
-                               median_labels = FALSE, # TRUE for adding median labels
-                               median_position = -0.3, # position of median labels along the layer axis
-                               legend = FALSE, # TRUE for adding a legend
-                               limits = NULL, # restrict the visible y-axis range to selected quantiles
-                               custom_colors = NULL, # specify a color palette
-                               flip = FALSE, # flip plot coordinates
-                               violin = FALSE # TRUE for using a violin plot instead of a boxplot
-) { 
-  
+im.boxplot.layers <- function(
+    input_image,
+    density = TRUE,
+    median_labels = FALSE,
+    median_position = -0.3,
+    legend = FALSE,
+    limits = NULL,
+    custom_colors = NULL,
+    flip = FALSE,
+    violin = FALSE,
+    friedman_test = FALSE
+) {
+
   # Check input image
   if (!inherits(input_image, "SpatRaster")) {
     stop("input_image should be a SpatRaster object.")
   }
-  
+
   if (terra::nlyr(input_image) < 2) {
     stop("input_image should have at least two layers.")
   }
-  
+
   # Check density
-  if (!is.logical(density) || length(density) != 1 || is.na(density)) {
+  if (!is.logical(density) ||
+      length(density) != 1 ||
+      is.na(density)) {
     stop("density must be either TRUE or FALSE.")
   }
-  
+
   # Check median_labels
   if (!is.logical(median_labels) ||
       length(median_labels) != 1 ||
       is.na(median_labels)) {
     stop("median_labels must be either TRUE or FALSE.")
   }
-  
+
   # Check median_position
   if (!is.numeric(median_position) ||
       length(median_position) != 1 ||
       is.na(median_position)) {
     stop("median_position must be a single numeric value.")
   }
-  
+
   # Check legend
-  if (!is.logical(legend) || length(legend) != 1 || is.na(legend)) {
+  if (!is.logical(legend) ||
+      length(legend) != 1 ||
+      is.na(legend)) {
     stop("legend must be either TRUE or FALSE.")
   }
-  
+
   # Check flip
-  if (!is.logical(flip) || length(flip) != 1 || is.na(flip)) {
+  if (!is.logical(flip) ||
+      length(flip) != 1 ||
+      is.na(flip)) {
     stop("flip must be either TRUE or FALSE.")
   }
-  
+
   # Check violin
-  if (!is.logical(violin) || length(violin) != 1 || is.na(violin)) {
+  if (!is.logical(violin) ||
+      length(violin) != 1 ||
+      is.na(violin)) {
     stop("violin must be either TRUE or FALSE.")
   }
-  
+
+  # Check friedman_test
+  if (!is.logical(friedman_test) ||
+      length(friedman_test) != 1 ||
+      is.na(friedman_test)) {
+    stop("friedman_test must be either TRUE or FALSE.")
+  }
+
   # Warn if density is ignored
   if (isTRUE(violin) && isTRUE(density)) {
     warning("density is ignored when violin = TRUE.")
   }
-  
-  # Build the data frame
-  df_wide <- terra::as.data.frame(input_image, na.rm = FALSE)
-  
+
+  # Build wide data frame
+  df_wide <- terra::as.data.frame(
+    input_image,
+    na.rm = FALSE
+  )
+
+  # Build long data frame for plotting
   df <- utils::stack(df_wide)
-  names(df) <- c("value", "Layer")
-  
-  df <- df[!is.na(df$value), ]
-  df$Layer <- factor(df$Layer, levels = names(input_image))
-  
+
+  names(df) <- c(
+    "value",
+    "Layer"
+  )
+
+  df <- df[
+    !is.na(df$value),
+    ,
+    drop = FALSE
+  ]
+
+  # Set layer order
+  # Reverse factor levels when flipped so that the first layer appears on top
+  if (isTRUE(flip)) {
+
+    df$Layer <- factor(
+      df$Layer,
+      levels = rev(names(input_image))
+    )
+
+  } else {
+
+    df$Layer <- factor(
+      df$Layer,
+      levels = names(input_image)
+    )
+  }
+
   # Basic plot
   p <- ggplot2::ggplot(
     data = df,
-    mapping = ggplot2::aes(x = Layer, y = value, colour = Layer)
+    mapping = ggplot2::aes(
+      x = Layer,
+      y = value,
+      colour = Layer
+    )
   ) +
-    ggplot2::labs(y = "Value", x = "Layer")
-  
-  # Add either a boxplot or a violin plot
+    ggplot2::labs(
+      x = "Layer",
+      y = "Value"
+    )
+
+  # Boxplot or violin plot
   if (isTRUE(violin)) {
-    
+
     p <- p +
       ggplot2::geom_violin(
-        ggplot2::aes(fill = Layer),
+        ggplot2::aes(
+          fill = Layer
+        ),
         width = 0.7,
         alpha = 0.5,
         trim = TRUE
       )
-    
+
   } else {
-    
+
     p <- p +
       ggplot2::geom_boxplot(
         width = 0.30,
@@ -297,13 +289,16 @@ im.boxplot.layers <- function(input_image,
         outlier.color = NA
       )
   }
-  
-  # Optional density layer
-  if (isTRUE(density) && !isTRUE(violin)) {
-    
+
+  # Optional half-eye density
+  if (isTRUE(density) &&
+      !isTRUE(violin)) {
+
     p <- p +
       ggdist::stat_halfeye(
-        ggplot2::aes(fill = Layer),
+        ggplot2::aes(
+          fill = Layer
+        ),
         adjust = 0.5,
         width = 0.5,
         .width = 0,
@@ -312,80 +307,194 @@ im.boxplot.layers <- function(input_image,
         alpha = 0.5
       )
   }
-  
+
   # Optional median labels
   if (isTRUE(median_labels)) {
-    
+
     p <- p +
       ggplot2::stat_summary(
         fun = stats::median,
         geom = "text",
         size = 3,
         ggplot2::aes(
-          label = round(ggplot2::after_stat(y), 3)
+          label = round(
+            ggplot2::after_stat(y),
+            3
+          )
         ),
         position = ggplot2::position_nudge(
           x = median_position
         )
       )
   }
-  
+
   # Optional quantile limits
   if (!is.null(limits)) {
-    
-    if (!is.numeric(limits) || length(limits) != 2) {
+
+    if (!is.numeric(limits) ||
+        length(limits) != 2) {
       stop("limits must be a numeric vector of length 2.")
     }
-    
-    if (any(is.na(limits)) || any(limits < 0 | limits > 1)) {
-      stop("limits must contain quantile probabilities between 0 and 1.")
+
+    if (any(is.na(limits)) ||
+        any(limits < 0 | limits > 1)) {
+      stop(
+        "limits must contain quantile probabilities between 0 and 1."
+      )
     }
-    
+
     if (limits[1] >= limits[2]) {
-      stop("The first value of limits must be smaller than the second.")
+      stop(
+        "The first value of limits must be smaller than the second."
+      )
     }
-    
+
+    value_limits <- stats::quantile(
+      df$value,
+      probs = limits,
+      na.rm = TRUE
+    )
+
     p <- p +
-      ggplot2::scale_y_continuous(
-        limits = stats::quantile(
-          df$value,
-          probs = limits,
-          na.rm = TRUE
-        )
+      ggplot2::coord_cartesian(
+        ylim = value_limits
       )
   }
-  
+
   # Optional custom colors
   if (!is.null(custom_colors)) {
-    
-    if (!is.character(custom_colors)) {
-      stop("custom_colors must be a character vector of valid color names or hex codes.")
+
+    if (!is.character(custom_colors) ||
+        length(custom_colors) == 0) {
+      stop(
+        "custom_colors must be a character vector of valid color names or hex codes."
+      )
     }
-    
-    n_layers <- nlevels(df$Layer)
-    pal <- grDevices::colorRampPalette(custom_colors)(n_layers)
-    
-    p <- p + ggplot2::scale_colour_manual(values = pal)
-    
-    if (isTRUE(density) || isTRUE(violin)) {
-      p <- p + ggplot2::scale_fill_manual(values = pal)
+
+    n_layers <- nlevels(
+      df$Layer
+    )
+
+    pal <- grDevices::colorRampPalette(
+      custom_colors
+    )(n_layers)
+
+    # Keep color-layer association stable when factor order is reversed
+    names(pal) <- names(input_image)
+
+    p <- p +
+      ggplot2::scale_colour_manual(
+        values = pal
+      )
+
+    if (isTRUE(density) ||
+        isTRUE(violin)) {
+
+      p <- p +
+        ggplot2::scale_fill_manual(
+          values = pal
+        )
     }
   }
-  
+
   # Optional legend
   if (!isTRUE(legend)) {
+
     p <- p +
-      ggplot2::guides(colour = "none", fill = "none")
-  }
-  
-  # Optional coordinate flipping
-  if (isTRUE(flip)) {
-    p <- p +
-      ggplot2::coord_flip() +
-      ggplot2::scale_x_discrete(
-        limits = rev(levels(df$Layer))
+      ggplot2::guides(
+        colour = "none",
+        fill = "none"
       )
   }
-  
+
+  # Optional coordinate flipping
+  if (isTRUE(flip)) {
+
+    p <- p +
+      ggplot2::coord_flip()
+  }
+
+  # ----------------------------------------------------------
+  # Optional Friedman rank-sum test
+  # ----------------------------------------------------------
+
+  if (isTRUE(friedman_test)) {
+
+    # Friedman requires complete repeated observations:
+    # one row = one raster cell
+    # one column = one raster layer
+    df_friedman <- df_wide[
+      stats::complete.cases(df_wide),
+      ,
+      drop = FALSE
+    ]
+
+    if (nrow(df_friedman) == 0) {
+
+      warning(
+        paste(
+          "Friedman test could not be performed because",
+          "no raster cells contain non-missing values in every layer."
+        )
+      )
+
+    } else {
+
+      ft <- stats::friedman.test(
+        as.matrix(df_friedman)
+      )
+
+      # Format p-value
+      p_text <- if (
+        ft$p.value < .Machine$double.eps
+      ) {
+
+        paste0(
+          "p < ",
+          format(
+            .Machine$double.eps,
+            scientific = TRUE
+          )
+        )
+
+      } else {
+
+        paste0(
+          "p = ",
+          format.pval(
+            ft$p.value,
+            digits = 3
+          )
+        )
+      }
+
+      # Print result
+      message(
+        sprintf(
+          "Friedman rank-sum test: chi-squared = %.2f, df = %d, %s",
+          unname(ft$statistic),
+          unname(ft$parameter),
+          p_text
+        )
+      )
+
+      # Spatial autocorrelation warning
+      warning(
+        paste(
+          "The Friedman test does not account for spatial autocorrelation",
+          "among neighbouring raster cells. Spatial autocorrelation may",
+          "inflate the test statistic and produce overly small p-values.",
+          "Statistical significance should therefore be interpreted with caution."
+        )
+      )
+
+      # Store complete test result
+      attr(
+        p,
+        "friedman_test"
+      ) <- ft
+    }
+  }
+
   return(p)
 }
