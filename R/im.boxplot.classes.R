@@ -340,102 +340,67 @@ im.boxplot.classes <- function(
       )
   }
 
-  # Default palette used by im.classify()
-  base_colors <- c(
-    "#0072B2",
-    "#E69F00",
-    "#009E73",
-    "#CC79A7",
-    "#000000",
-    "#D55E00"
+# ----------------------------------------------------------
+# Colors
+# ----------------------------------------------------------
+
+if (is.null(custom_colors)) {
+
+  # Use the same viridis palette adopted by im.classify()
+  class_colors <- viridisLite::viridis(
+    n_classes
   )
 
-  # Select the base colors
-  if (is.null(custom_colors)) {
+} else {
 
-    if (n_classes > length(base_colors)) {
-
-      colors <- grDevices::colorRampPalette(
-        base_colors
-      )(n_classes)
-
-    } else {
-
-      colors <- base_colors[seq_len(n_classes)]
-    }
-
-  } else {
-
-    if (!is.character(custom_colors) ||
-        length(custom_colors) == 0) {
-      stop(
-        paste(
-          "custom_colors must be a character vector",
-          "of valid color names or hex codes."
-        )
-      )
-    }
-
-    if (n_classes > length(custom_colors)) {
-
-      colors <- grDevices::colorRampPalette(
-        custom_colors
-      )(n_classes)
-
-    } else {
-
-      colors <- custom_colors[seq_len(n_classes)]
-    }
-  }
-
-  # Reproduce the 100-color palette used by im.classify()
-  num_colors <- 100
-
-  color_palette <- grDevices::colorRampPalette(
-    colors
-  )(num_colors)
-
-  # Match each class value to its position in the raster color scale
-  if (n_classes == 1) {
-
-    color_indices <- 1
-
-  } else {
-
-    color_indices <- round(
-      seq(
-        from = 1,
-        to = num_colors,
-        length.out = n_classes
+  if (!is.character(custom_colors) ||
+      length(custom_colors) == 0) {
+    stop(
+      paste(
+        "custom_colors must be a character vector",
+        "of valid color names or hex codes."
       )
     )
   }
 
-  class_colors <- color_palette[color_indices]
+  if (length(custom_colors) < n_classes) {
 
-  # Explicitly associate each color with its class
-  names(class_colors) <- as.character(class_values)
+    class_colors <- grDevices::colorRampPalette(
+      custom_colors
+    )(n_classes)
 
-  # Apply class colors
+  } else {
+
+    class_colors <- custom_colors[
+      seq_len(n_classes)
+    ]
+  }
+}
+
+# Associate each color explicitly with its class
+names(class_colors) <- as.character(
+  class_values
+)
+
+# Apply colors
+p <- p +
+  ggplot2::scale_colour_manual(
+    values = class_colors,
+    breaks = as.character(class_values),
+    limits = as.character(class_values),
+    drop = FALSE
+  )
+
+if (isTRUE(density) || isTRUE(violin)) {
+
   p <- p +
-    ggplot2::scale_colour_manual(
+    ggplot2::scale_fill_manual(
       values = class_colors,
       breaks = as.character(class_values),
       limits = as.character(class_values),
       drop = FALSE
     )
-
-  # Apply fill colors when needed
-  if (isTRUE(density) || isTRUE(violin)) {
-
-    p <- p +
-      ggplot2::scale_fill_manual(
-        values = class_colors,
-        breaks = as.character(class_values),
-        limits = as.character(class_values),
-        drop = FALSE
-      )
-  }
+}
 
   # Optional legend
   if (!isTRUE(legend)) {
