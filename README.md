@@ -141,30 +141,41 @@ All core **R functions** are implemented here, organized around a unified workfl
 
 #### **📥 Data access and import**
 
-* `im.list()` — list available bundled raster datasets
-* `im.import()` — load raster images as `SpatRaster` objects
-* `im.export()` — export raster outputs to standard formats (GeoTIFF, PNG, JPG)
+- `im.list()` — list available bundled raster datasets
+- `im.import()` — import raster images as `SpatRaster` objects
+- `im.export()` — export raster outputs to standard formats
+- `im.print()` — print raster information and package outputs
+- `im.refresh()` — refresh the imageRy working environment
 
 #### **🛰️ Remote sensing analysis**
 
-* `im.classify()` — unsupervised classification using k-means
-* `im.fuzzy()` — fuzzy classification with probabilistic membership
-* `im.ndvi()` / `im.dvi()` — vegetation indices
-* `im.kernel()` — moving-window statistics (e.g., SD, mean, variability)
-* `im.pca()` — principal component analysis
+- `im.classify()` — unsupervised raster classification using k-means
+- `im.fuzzy()` — fuzzy classification with probabilistic membership
+- `im.ndvi()` — calculate the Normalized Difference Vegetation Index (NDVI)
+- `im.dvi()` — calculate the Difference Vegetation Index (DVI)
+- `im.kernel()` — calculate moving-window statistics on raster data
+- `im.pca()` — perform principal component analysis on raster layers
 
-#### **🎨 Spatial visualization**
+#### **🔗 Multivariate and spatial relationships**
 
-* `im.plotRGB()` / `im.plotRGB.auto()` — RGB composites
-* `im.ggplot()` — raster visualization using `ggplot2`
-* `im.ggplotRGB()` — RGB visualization within the `ggplot2` framework
-* `im.multiframe()` — arrange multiple plots
+- `im.bivariate()` — explore and visualize relationships between two raster variables
+- `im.pairs()` — explore pairwise relationships among multiple raster layers
 
-#### **📊 Statistical visualization layer (core novelty)**
+#### **🗺️ Raster and RGB visualization**
 
-* `im.ridgeline()` — distribution of raster values across layers
-* `im.barplot()` — class proportions and frequencies
-* `im.boxplot()` — spectral distributions across classes
+- `im.plotRGB()` — create RGB raster composites
+- `im.plotRGB.auto()` — automatically create RGB composites
+- `im.ggplot()` — visualize raster data using `ggplot2`
+- `im.ggplotRGB()` — create RGB raster visualizations within the `ggplot2` framework
+- `im.multiframe()` — arrange multiple graphical outputs in the same plotting window
+
+#### **📊 Distribution-based and statistical visualization**
+
+- `im.levelplot()` — explore the spatial distribution of raster values with optional row- and column-wise marginal summaries
+- `im.ridgeline()` — explore raster-value distributions across multiple layers using kernel density ridgelines
+- `im.boxplot.layers()` — compare distributions among raster layers using boxplots, half-eye kernel density estimates or violin plots, with optional non-parametric statistical testing
+- `im.boxplot.classes()` — compare raster-value distributions among discrete spatial classes using boxplots, half-eye kernel density estimates or violin plots, with optional Wilcoxon or Kruskal–Wallis tests
+- `im.barplot()` — visualize class proportions and frequencies
 
 These functions share a common design: they transform raster data into structured representations (spatial or statistical), enabling users to move seamlessly between maps and distributional interpretation within a single workflow.
 
@@ -187,15 +198,6 @@ Contains **unit tests** (likely using *testthat*) to check expected behavior of 
 ### 📦 `inst/images`
 
 Example image files included for demonstration and testing. These are installed with the package and can be referenced in examples and vignettes.
-
----
-
-### 📘 Documentation & Vignettes
-
-* **vignette.html** — a comprehensive user guide / tutorial
-* **imageRy.html** — full reference manual
-* **imageRy_rapid_manual.html** — a rapid manual for quick usage examples
-* **data_description.md** — explanation of example datasets
 
 ---
 
