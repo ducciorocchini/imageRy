@@ -361,41 +361,63 @@ im.boxplot.layers <- function(
       )
   }
 
-  # Optional custom colors
-  if (!is.null(custom_colors)) {
+# ----------------------------------------------------------
+# Colors
+# ----------------------------------------------------------
 
-    if (!is.character(custom_colors) ||
-        length(custom_colors) == 0) {
-      stop(
-        "custom_colors must be a character vector of valid color names or hex codes."
+n_layers <- nlevels(df$Layer)
+
+if (is.null(custom_colors)) {
+
+  # Default colorblind-friendly viridis palette
+  pal <- viridisLite::viridis(
+    n_layers
+  )
+
+} else {
+
+  if (!is.character(custom_colors) ||
+      length(custom_colors) == 0) {
+    stop(
+      paste(
+        "custom_colors must be a character vector",
+        "of valid color names or hex codes."
       )
-    }
-
-    n_layers <- nlevels(
-      df$Layer
     )
+  }
+
+  if (length(custom_colors) < n_layers) {
 
     pal <- grDevices::colorRampPalette(
       custom_colors
     )(n_layers)
 
-    # Keep color-layer association stable when factor order is reversed
-    names(pal) <- names(input_image)
+  } else {
 
-    p <- p +
-      ggplot2::scale_colour_manual(
-        values = pal
-      )
-
-    if (isTRUE(density) ||
-        isTRUE(violin)) {
-
-      p <- p +
-        ggplot2::scale_fill_manual(
-          values = pal
-        )
-    }
+    pal <- custom_colors[
+      seq_len(n_layers)
+    ]
   }
+}
+
+# Associate each color explicitly with its raster layer
+names(pal) <- names(input_image)
+
+# Apply colors to boxplots
+p <- p +
+  ggplot2::scale_colour_manual(
+    values = pal
+  )
+
+# Apply fill colors to half-eye or violin plots
+if (isTRUE(density) || isTRUE(violin)) {
+
+  p <- p +
+    ggplot2::scale_fill_manual(
+      values = pal
+    )
+}
+    
 
   # Optional legend
   if (!isTRUE(legend)) {
