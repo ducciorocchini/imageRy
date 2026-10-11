@@ -114,3 +114,6 @@ https://dx.doi.org/10.5281/zenodo.23011866
 
 + Cinque Torri, October 2026
 https://doi.org/10.5281/zenodo.23169103
+
++ Broadleaf Woodland - Sovicille, October 2026
+https://doi.org/OI 10.5281/zenodo.23300897
