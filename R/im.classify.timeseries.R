@@ -1,4 +1,3 @@
-
 #' Classify a Time Series of Raster Images Using Common K-Means Clustering
 #'
 #' This function performs unsupervised classification of a time series of raster images
