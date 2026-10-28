@@ -26,7 +26,7 @@ several functions are derived. In this vignette, we will also use
 `imageRy` can be installed via function `install_github()`:
 
 ``` r
-devtools::install_github("ducciorocchini/imageRy")
+remotes::install_github("ducciorocchini/imageRy")
 ```
 
 After the installation, we can load all the packages needed in this
@@ -58,24 +58,42 @@ simply call function **`im.list()`**:
 im.list()
 ```
 
-    ##  [1] "bletterbach.jpg"                                    "dolansprings_oli_2013088_canyon_lrg.jpg"           
-    ##  [3] "EN_01.png"                                          "EN_02.png"                                         
-    ##  [5] "EN_03.png"                                          "EN_04.png"                                         
-    ##  [7] "EN_05.png"                                          "EN_06.png"                                         
-    ##  [9] "EN_07.png"                                          "EN_08.png"                                         
-    ## [11] "EN_09.png"                                          "EN_10.png"                                         
-    ## [13] "EN_11.png"                                          "EN_12.png"                                         
-    ## [15] "EN_13.png"                                          "greenland.2000.tif"                                
-    ## [17] "greenland.2005.tif"                                 "greenland.2010.tif"                                
-    ## [19] "greenland.2015.tif"                                 "info.md"                                           
-    ## [21] "iss063e039892_lrg.jpg"                              "matogrosso_ast_2006209_lrg.jpg"                    
-    ## [23] "matogrosso_l5_1992219_lrg.jpg"                      "NDVI_rainbow_legend.png"                           
-    ## [25] "NDVI_rainbow.png"                                   "S2_AllBands_temperate_passo_falzarego.tif"         
-    ## [27] "S2_AllBands_tropical.tif"                           "sentinel.dolomites.b2.tif"                         
-    ## [29] "sentinel.dolomites.b3.tif"                          "sentinel.dolomites.b4.tif"                         
-    ## [31] "sentinel.dolomites.b8.tif"                          "sentinel.png"                                      
-    ## [33] "Sentinel2_NDVI_2020-02-21.tif"                      "Sentinel2_NDVI_2020-05-21.tif"                     
-    ## [35] "Sentinel2_NDVI_2020-08-01.tif"                      "Sentinel2_NDVI_2020-11-27.tif"                     
+    ##  [1] "bletterbach.jpg"                                   
+    ##  [2] "dolansprings_oli_2013088_canyon_lrg.jpg"           
+    ##  [3] "EN_01.png"                                         
+    ##  [4] "EN_02.png"                                         
+    ##  [5] "EN_03.png"                                         
+    ##  [6] "EN_04.png"                                         
+    ##  [7] "EN_05.png"                                         
+    ##  [8] "EN_06.png"                                         
+    ##  [9] "EN_07.png"                                         
+    ## [10] "EN_08.png"                                         
+    ## [11] "EN_09.png"                                         
+    ## [12] "EN_10.png"                                         
+    ## [13] "EN_11.png"                                         
+    ## [14] "EN_12.png"                                         
+    ## [15] "EN_13.png"                                         
+    ## [16] "greenland.2000.tif"                                
+    ## [17] "greenland.2005.tif"                                
+    ## [18] "greenland.2010.tif"                                
+    ## [19] "greenland.2015.tif"                                
+    ## [20] "info.md"                                           
+    ## [21] "iss063e039892_lrg.jpg"                             
+    ## [22] "matogrosso_ast_2006209_lrg.jpg"                    
+    ## [23] "matogrosso_l5_1992219_lrg.jpg"                     
+    ## [24] "NDVI_rainbow_legend.png"                           
+    ## [25] "NDVI_rainbow.png"                                  
+    ## [26] "S2_AllBands_temperate_passo_falzarego.tif"         
+    ## [27] "S2_AllBands_tropical.tif"                          
+    ## [28] "sentinel.dolomites.b2.tif"                         
+    ## [29] "sentinel.dolomites.b3.tif"                         
+    ## [30] "sentinel.dolomites.b4.tif"                         
+    ## [31] "sentinel.dolomites.b8.tif"                         
+    ## [32] "sentinel.png"                                      
+    ## [33] "Sentinel2_NDVI_2020-02-21.tif"                     
+    ## [34] "Sentinel2_NDVI_2020-05-21.tif"                     
+    ## [35] "Sentinel2_NDVI_2020-08-01.tif"                     
+    ## [36] "Sentinel2_NDVI_2020-11-27.tif"                     
     ## [37] "Solar_Orbiter_s_first_views_of_the_Sun_pillars.jpg"
 
 These files can be imported using **`im.import()`**. In this vignette,
@@ -112,17 +130,17 @@ names, and the minimum and maximum values.
 dolom
 ```
 
-    ## class       : SpatRaster 
+    ## class       : SpatRaster
     ## size        : 934, 1059, 4  (nrow, ncol, nlyr)
     ## resolution  : 10, 10  (x, y)
     ## extent      : 740350, 750940, 5158820, 5168160  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : WGS 84 / UTM zone 32N (EPSG:32632) 
-    ## sources     : sentinel.dolomites.b2.tif  
-    ##               sentinel.dolomites.b3.tif  
-    ##               sentinel.dolomites.b4.tif  
-    ##               sentinel.dolomites.b8.tif  
-    ## names       :   B2,   B3,   B4,   B8 
-    ## min values  : 1338, 1293,  750, 1159 
+    ## coord. ref. : WGS 84 / UTM zone 32N (EPSG:32632)
+    ## sources     : sentinel.dolomites.b2.tif
+    ##               sentinel.dolomites.b3.tif
+    ##               sentinel.dolomites.b4.tif
+    ##               sentinel.dolomites.b8.tif
+    ## names       :   B2,   B3,   B4,   B8
+    ## min values  : 1338, 1293,  750, 1159
     ## max values  : 6903, 6780, 7229, 7313
 
 ## 3. Data visualization
@@ -292,6 +310,9 @@ im.boxplot.layers(dolom,
 )
 ```
 
+    ## Coordinate system already present.
+    ## ℹ Adding new coordinate system, which will replace the existing one.
+
 <img src="imagery_vignette_update_files/figure-gfm/im.boxplot.layers usage-1.png" alt="" style="display: block; margin: auto;" />
 
 Finally, argument `violin = TRUE` will produce a **violin plot** instead
@@ -308,6 +329,9 @@ im.boxplot.layers(dolom,
   flip = TRUE
 )
 ```
+
+    ## Coordinate system already present.
+    ## ℹ Adding new coordinate system, which will replace the existing one.
 
 <img src="imagery_vignette_update_files/figure-gfm/im.boxplot.layers violin-1.png" alt="" style="display: block; margin: auto;" />
 
@@ -591,6 +615,9 @@ im.boxplot.classes(dolom, classes,
   flip = TRUE
 )
 ```
+
+    ## Coordinate system already present.
+    ## ℹ Adding new coordinate system, which will replace the existing one.
 
 <img src="imagery_vignette_update_files/figure-gfm/im.boxplot.classes options-2.png" alt="" style="display: block; margin: auto;" />
 
