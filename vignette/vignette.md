@@ -628,7 +628,183 @@ im.barplot(classes,
 Just like `im.ggplot()` and `im.ggplotRGB()`, both `im.boxplot()` and
 `im.barplot()` return a `ggplot2` object.
 
-### 4.3 Fuzzy classification with `im.fuzzy()`
+### 4.3 Classification of image time series
+
+Remote sensing analyses often involve **time series of images**. When
+applying unsupervised classification to multiple images, however,
+classifying each image independently does not guarantee that the same
+class number represents the same spectral cluster at different dates.
+
+To address this issue, `imageRy` implements
+**`im.classify.timeseries()`**, which performs a common k-means
+classification across a series of raster images. Instead of estimating
+independent cluster centres for each image, the function combines the
+pixel values from all images, applies k-means clustering to the combined
+data, and then reconstructs a classified raster for each date. In this
+way, the same class number refers to the same spectral cluster across
+the entire time series.
+
+To demonstrate the function, we will use a time series of four
+Sentinel-2 NDVI images of the Brenta region (Italian Alps) acquired at
+different times of the year:
+
+``` r
+ndvi_series <- im.import("Sentinel2_NDVI")
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/ndvi images-1.png" alt="" style="display: block; margin: auto;" />
+
+The imported object is a multi-layer `SpatRaster`, with each layer
+representing NDVI at a different date. Since `im.classify.timeseries()`
+takes as input a list of raster images, we first convert the object to a
+list and assign a name to each image:
+
+``` r
+ndvi_series <- terra::as.list(ndvi_series)
+
+names(ndvi_series) <- c(
+  "Feb2020",
+  "May2020",
+  "Aug2020",
+  "Nov2020"
+)
+```
+
+All images supplied to `im.classify.timeseries()` must have the same
+geometry and the same number of layers. For multi-band images,
+corresponding spectral bands should also occur in the same order in each
+raster.
+
+#### 4.3.1 Time-series classification with `im.classify.timeseries()`
+
+The time series can now be classified by specifying the number of
+clusters. As with `im.classify()`, the seed argument can be used to make
+the k-means classification reproducible:
+
+``` r
+ndvi_class <- im.classify.timeseries(
+  input_images = ndvi_series,
+  num_clusters = 4,
+  seed = 42
+)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/time series classification-1.png" alt="" style="display: block; margin: auto;" />
+
+By default, the classified images are plotted together using the same
+color scale, allowing the spatial distribution of the classes to be
+compared directly among dates.
+
+The output of `im.classify.timeseries()` is a list containing two
+elements: the `result` element contains the classified raster for each
+image in the original time series, whereas `centers` contains the common
+k-means cluster centers used to classify all images:
+
+``` r
+ndvi_class$result
+```
+
+    ## $Feb2020
+    ## class       : SpatRaster
+    ## size        : 528, 555, 1  (nrow, ncol, nlyr)
+    ## resolution  : 10, 10  (x, y)
+    ## extent      : 648990, 654540, 5120440, 5125720  (xmin, xmax, ymin, ymax)
+    ## coord. ref. : WGS 84 / UTM zone 32N (EPSG:32632)
+    ## source(s)   : memory
+    ## varname     : Sentinel2_NDVI_2020-02-21
+    ## name        : class
+    ## min value   :     1
+    ## max value   :     4
+    ## 
+    ## $May2020
+    ## class       : SpatRaster
+    ## size        : 528, 555, 1  (nrow, ncol, nlyr)
+    ## resolution  : 10, 10  (x, y)
+    ## extent      : 648990, 654540, 5120440, 5125720  (xmin, xmax, ymin, ymax)
+    ## coord. ref. : WGS 84 / UTM zone 32N (EPSG:32632)
+    ## source(s)   : memory
+    ## varname     : Sentinel2_NDVI_2020-05-21
+    ## name        : class
+    ## min value   :     1
+    ## max value   :     4
+    ## 
+    ## $Aug2020
+    ## class       : SpatRaster
+    ## size        : 528, 555, 1  (nrow, ncol, nlyr)
+    ## resolution  : 10, 10  (x, y)
+    ## extent      : 648990, 654540, 5120440, 5125720  (xmin, xmax, ymin, ymax)
+    ## coord. ref. : WGS 84 / UTM zone 32N (EPSG:32632)
+    ## source(s)   : memory
+    ## varname     : Sentinel2_NDVI_2020-08-01
+    ## name        : class
+    ## min value   :     1
+    ## max value   :     4
+    ## 
+    ## $Nov2020
+    ## class       : SpatRaster
+    ## size        : 528, 555, 1  (nrow, ncol, nlyr)
+    ## resolution  : 10, 10  (x, y)
+    ## extent      : 648990, 654540, 5120440, 5125720  (xmin, xmax, ymin, ymax)
+    ## coord. ref. : WGS 84 / UTM zone 32N (EPSG:32632)
+    ## source(s)   : memory
+    ## varname     : Sentinel2_NDVI_2020-11-27
+    ## name        : class
+    ## min value   :     1
+    ## max value   :     4
+
+``` r
+ndvi_class$centers
+```
+
+    ##         NDVI
+    ## 1  0.1737847
+    ## 2 -0.0658465
+    ## 3  0.6863459
+    ## 4  0.4412306
+
+As with `im.classify()`, the resulting classes are spectral clusters
+identified by the k-means algorithm and do not automatically correspond
+to predefined land-cover categories. Their ecological or spectral
+meaning therefore needs to be interpreted according to the input data
+and the characteristics of the resulting clusters.
+
+#### 4.3.2 Visualising class transitions with `im.parallel()`
+
+Now we can visualise changes in pixel membership among classes using
+**`im.parallel()`**. The function produces a **parallel sets plot**, in
+which each vertical axis represents one image in the time series and the
+ribbons connecting the axes show how pixels move among classes through
+time. The width of each ribbon is proportional to the number of pixels
+following a particular sequence of classes.
+
+`im.parallel()` takes directly as input the object returned by
+`im.classify.timeseries()`:
+
+``` r
+im.parallel(ndvi_class)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/im.parallel-1.png" alt="" style="display: block; margin: auto;" />
+
+By default, the names of the classified images are used as labels for
+the temporal axes. Custom labels can also be supplied through the
+`axis_labels` argument.
+
+``` r
+im.parallel(
+  ndvi_class,
+  axis_labels = c(
+    "February 2020",
+    "May 2020",
+    "August 2020",
+    "November 2020"
+  )
+)
+```
+
+<img src="imagery_vignette_update_files/figure-gfm/im.parallel labels-1.png" alt="" style="display: block; margin: auto;" />
+
+### 4.4 Fuzzy classification with `im.fuzzy()`
 
 In some cases, pixels cannot be clearly assigned to a single class,
 because their spectral properties are intermediate between different
@@ -671,7 +847,7 @@ fuzzy$centers
     ## 2  88.46110
     ## 3 147.10982
 
-### 4.4 Multivariate analysis with `im.pca()`
+### 4.5 Multivariate analysis with `im.pca()`
 
 The information contained in a satellite image is often replicated in
 several bands, i.e. there is usually a high **multicollinearity** in the
@@ -705,7 +881,7 @@ contribute much less. The rotation matrix indicates how each original
 band contributes to each principal component, and the maps show the
 spatial distribution of these new variables.
 
-### 4.5 Moving-window (kernel) statistics with `im.kernel()`
+### 4.6 Moving-window (kernel) statistics with `im.kernel()`
 
 **Moving-window (kernel)** operations basically consist of applying a
 square window that moves across the raster, calculating for each focal
