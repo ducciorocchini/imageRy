@@ -1,8 +1,8 @@
-\name{im.boxplot.class}
-\alias{im.boxplot.class}
+\name{im.boxplot.classes}
+\alias{im.boxplot.classes}
 \title{Visualize raster value distributions across image classes}
 \usage{
-im.boxplot.class(
+im.boxplot.classes(
   input_image,
   classified_image,
   layer = 1,
