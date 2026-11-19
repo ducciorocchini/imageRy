@@ -42,7 +42,7 @@ im.dvi <- function(input_image,nir,red){
     stop("Input image should be a SpatRaster object.")
   }
   
-  if(!inherits(nir, "numeric") && !inherits(red, "numeric")) {
+  if(!inherits(nir, "numeric") || !inherits(red, "numeric")) {
     stop("NIR and red layers should be indicated with a number")
   }
   
