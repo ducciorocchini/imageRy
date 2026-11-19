@@ -51,5 +51,3 @@ im.ggplot <- function(input_image, layerfill = 1) {
       scale_fill_viridis(option = 'viridis')
   )
 }
-
-# p <- im.ggplot(input_image = mato, layerfill = "matogrosso_ast_2006209_lrg_2")
