@@ -3,7 +3,7 @@
 #' This function calculates the Normalized Difference Vegetation Index (NDVI) from a multispectral raster image.
 #' NDVI is a widely used vegetation index that assesses plant health by comparing Near-Infrared (NIR) and Red bands.
 #'
-#' @param x A `SpatRaster` object representing the input multispectral image.
+#' @param input_image A `SpatRaster` object representing the input multispectral image.
 #' @param nir An integer specifying the band index of the Near-Infrared (NIR) channel.
 #' @param red An integer specifying the band index of the Red channel.
 #'
@@ -41,9 +41,9 @@
 #' }
 #'
 #' @export
-im.ndvi <- function(x, nir, red){
+im.ndvi <- function(input_image, nir, red){
   
-  if(!inherits(x, "SpatRaster")) {
+  if(!inherits(input_image, "SpatRaster")) {
     stop("Input image should be a SpatRaster object.")
   }
   
@@ -51,7 +51,7 @@ im.ndvi <- function(x, nir, red){
     stop("NIR and red layers should be indicated with a number")
   }
   
-  ndvi = (x[[nir]] - x[[red]]) / (x[[nir]] + x[[red]])
+  ndvi = (input_image[[nir]] - input_image[[red]]) / (input_image[[nir]] + input_image[[red]])
  
   return(ndvi)
 
