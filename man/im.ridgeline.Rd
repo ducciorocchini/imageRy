@@ -2,23 +2,19 @@
 % Please edit documentation in R/im.ridgeline.R
 \name{im.ridgeline}
 \alias{im.ridgeline}
-
 \title{Generate Ridgeline Plots from Raster Data}
-
 \usage{
 im.ridgeline(
-  im,
+  input_image,
   scale = 2,
-  palette = "viridis",
+  custom_colors = "viridis",
   direction = 1,
   color_by = c("value", "quartile", "quartile_smooth"),
   rel_min_height = 0.01
 )
 }
-
 \arguments{
-
-\item{im}{
+\item{input_image}{
 A \code{SpatRaster} object representing the raster data to be visualized.
 }
 
@@ -27,17 +23,21 @@ A numeric value defining the vertical scale of the ridgelines
 (default: \code{2}).
 }
 
-\item{palette}{
-A character string specifying the \code{viridis} color palette.
-Available options are \code{"viridis"}, \code{"magma"},
+\item{custom_colors}{
+A character string specifying a \code{viridis} color palette,
+or a character vector of custom colors (default: \code{"viridis"}).
+
+Available viridis options are \code{"viridis"}, \code{"magma"},
 \code{"plasma"}, \code{"inferno"}, \code{"cividis"},
 \code{"mako"}, \code{"rocket"}, and \code{"turbo"}.
+
+Custom color vectors must contain at least two valid colors.
 }
 
 \item{direction}{
-A numeric value controlling the direction of the color palette.
+A numeric value controlling the direction of the selected viridis palette.
 Use \code{1} for the default direction and \code{-1} to reverse it
-(default: \code{1}).
+(default: \code{1}). Only applies to named viridis palettes.
 }
 
 \item{color_by}{
@@ -59,20 +59,19 @@ A numeric value controlling the minimum relative density height displayed
 (default: \code{0.01}).
 }
 }
-
 \value{
 A \code{ggplot} object displaying the ridgeline plot.
 }
-
 \description{
-Generates ridgeline plots from multi-layer raster data. Colors can represent
-continuous raster values, discrete quartiles, or a smooth quartile-based
-gradient.
+This function generates ridgeline plots from multi-layer raster data.
+Colors can represent continuous raster values, discrete quartiles, or a
+smooth quartile-based gradient.
 }
-
 \details{
 Raster values are extracted from all layers of the input
 \code{SpatRaster} and represented as kernel density ridgelines.
+
+Missing and non-finite raster values are excluded.
 
 The first raster layer is displayed at the top of the plot and subsequent
 layers are arranged below it, preserving the order of the raster layers.
@@ -88,16 +87,32 @@ represented using discrete colors.
 When \code{color_by = "quartile_smooth"}, quartiles are also calculated
 independently for each raster layer, but the color scale varies continuously.
 The scale is normalized so that each quartile occupies one quarter of the
-palette, providing smooth color transitions while retaining information about
-the quartile position of raster values.
+palette, providing smooth color transitions while retaining information
+about the quartile position of raster values.
 
-The horizontal axis is labelled \code{Value}, whereas the vertical axis is
-labelled \code{Layer}.
+Color palettes can be defined using a named viridis palette or a vector
+of custom colors.
+
+For named viridis palettes, the \code{direction} argument controls
+the palette orientation.
+
+For custom color vectors, at least two valid colors must be supplied.
+In discrete quartile mode, colors are interpolated if fewer than four
+are provided; otherwise, the first four colors are used.
+
+In continuous modes, custom colors define the gradient used to represent
+raster values or normalized quartile positions.
+
+The \code{scale} argument controls the vertical scaling of the ridgelines.
+
+The \code{rel_min_height} argument controls the minimum relative density
+height in the continuous value mode.
+
+The horizontal axis is labelled \code{Value}, whereas the vertical axis
+is labelled \code{Layer}.
 }
-
 \examples{
 \dontrun{
-
 library(terra)
 
 # Import a multi-layer raster
@@ -107,7 +122,7 @@ r <- im.import("greenland")
 im.ridgeline(
   r,
   scale = 2,
-  palette = "viridis",
+  custom_colors = "viridis",
   color_by = "value"
 )
 
@@ -115,7 +130,7 @@ im.ridgeline(
 im.ridgeline(
   r,
   scale = 2,
-  palette = "mako",
+  custom_colors = "mako",
   color_by = "quartile"
 )
 
@@ -123,14 +138,26 @@ im.ridgeline(
 im.ridgeline(
   r,
   scale = 2,
-  palette = "mako",
+  custom_colors = "mako",
   direction = -1,
   color_by = "quartile_smooth"
 )
 
-}
-}
+# Ridgelines with a custom color palette
+im.ridgeline(
+  r,
+  custom_colors = c("blue", "cyan", "yellow", "red"),
+  color_by = "value"
+)
 
+# Discrete quartile colors using a custom palette
+im.ridgeline(
+  r,
+  custom_colors = c("darkblue", "lightblue", "orange", "red"),
+  color_by = "quartile"
+)
+}
+}
 \seealso{
 \code{\link{im.levelplot}},
 \code{\link{im.boxplot.layers}},
