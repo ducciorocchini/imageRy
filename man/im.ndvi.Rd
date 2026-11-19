@@ -4,32 +4,40 @@
 \alias{im.ndvi}
 \title{Compute the Normalized Difference Vegetation Index (NDVI)}
 \usage{
-im.ndvi(x, nir, red)
+im.ndvi(input_image, nir, red)
 }
 \arguments{
-\item{x}{A `SpatRaster` object representing the input multispectral image.}
+\item{input_image}{A \code{SpatRaster} object representing the input multispectral image.}
 
 \item{nir}{An integer specifying the band index of the Near-Infrared (NIR) channel.}
 
 \item{red}{An integer specifying the band index of the Red channel.}
 }
 \value{
-A `SpatRaster` object containing the computed NDVI values, ranging from -1 to 1.
+A \code{SpatRaster} object containing the computed NDVI values, ranging from -1 to 1.
 }
 \description{
-This function calculates the Normalized Difference Vegetation Index (NDVI) from a multispectral raster image.
-NDVI is a widely used vegetation index that assesses plant health by comparing Near-Infrared (NIR) and Red bands.
+This function calculates the Normalized Difference Vegetation Index (NDVI)
+from a multispectral raster image. NDVI is a widely used vegetation index
+that assesses plant health by comparing Near-Infrared (NIR) and Red bands.
 }
 \details{
 NDVI is calculated as:
 \deqn{NDVI = (NIR - Red) / (NIR + Red)}
-where:
-- **High NDVI values (~1)** indicate healthy, dense vegetation.
-- **Low NDVI values (~0 or negative)** indicate barren land, water bodies, or unhealthy vegetation.
 
-**Important:**
-- Ensure that `nir` and `red` correspond to the correct band indices in your raster image.
-- Pixels with (NIR + Red) = 0 will result in `NaN` values.
+where:
+\itemize{
+  \item High NDVI values (approaching 1) indicate healthy, dense vegetation.
+  \item Low NDVI values (around 0 or negative) indicate barren land,
+  water bodies, or unhealthy vegetation.
+}
+
+Important:
+\itemize{
+  \item Ensure that \code{nir} and \code{red} correspond to the correct
+  band indices in the raster image.
+  \item Pixels with (NIR + Red) = 0 will result in \code{NaN} values.
+}
 }
 \examples{
 \dontrun{
@@ -38,18 +46,17 @@ library(terra)
 # Load a multispectral raster dataset
 r <- rast(system.file("ex/logo.tif", package = "terra"))
 
-# Compute NDVI using bands 4 (NIR) and 3 (Red)
-ndvi_raster <- im.ndvi(r, nir = 4, red = 3)
+# Compute NDVI using bands 3 (NIR) and 1 (Red)
+ndvi_raster <- im.ndvi(r, nir = 3, red = 1)
 
 # Plot the NDVI result
 plot(ndvi_raster)
 }
-
 }
 \references{
 For more details on NDVI, see:
 \url{https://en.wikipedia.org/wiki/Normalized_difference_vegetation_index}
 }
 \seealso{
-[im.dvi()], [im.classify()]
+\code{\link{im.dvi}}, \code{\link{im.classify}}
 }
