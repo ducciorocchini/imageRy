@@ -3,7 +3,7 @@
 #' This function calculates the Difference Vegetation Index (DVI) from a multispectral raster image.
 #' The DVI is computed as the difference between the Near-Infrared (NIR) and Red bands.
 #'
-#' @param x A `SpatRaster` object representing the input multispectral image.
+#' @param input_image A `SpatRaster` object representing the input multispectral image.
 #' @param nir An integer specifying the band index of the Near-Infrared (NIR) channel.
 #' @param red An integer specifying the band index of the Red channel.
 #'
@@ -36,9 +36,9 @@
 #' }
 #'
 #' @export
-im.dvi <- function(x,nir,red){
+im.dvi <- function(input_image,nir,red){
   
-  if(!inherits(x, "SpatRaster")) {
+  if(!inherits(input_image, "SpatRaster")) {
     stop("Input image should be a SpatRaster object.")
   }
   
@@ -46,7 +46,7 @@ im.dvi <- function(x,nir,red){
     stop("NIR and red layers should be indicated with a number")
   }
   
-  dvi = x[[nir]] - x[[red]]
+  dvi = input_image[[nir]] - input_image[[red]]
   
   return(dvi)
 }
