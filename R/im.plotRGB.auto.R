@@ -3,7 +3,7 @@
 #' This function visualizes a multispectral raster image using the first three bands
 #' as an RGB composite. It applies a linear contrast stretch to enhance visualization.
 #'
-#' @param x A `SpatRaster` object representing the input multispectral image.
+#' @param input_image A `SpatRaster` object representing the input multispectral image.
 #' @param title A character string specifying the plot title (default: "Main").
 #'
 #' @return This function does not return an object. It directly generates a plot.
@@ -28,9 +28,8 @@
 #' }
 #'
 #' @export
-im.plotRGB.auto <- function(x, title = 'Main'){
-  plotRGB(x,1,2,3,stretch="lin")
+im.plotRGB.auto <- function(input_image, title = 'Main'){
+  plotRGB(input_image,1,2,3,stretch="lin")
   par(col.axis="white", col.lab = "white", tck = 0)
   title(main = title, cex.main = 1.3, line = 2.5)
 }
-
