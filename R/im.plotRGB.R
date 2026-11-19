@@ -3,7 +3,7 @@
 #' This function visualizes a multispectral raster image using user-defined bands
 #' for the Red, Green, and Blue channels. A linear contrast stretch is applied to enhance visualization.
 #'
-#' @param x A `SpatRaster` object representing the input multispectral image.
+#' @param input_image A `SpatRaster` object representing the input multispectral image.
 #' @param r An integer specifying the band index for the Red channel.
 #' @param g An integer specifying the band index for the Green channel.
 #' @param b An integer specifying the band index for the Blue channel.
@@ -31,8 +31,8 @@
 #' }
 #'
 #' @export
-im.plotRGB <- function(x, r, g, b, title = ''){
+im.plotRGB <- function(input_image, r, g, b, title = ''){
   par(col.axis="black", col.lab = "black", tck = 0)
-  plotRGB(x, r, g, b, stretch = "lin", axes = T, mar = c(1,1,2,1))
+  plotRGB(input_image, r, g, b, stretch = "lin", axes = T, mar = c(1,1,2,1))
   title(main = title, cex.main = 1.3, line = 2.5)
 }
