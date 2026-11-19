@@ -4,25 +4,46 @@
 \alias{im.plotRGB.auto}
 \title{Automatically Plot a Raster Image as an RGB Composite}
 \usage{
-im.plotRGB.auto(x, title = "Main")
+im.plotRGB.auto(input_image, title = "Main")
 }
 \arguments{
-\item{x}{A `SpatRaster` object representing the input multispectral image.}
+\item{input_image}{
+A \code{SpatRaster} object representing the input multispectral image.
+}
 
-\item{title}{A character string specifying the plot title (default: "Main").}
+\item{title}{
+A character string specifying the plot title (default: "Main").
+}
 }
 \value{
-This function does not return an object. It directly generates a plot.
+The function directly generates an RGB plot using base R graphics.
+It does not return a reusable plot object.
 }
 \description{
-This function visualizes a multispectral raster image using the first three bands
-as an RGB composite. It applies a linear contrast stretch to enhance visualization.
+This function visualizes a multispectral raster image using the first
+three bands as an RGB composite. It applies a linear contrast stretch
+to enhance visualization.
 }
 \details{
-- The function assumes that the **first three bands** of the raster correspond to the Red, Green, and Blue channels.
-- It uses `plotRGB()` with `stretch="lin"` to enhance contrast.
-- The plot title is customizable via the `title` parameter.
-- The axis and label colors are set to white for better contrast with dark backgrounds.
+The function automatically selects the first three bands of the input
+raster for RGB visualization.
+
+\itemize{
+  \item The first raster band is assigned to the Red channel.
+  \item The second raster band is assigned to the Green channel.
+  \item The third raster band is assigned to the Blue channel.
+  \item A linear contrast stretch (\code{stretch = "lin"}) is applied
+  using \code{terra::plotRGB()} to enhance image contrast.
+  \item The plot title is customizable through the \code{title} argument.
+  \item Axis and label colors are set to white.
+  \item Tick marks are disabled using \code{tck = 0}.
+}
+
+The function uses base R graphics and is particularly useful for
+quick visualization of true-color RGB composites from multispectral
+remote sensing imagery.
+
+The input raster must contain at least three bands.
 }
 \examples{
 \dontrun{
@@ -32,10 +53,13 @@ library(terra)
 r <- rast(system.file("ex/logo.tif", package = "terra"))
 
 # Automatically plot the raster as an RGB composite
-im.plotRGB.auto(r, title = "RGB Visualization")
+im.plotRGB.auto(
+  r,
+  title = "RGB Visualization"
+)
 }
-
 }
 \seealso{
-[im.import()], [im.ggplot()]
+\code{\link{im.import}},
+\code{\link{im.ggplot}}
 }
