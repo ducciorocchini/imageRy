@@ -3,7 +3,7 @@
 #' This function converts a `SpatRaster` object into a `ggplot2` visualization, allowing for
 #' flexible raster plotting with color interpolation.
 #'
-#' @param input_raster A `SpatRaster` object representing the input raster image.
+#' @param input_image A `SpatRaster` object representing the input raster image.
 #' @param layerfill An integer indicating the layer index to be used for coloring the raster (default: 1).
 #'
 #' @return A `ggplot` object displaying the raster image.
@@ -31,9 +31,9 @@
 #' }
 #'
 #' @export
-im.ggplot <- function(input_raster, layerfill = 1) {
+im.ggplot <- function(input_image, layerfill = 1) {
   # Convert raster to dataframe and create plot directly
-  if(!inherits(input_raster, "SpatRaster")) {
+  if(!inherits(input_image, "SpatRaster")) {
     stop("Input image should be a SpatRaster object.")
   }
   
@@ -41,7 +41,7 @@ im.ggplot <- function(input_raster, layerfill = 1) {
     stop("Input layer should be indicated with a number")
   }
   
-  df <- as.data.frame(input_raster, xy = TRUE)
+  df <- as.data.frame(input_image, xy = TRUE)
   layerfill <- colnames(df)[layerfill + 2]
   
   print(
@@ -52,7 +52,4 @@ im.ggplot <- function(input_raster, layerfill = 1) {
   )
 }
 
-# p <- im.ggplot(input_raster = mato, layerfill = "matogrosso_ast_2006209_lrg_2")
-
-
-
+# p <- im.ggplot(input_image = mato, layerfill = "matogrosso_ast_2006209_lrg_2")
