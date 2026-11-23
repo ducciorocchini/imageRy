@@ -240,5 +240,4 @@ remotes::install_github("ducciorocchini/imageRy")
 
 ## Work in progress
 
-* im.boxplot.layers() coordinates
-* im.boxplot.classes() colors 
+* im.loess() for comparing images. 
