@@ -1,4 +1,3 @@
-
 #' Visualize Raster Layers Using Level Plots
 #'
 #' Visualizes single- and multi-layer SpatRaster objects using level plots,
