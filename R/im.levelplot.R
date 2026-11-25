@@ -1,67 +1,98 @@
 #' Visualize Raster Layers Using Level Plots
 #'
-#' This function visualizes single- or multi-layer raster images using level plots.
-#' It supports customizable color palettes, contour overlays, optional marginal
-#' summaries for single-layer rasters, flexible multi-panel layouts, and
-#' automatic axis labeling based on the raster coordinate reference system.
+#' This function visualizes single- or multi-layer raster images using
+#' level plots. It supports customizable color palettes, contour overlays,
+#' row- and column-wise marginal summaries, flexible multi-panel layouts,
+#' and coordinate labels based on the raster coordinate reference system.
 #'
 #' @param input_image A `SpatRaster` object representing the input raster image.
 #' @param layer A numeric index or character string specifying the layer to
 #'   display. If `NULL`, all raster layers are displayed (default: NULL).
 #' @param margin An optional character value specifying the function used to
-#'   summarize rows and columns for single-layer rasters. Accepted values are
-#'   `"mean"` (default), `"median"`, and `NULL` (no marginal summaries).
+#'   summarize raster values along rows and columns for each displayed layer.
+#'   Accepted values are `"mean"` (default), `"median"`, and `NULL`
+#'   (no marginal summaries).
 #' @param custom_colors Either the name of a viridis palette (`"viridis"`,
 #'   `"magma"`, `"plasma"`, `"inferno"`, `"cividis"`, `"mako"`, `"rocket"`,
-#'   `"turbo"`) or a character vector of colors used to build a custom palette
+#'   `"turbo"`) or a character vector of colors defining a custom palette
 #'   (default: `"viridis"`).
 #' @param direction An integer specifying the direction of the viridis palette.
-#'   Accepted values are `1` (default) and `-1`.
+#'   Accepted values are `1` (default) and `-1`. This argument applies
+#'   when a predefined viridis palette is selected.
 #' @param contour A logical value indicating whether contour lines should be
 #'   overlaid on the raster (default: FALSE).
 #' @param ncol An optional positive integer specifying the number of columns
 #'   used when displaying multiple raster layers (default: NULL).
+#'   When marginal summaries are enabled, `NULL` automatically determines
+#'   the number of columns based on the number of raster layers.
 #' @param main An optional character string specifying the plot title
-#'   (default: NULL).
-#' @param legend_title An optional character string specifying the legend title
-#'   (default: NULL).
+#'   (default: NULL). For multi-layer displays with marginal summaries,
+#'   this title is placed above the combined multi-panel plot.
+#' @param legend_title An optional character string specifying the color
+#'   legend title (default: NULL).
 #'
-#' @return A `trellis` object produced by `rasterVis::levelplot()`.
+#' @return A `trellis` object produced by `rasterVis::levelplot()` when
+#'   displaying a single raster layer or when `margin = NULL`.
+#'   For multi-layer rasters with marginal summaries enabled, a `gtable`
+#'   object produced by `gridExtra::arrangeGrob()` is returned invisibly
+#'   after displaying the combined multi-panel plot.
 #'
 #' @details
 #' The function creates level plots for raster data using
 #' `rasterVis::levelplot()`. A single raster layer or all layers of a
 #' multi-layer raster can be displayed.
 #'
-#' For single-layer rasters, marginal summaries are displayed by default
-#' using the mean of raster values along rows and columns.
-#' Setting `margin = "median"` uses the median instead, whereas
-#' `margin = NULL` disables marginal summaries.
-#' For multi-layer rasters, marginal summaries are automatically disabled
-#' with a warning.
+#' Marginal summaries, also referred to as marginal profiles, describe
+#' variation in raster values along rows and columns. They are calculated
+#' using either the mean or median of the raster values.
+#'
+#' By default, `margin = "mean"` displays row- and column-wise mean
+#' profiles. Setting `margin = "median"` uses the median instead,
+#' whereas `margin = NULL` disables marginal summaries.
+#'
+#' For single-layer rasters, the level plot and its marginal profiles
+#' are displayed together in a single graphical representation.
+#'
+#' For multi-layer rasters with marginal summaries enabled, each layer
+#' is displayed in a separate panel together with its corresponding
+#' row- and column-wise marginal profiles. The individual plots are
+#' arranged in a grid using `gridExtra::arrangeGrob()`.
+#'
+#' A common color scale is calculated across all raster layers in
+#' multi-panel displays with marginal summaries, allowing direct
+#' comparison of raster values among layers.
+#'
+#' When `margin = NULL`, multi-layer rasters are displayed using
+#' the standard multi-panel behavior of `rasterVis::levelplot()`.
+#'
+#' Marginal summaries based on the mean or median are primarily
+#' intended for continuous numerical raster data. For categorical
+#' rasters, numerical class identifiers may represent labels rather
+#' than quantitative measurements, making such summaries difficult
+#' to interpret.
 #'
 #' Additional options:
 #' \itemize{
-#'   \item If `margin = "mean"` or `margin = "median"`, marginal profiles are
-#'   displayed for single-layer rasters.
+#'   \item If `margin = "mean"` or `margin = "median"`, marginal profiles
+#'   are displayed for each raster layer.
 #'   \item If `contour = TRUE`, contour lines are superimposed on the raster.
-#'   \item If `ncol` is specified, multiple raster layers are arranged using
-#'   the requested number of columns.
-#'   \item If `custom_colors` is a viridis palette name, a 100-color viridis
+#'   \item If `ncol` is specified, multiple raster layers are arranged
+#'   using the requested number of columns.
+#'   \item If `custom_colors` is a viridis palette name, a 100-color
 #'   palette is automatically generated.
-#'   \item If `custom_colors` is a vector of colors, a continuous palette is
-#'   interpolated from the supplied colors.
+#'   \item If `custom_colors` is a vector of colors, the supplied colors
+#'   are used directly to define the palette.
+#'   \item If `direction = -1`, the selected viridis palette is reversed.
 #' }
 #'
-#' Axis labels are automatically adapted to the raster coordinate reference
-#' system. Geographic rasters are labelled as longitude and latitude,
-#' projected rasters as easting and northing, whereas rasters without a
-#' coordinate reference system use generic X and Y coordinates.
+#' Geographic rasters are explicitly labelled with longitude and
+#' latitude. For projected rasters and rasters without a defined
+#' coordinate reference system, axis labels follow the default
+#' behavior of `rasterVis::levelplot()`.
 #'
-#' This function provides an intuitive visualization of raster data and is
-#' particularly useful as a first exploratory step before applying
-#' distribution-based analyses such as [im.ridgeline()] or
-#' [im.boxplot.layers()].
+#' The function is particularly useful as an initial exploratory step
+#' before applying distribution-based visualization methods such as
+#' [im.ridgeline()] or [im.boxplot.layers()].
 #'
 #' @seealso [im.ridgeline()], [im.boxplot.layers()], [im.ggplot()]
 #'
@@ -69,25 +100,25 @@
 #' \dontrun{
 #' library(terra)
 #'
-#' # Load a raster
+#' # Load a raster image
 #' r <- rast(system.file("ex/elev.tif", package = "terra"))
 #'
 #' # Display a single layer with mean marginal profiles
 #' im.levelplot(r)
 #'
-#' # Add median marginal profiles
+#' # Display median marginal profiles
 #' im.levelplot(
 #'   r,
 #'   margin = "median"
 #' )
 #'
-#' # Display without marginal summaries
+#' # Display a raster without marginal summaries
 #' im.levelplot(
 #'   r,
 #'   margin = NULL
 #' )
 #'
-#' # Reverse a viridis palette and add contours
+#' # Use a reversed viridis palette and add contour lines
 #' im.levelplot(
 #'   r,
 #'   custom_colors = "mako",
@@ -95,12 +126,36 @@
 #'   contour = TRUE
 #' )
 #'
-#' # Display multiple layers in two columns
+#' # Use a custom color vector
+#' im.levelplot(
+#'   r,
+#'   custom_colors = c("navy", "white", "orange")
+#' )
+#'
+#' # Create a multi-layer raster
 #' r_multi <- c(r, r * 2, r * 3)
 #' names(r_multi) <- c("Layer1", "Layer2", "Layer3")
 #'
+#' # Display multiple layers with individual mean marginal profiles
 #' im.levelplot(
 #'   r_multi,
+#'   margin = "mean",
+#'   ncol = 2
+#' )
+#'
+#' # Display multiple layers with median marginal profiles
+#' im.levelplot(
+#'   r_multi,
+#'   margin = "median",
+#'   custom_colors = "plasma",
+#'   ncol = 2,
+#'   main = "Multi-layer raster comparison"
+#' )
+#'
+#' # Display multiple layers without marginal summaries
+#' im.levelplot(
+#'   r_multi,
+#'   margin = NULL,
 #'   ncol = 2
 #' )
 #' }
