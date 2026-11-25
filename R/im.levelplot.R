@@ -106,8 +106,7 @@
 #' }
 #'
 #' @export
-
-im.levelplot2 <- function(input_image, # a SpatRaster object
+im.levelplot <- function(input_image, # a SpatRaster object
                          layer = NULL, # Layer to display
                          margin = "mean", # Function for the margin plots (either "mean" or "median) (only works for single layer display)
                          custom_colors = "viridis", # Custom color palette
