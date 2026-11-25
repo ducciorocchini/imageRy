@@ -1,103 +1,92 @@
-\name{im.levelplot}
-\alias{im.levelplot}
-\title{Raster level plots}
-\usage{
-im.levelplot(
-  input_image,
-  layer = NULL,
-  margin = NULL,
-  custom_colors = "viridis",
-  direction = 1,
-  contour = FALSE,
-  ncol = NULL,
-  main = NULL,
-  legend_title = NULL
-)
-}
-\arguments{
-  \item{input_image}{A \code{SpatRaster} object.}
 
-  \item{layer}{Optional. A single layer to display, provided either as a numeric
-  layer index or as a character string matching one of the layer names of
-  \code{input_image}. If \code{NULL}, all layers are displayed. Defaults to
-  \code{NULL}.}
-
-  \item{margin}{Optional character string specifying the function used to draw
-  marginal summary plots. Accepted values are \code{"mean"} and
-  \code{"median"}. Marginal plots are only displayed for single-layer plots.
-  If a multi-layer image is provided, \code{margin} is ignored. Defaults to
-  \code{NULL}.}
-
-  \item{custom_colors}{Color palette used to display raster values. It can be
-  either the name of a supported \code{viridis} palette or a character vector
-  of valid color names or hex codes. Supported palette names are
-  \code{"viridis"}, \code{"magma"}, \code{"plasma"}, \code{"inferno"},
-  \code{"cividis"}, \code{"mako"}, \code{"rocket"}, and \code{"turbo"}.
-  Defaults to \code{"viridis"}.}
-
-  \item{direction}{Direction of the \code{viridis} palette. Use \code{1} for
-  the default direction and \code{-1} to reverse the palette. This argument
-  only applies when \code{custom_colors} is a \code{viridis} palette name.
-  Defaults to \code{1}.}
-
-  \item{contour}{Logical. If \code{TRUE}, contour lines are added to the level
-  plot. Defaults to \code{FALSE}.}
-
-  \item{ncol}{Optional numeric value defining the number of columns used to
-  arrange panels when displaying a multi-layer raster. Defaults to
-  \code{NULL}.}
-
-  \item{main}{Optional character string used as the main title of the plot.
-  Defaults to \code{NULL}.}
-
-  \item{legend_title}{Optional character string used as the title of the color
-  legend. Defaults to \code{NULL}.}
-}
-\description{
-Creates level plots for single-layer or multi-layer \code{SpatRaster} objects.
-Raster values are displayed using a continuous color scale, making the function
-useful for exploring the spatial distribution of pixel values across one or
-more raster layers.
-}
-\details{
-The function is a simplified wrapper around \code{rasterVis::levelplot()} for
-common raster visualization tasks in \code{imageRy}. When \code{input_image}
-contains multiple layers, each layer is displayed in a separate panel. A
-specific layer can be selected using the \code{layer} argument.
-
-Color palettes can be selected using \code{custom_colors}. If a supported
-\code{viridis} palette is used, its direction can be reversed with
-\code{direction = -1}. Custom color vectors can also be supplied.
-
-For single-layer plots, marginal summaries can be added using the
-\code{margin} argument. Accepted values are \code{"mean"} and
-\code{"median"}. If \code{margin} is supplied for a multi-layer image, it is
-ignored and a warning is returned. Contour lines can be added with
-\code{contour = TRUE}, and the layout of multi-layer plots can be controlled
-with \code{ncol}.
-}
-\value{
-A level plot object produced by \code{rasterVis::levelplot()}.
-}
-\examples{
-\dontrun{
-dolom <- im.import("sentinel.dolomites")
-
-# Basic usage
-im.levelplot(dolom, custom_colors = "viridis")
-
-# Plot a single layer with marginal median summaries
-im.levelplot(dolom, layer = 4, 
-             custom_colors = "mako", 
-             direction = -1, 
-             margin = "median")
-
-# Add contour lines
-im.levelplot(dolom,
-             layer = 4,
-             custom_colors = "mako",
-             direction = -1,
-             margin = "median",
-             contour = TRUE)
-}
-}
+#' Visualize Raster Layers Using Level Plots
+#'
+#' Visualizes single- and multi-layer SpatRaster objects using level plots,
+#' with optional row- and column-wise marginal profiles.
+#'
+#' @param input_image A SpatRaster object containing the raster data.
+#' @param layer Numeric index or name of the layer to display.
+#'   If NULL, all layers are displayed (default: NULL).
+#' @param margin Function used to calculate marginal profiles.
+#'   Accepted values are "mean" (default), "median", or NULL
+#'   to disable marginal profiles.
+#' @param custom_colors Name of a viridis palette ("viridis", "magma",
+#'   "plasma", "inferno", "cividis", "mako", "rocket", "turbo")
+#'   or a character vector of custom colors (default: "viridis").
+#' @param direction Direction of the viridis palette:
+#'   1 (default) or -1 (reversed).
+#' @param contour Logical. If TRUE, contour lines are added
+#'   to the raster visualization (default: FALSE).
+#' @param ncol Number of columns used to arrange multiple raster
+#'   layers. If NULL, the layout is determined automatically.
+#' @param main Optional title for the plot (default: NULL).
+#' @param legend_title Optional title for the color legend
+#'   (default: NULL).
+#'
+#' @return A trellis object for single-layer plots or multi-layer plots
+#'   without marginal profiles. For multi-layer plots with marginal
+#'   profiles, a gtable object is returned invisibly after plotting.
+#'
+#' @details
+#' The function is based on rasterVis::levelplot() and supports
+#' visualization of individual raster layers or multiple layers
+#' arranged in a multi-panel layout.
+#'
+#' Marginal summaries, also referred to as marginal profiles,
+#' describe variation in raster values along rows and columns.
+#' They are calculated using the mean or median.
+#'
+#' By default, margin = "mean" displays marginal profiles.
+#' Setting margin = "median" uses the median, whereas
+#' margin = NULL disables marginal profiles.
+#'
+#' For multi-layer rasters, each layer is displayed in a separate
+#' panel together with its corresponding marginal profiles.
+#' A common color scale is applied across all layers when
+#' marginal profiles are enabled, facilitating comparisons.
+#'
+#' The number of columns in the multi-panel layout can be
+#' controlled using ncol.
+#'
+#' Marginal profiles are primarily intended for continuous
+#' numerical raster data. For categorical rasters, numerical
+#' class identifiers may represent labels rather than
+#' quantitative measurements, making mean and median
+#' summaries potentially inappropriate.
+#'
+#' Geographic rasters are labelled using longitude and latitude.
+#' For other rasters, axis labels follow the default behavior
+#' of rasterVis::levelplot().
+#'
+#' @seealso im.ridgeline, im.boxplot.layers, im.ggplot
+#'
+#' @examples
+#' \dontrun{
+#' library(terra)
+#'
+#' r <- rast(system.file("ex/elev.tif", package = "terra"))
+#'
+#' # Single-layer raster with mean marginal profiles
+#' im.levelplot(r)
+#'
+#' # Median marginal profiles
+#' im.levelplot(r, margin = "median")
+#'
+#' # Without marginal profiles
+#' im.levelplot(r, margin = NULL)
+#'
+#' # Custom palette
+#' im.levelplot(r, custom_colors = "mako", direction = -1)
+#'
+#' # Multi-layer raster with marginal profiles
+#' r_multi <- c(r, r * 2, r * 3)
+#' names(r_multi) <- c("Layer1", "Layer2", "Layer3")
+#'
+#' im.levelplot(
+#'   r_multi,
+#'   margin = "mean",
+#'   ncol = 2
+#' )
+#' }
+#'
+#' @export
