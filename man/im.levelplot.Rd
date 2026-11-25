@@ -1,4 +1,3 @@
-
 \name{im.levelplot}
 \alias{im.levelplot}
 \title{Visualize raster layers using level plots}
