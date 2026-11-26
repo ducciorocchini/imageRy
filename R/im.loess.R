@@ -3,12 +3,12 @@ im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
   stopifnot(terra::nlyr(x) == 1, terra::nlyr(y) == 1)
 
   if (!terra::compareGeom(x, y, stopOnError = FALSE)) {
-    stop("Le due bande devono avere la stessa griglia e lo stesso allineamento.")
+    stop("The two bands must have the same grid and alignment.")
   }
 
   if (!is.null(seed)) set.seed(seed)
 
-  dati <- terra::spatSample(
+  data <- terra::spatSample(
     c(x, y),
     size = n,
     method = "random",
@@ -17,18 +17,18 @@ im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
     xy = TRUE
   )
 
-  names(dati) <- c("coord_x", "coord_y", "x", "y")
+  names(data) <- c("coord_x", "coord_y", "x", "y")
 
-  test_spaziale <- SpatialPack::modified.ttest(
-    x = dati$x,
-    y = dati$y,
-    coords = as.matrix(dati[c("coord_x", "coord_y")])
+  spatial_test <- SpatialPack::modified.ttest(
+    x = data$x,
+    y = data$y,
+    coords = as.matrix(data[c("coord_x", "coord_y")])
   )
 
-  r <- test_spaziale$corr
-  p <- test_spaziale$p.value
+  r <- spatial_test$corr
+  p <- spatial_test$p.value
 
-  grafico <- ggplot2::ggplot(dati, ggplot2::aes(x = x, y = y)) +
+  plot <- ggplot2::ggplot(data, ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_point(
       color = "#30D5C8",
       alpha = 0.65,
@@ -60,8 +60,8 @@ im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
     ggplot2::labs(
       x = names(x),
       y = names(y),
-      title = "Relazione tra le due bande",
-      subtitle = paste("Campione casuale di", nrow(dati), "pixel"),
+      title = "Relationship between the two bands",
+      subtitle = paste("Random sample of", nrow(data), "pixels"),
       color = NULL
     ) +
     ggplot2::theme_minimal(base_size = 14) +
@@ -72,24 +72,24 @@ im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
       legend.direction = "horizontal"
     )
 
-  linee_legenda <- character(0)
+  legend_lines <- character(0)
 
   if (one_to_one_line) {
-    limiti <- range(c(dati$x, dati$y), finite = TRUE)
+    limits <- range(c(data$x, data$y), finite = TRUE)
 
-    segmento_1to1 <- data.frame(
-      x = limiti[1],
-      y = limiti[1],
-      xend = limiti[2],
-      yend = limiti[2]
+    one_to_one_segment <- data.frame(
+      x = limits[1],
+      y = limits[1],
+      xend = limits[2],
+      yend = limits[2]
     )
 
-    grafico <- grafico +
+    plot <- plot +
       ggplot2::geom_segment(
-        data = segmento_1to1,
+        data = one_to_one_segment,
         mapping = ggplot2::aes(
           x = x, y = y, xend = xend, yend = yend,
-          color = "1:1 line (dashed)"
+          color = "1:1 line"
         ),
         inherit.aes = FALSE,
         linetype = "dashed",
@@ -97,16 +97,13 @@ im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
         show.legend = TRUE
       )
 
-    linee_legenda <- c(linee_legenda, "1:1 line (dashed)")
+    legend_lines <- c(legend_lines, "1:1 line")
   }
 
   if (reg_line) {
-    grafico <- grafico +
+    plot <- plot +
       ggplot2::geom_smooth(
-        ggplot2::aes(
-          color = "regression line",
-          fill = "regression line"
-        ),
+        ggplot2::aes(color = "OLS", fill = "OLS"),
         method = "lm",
         formula = y ~ x,
         se = TRUE,
@@ -114,22 +111,22 @@ im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
         linewidth = 1
       )
 
-    linee_legenda <- c(linee_legenda, "regression line")
+    legend_lines <- c(legend_lines, "OLS")
   }
 
-  linee_legenda <- c(linee_legenda, "LOESS")
+  legend_lines <- c(legend_lines, "LOESS")
 
-  grafico +
+  plot +
     ggplot2::scale_color_manual(
       values = c(
         "1:1 line" = "#008C95",
         "OLS" = "#7B2CBF",
         "LOESS" = "#FDE725"
       ),
-      breaks = linee_legenda
+      breaks = legend_lines
     ) +
     ggplot2::scale_fill_manual(
-      values = c("regression line" = "#7B2CBF"),
+      values = c("OLS" = "#7B2CBF"),
       guide = "none"
     )
 }
