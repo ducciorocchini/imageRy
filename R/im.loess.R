@@ -1,3 +1,58 @@
+#' Scatterplot with a LOESS Smooth for Two Raster Layers
+#'
+#' This function draws a scatterplot of paired pixel values from two
+#' single-layer `SpatRaster` objects. It adds a LOESS smooth with a confidence
+#' interval and reports the Pearson correlation coefficient and a
+#' spatially adjusted p-value.
+#'
+#' @param x A single-layer `SpatRaster` used for the x-axis.
+#' @param y A single-layer `SpatRaster` used for the y-axis. It must have the
+#'   same grid and alignment as `x`.
+#' @param n The number of valid pixel pairs to sample (default: 1000).
+#' @param span The span parameter passed to the LOESS smoother (default: 0.75).
+#'   Smaller values produce a more flexible curve.
+#' @param seed An optional random seed for reproducible sampling
+#'   (default: `NULL`).
+#' @param one_to_one_line A logical value indicating whether to add a dashed
+#'   1:1 line (default: `FALSE`).
+#' @param reg_line A logical value indicating whether to add an OLS regression
+#'   line with its confidence interval (default: `FALSE`).
+#' @param xlab An optional label for the x-axis. If `NULL`, the name of `x` is
+#'   used.
+#' @param ylab An optional label for the y-axis. If `NULL`, the name of `y` is
+#'   used.
+#'
+#' @return A `ggplot` object showing the sampled pixel pairs, the LOESS curve,
+#'   and the Pearson correlation. Optional 1:1 and OLS regression lines are
+#'   included when requested.
+#'
+#' @details
+#' The function randomly samples valid, corresponding pixel pairs from the
+#' two raster layers. The Pearson correlation is calculated from the sampled
+#' values. Its p-value is obtained using the modified t-test implemented in
+#' `SpatialPack::modified.ttest`, which accounts for spatial autocorrelation.
+#'
+#' The confidence interval around the LOESS curve is calculated by
+#' `ggplot2::geom_smooth`. When `reg_line = TRUE`, the OLS regression line is
+#' also shown with its confidence interval.
+#'
+#' @seealso [terra::spatSample()], [SpatialPack::modified.ttest()]
+#'
+#' @examples
+#' \dontrun{
+#' im.loess(
+#'   band1,
+#'   band2,
+#'   n = 1000,
+#'   seed = 42,
+#'   one_to_one_line = TRUE,
+#'   reg_line = TRUE,
+#'   xlab = "Band 1",
+#'   ylab = "Band 2"
+#' )
+#' }
+#'
+#' @export
 im.loess <- function(x, y, n = 1000, span = 0.75, seed = NULL,
                      one_to_one_line = FALSE, reg_line = FALSE) {
   stopifnot(terra::nlyr(x) == 1, terra::nlyr(y) == 1)
